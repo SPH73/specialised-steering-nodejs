@@ -1,5 +1,5 @@
 {
-  "name": "webapp",
+  "name": "seguro-hydraulics-webapp",
   "version": "1.0.0",
   "description": "Seguro Hydarulics Web Application",
   "main": "app.js",
@@ -12,6 +12,10 @@
     "web-application"
   ],
   "author": "Sue Holder",
+  "maintainers": [
+    "Sue Holder",
+    "Design Develop Host"
+  ],
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1"

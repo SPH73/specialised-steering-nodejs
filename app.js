@@ -4,36 +4,49 @@ const path = require('path');
 
 const app = express();
 
-app.use(express.urlencoded({ extended: false }));
+app.use(express.static('public'));
+
+// app.use(express.urlencoded({ extended: false }));
 
 app.get('/', function (req, res) {
-    res.send('<h1>Homepage</h1>');
+    const htmlFilePath = path.join(__dirname, 'views', 'index.html');
+    res.sendFile(htmlFilePath);
 });
 
 app.get('/about', function (req, res) {
-    res.send('<h1>About page</h1>');
+    const htmlFilePath = path.join(__dirname, 'views', 'about.html');
+    res.sendFile(htmlFilePath);
 });
 
 app.get('/our-work', function (req, res) {
-    res.send('<h1>Our Work page</h1>');
+    // route for dynamic content
+    const htmlFilePath = path.join(__dirname, 'views', 'our-work.html');
+    res.sendFile(htmlFilePath);
 });
 
 app.get('/register', function (req, res) {
-    res.send('<h1>Register User</h1>');
+    const htmlFilePath = path.join(__dirname, 'views', 'register.html');
+    res.sendFile(htmlFilePath);
 });
 
 app.get('/login', function (req, res) {
-    res.send('<h1>login User</h1>');
+    const htmlFilePath = path.join(__dirname, 'views', 'login.html');
+    res.sendFile(htmlFilePath);
 });
 
 app.get('/disclaimer', function (req, res) {
-    res.send('<h1>Disclaimer</h1>');
+    const htmlFilePath = path.join(__dirname, 'views', 'disclaimer.html');
+    res.sendFile(htmlFilePath);
+});
+
+app.get('/terms', function (req, res) {
+    const htmlFilePath = path.join(__dirname, 'views', 'terms-of-sale.html');
+    res.sendFile(htmlFilePath);
 });
 
 app.get('/enquiry', function (req, res) {
-    res.send(
-        '<div><br><div><form action="/store-enquiry" method="POST"><br><div><input type="hidden" id="date" name="posted" value="date"</input><input type="text" name="name" placeholder="Your name"></div><div><input type="email" name="email" placeholder="Your email"><div><textarea type="text" name="message" placeholder="How can we help you?"></textarea></div><div><button>Submit</button></form></div></div> <script>const d = new Date(); document.getElementById("date").value = d.toISOString();</script>',
-    );
+    const htmlFilePath = path.join(__dirname, 'views', 'enquiry.html');
+    res.sendFile(htmlFilePath);
 });
 
 app.post('/store-enquiry', function (req, res) {
@@ -76,9 +89,8 @@ app.get('/enquiries', function (req, res) {
 });
 
 app.get('/contact', function (req, res) {
-    res.send(
-        '<div><br><div><form action="/store-message" method="POST"><br><div><input type="hidden" id="date" name="posted" value="date"</input><input type="text" name="name" placeholder="Your name"></div><div><input type="email" name="email" placeholder="Your email"><div><textarea type="text" name="message" placeholder="How can we help you?"></textarea></div><div><button>Submit</button></form></div></div> <script>const d = new Date(); document.getElementById("date").value = d.toISOString();</script>',
-    );
+    const htmlFilePath = path.join(__dirname, 'views', 'contact.html');
+    res.sendFile(htmlFilePath);
 });
 app.post('/store-message', function (req, res) {
     const message = req.body;
