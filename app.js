@@ -1,6 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const { title } = require('process');
 
 const app = express();
 
@@ -11,11 +12,20 @@ app.use(express.static('public'));
 
 app.use(express.urlencoded({ extended: false }));
 
-app.get('/', function (req, res) {
-    res.render('index');
-});
-
 // ----HOME
+
+app.get('/', function (req, res) {
+    const meta = {
+        title: 'SEGURO HYDRAULICS: Gauteng, South Africa - Service Worldwide',
+        description:
+            'We source hydraulic components for a wide range of industries and applications. We also service, test and repair components to OEM specification. View our range and examples of client work. We are here to help.',
+    };
+    const filePath = path.join(__dirname, 'data', 'repair-list.json');
+    const fileData = fs.readFileSync(filePath);
+    const repairs = JSON.parse(fileData);
+
+    res.render('index', { meta: meta, repairs: repairs });
+});
 
 app.post('/', function (req, res) {
     // get the form data
@@ -37,7 +47,12 @@ app.post('/', function (req, res) {
 // ----ENQUIRY
 
 app.get('/enquiry', function (req, res) {
-    res.render('enquiry');
+    const meta = {
+        title: 'HYDRAULIC COMPONENTS FOR MINING AND AGRICULTURAL MACHINERY AND TRUCKS',
+        description:
+            'We supply a wide range of industries with replacement hydraulic components from leading manufacturers. Fill out an enquiry form for the part you require and we will do our best to get you up and running again as soon as possible.',
+    };
+    res.render('enquiry', { meta: meta });
 });
 
 app.post('/enquiry', function (req, res) {
@@ -56,7 +71,11 @@ app.post('/enquiry', function (req, res) {
 // ----CONTACT
 
 app.get('/contact', function (req, res) {
-    res.render('contact');
+    const meta = {
+        title: '',
+        description: '',
+    };
+    res.render('contact', { meta: meta });
 });
 
 app.post('/contact', function (req, res) {
@@ -77,7 +96,11 @@ app.post('/contact', function (req, res) {
 });
 
 app.get('/confirm', function (req, res) {
-    res.render('confirm');
+    const meta = {
+        title: '',
+        description: '',
+    };
+    res.render('confirm', { meta: meta });
 });
 
 // ----DYNAMIC PAGES----
@@ -85,6 +108,10 @@ app.get('/confirm', function (req, res) {
 // ----DASHBOARD
 
 app.get('/dashboard', function (req, res) {
+    const meta = {
+        title: '',
+        description: '',
+    };
     const messagesFilePath = path.join(__dirname, 'data', 'message.json');
     const messagesFileData = fs.readFileSync(messagesFilePath);
     const storedMessages = JSON.parse(messagesFileData);
@@ -98,12 +125,18 @@ app.get('/dashboard', function (req, res) {
         contacts: storedMessages,
         numberOfEnquiries: storedEnquiries.length,
         enquiries: storedEnquiries,
+        meta: meta,
     });
 });
 
 app.get('/our-work', function (req, res) {
+    const meta = {
+        title: 'HYDRAULIC COMPONENT SERVICE EXCHANGE & REAIRS TO OEM SPEC',
+        description:
+            'We offer service exchange on some hydraulic components and repair all components to OEM specification on machinery and trucks for the mining and agricultural industries. Fill in a contact form if you need assistance on any hydraulic component for repair or servicing. Feel free to contact us with any related queries - we are always willing to offer expert advice.',
+    };
     // route for dynamic content
-    res.render('our-work');
+    res.render('our-work', { meta: meta });
 });
 
 app.listen(3000);
