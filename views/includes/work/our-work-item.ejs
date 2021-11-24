@@ -1,0 +1,42 @@
+<article
+    id="repair-item-{}"
+    class="repair-card w-node-_8aefed1a-6bcc-a852-bb0f-3a4c3e66662e-a620ef40"
+>
+    <div class="featured-image">
+        <img
+            src="images/travel-motor_hitachi.png"
+            loading="lazy"
+            id="mainImage"
+            alt="Hitachi Travel Motor"
+        />
+    </div>
+    <div class="job-info">
+        <h3 id="name"><%=repair.name %></h3>
+        <p id="date"><%=repair.date %></p>
+        <p id="componentName">
+            <strong>Component: </strong><br />
+            <%=repair.componentName %>
+        </p>
+        <p id="partNo"><strong>Part No.: </strong><br /><%=repair.partNo %></p>
+        <p id="componentDescription">
+            <strong>Component Description: </strong><br />
+            <%=repair.componentDescr %>
+        </p>
+        <p id="repairDescription">
+            <strong>Reason for repair: </strong><br />
+            <%=repair.repairDescription %>
+        </p>
+        <p id="clientName">
+            <strong>Customer: </strong><br />
+            <%=repair.clientName %>
+        </p>
+        <p id="clientComment"><%=repair.clientComment %></p>
+        <div class="card-footer">
+            <p id="linkToDetailsPage" class="repair-detail-link">
+                <a href="#"
+                    >See more about this repair <span class="arrow">→</span></a
+                >
+            </p>
+        </div>
+    </div>
+</article>
