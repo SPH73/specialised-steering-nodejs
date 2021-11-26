@@ -22,8 +22,8 @@
                             />
                             <script>
                                 const date = new Date();
-                                const d = date.getDate();
-                                const mth = date.getMonth() + 1;
+                                let d = date.getDate();
+                                let mth = date.getMonth() + 1;
                                 const yr = date.getFullYear();
                                 if (d < 10) {
                                     d = '0' + d;
@@ -34,17 +34,17 @@
                                 document.getElementById('date').value =
                                     yr + '/' + mth + '/' + d;
 
-                                const hr = date.getHours();
-                                const min = date.getMinutes();
+                                let hr = date.getHours();
+                                let min = date.getMinutes();
                                 if (hr < 10) {
-                                    hr = '0' + h;
+                                    hr = '0' + hr;
                                 }
                                 if (min < 10) {
                                     min = '0' + min;
                                 }
 
                                 document.getElementById('time').value =
-                                    hr + ':' + mth;
+                                    hr + ':' + min;
                             </script>
                             <h3>Contact details</h3>
                             <div class="w-layout-grid contact-info">
