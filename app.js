@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const uuid = require('uuid');
 
+const data = require('./utils/stored-data');
+
 const app = express();
 
 app.set('views', path.join(__dirname, 'views'));
@@ -19,9 +21,7 @@ app.get('/', function (req, res) {
         description:
             'We source hydraulic components for a wide range of industries and applications. We also service, test and repair components to OEM specification. View our range and examples of client work. We are here to help.',
     };
-    const filePath = path.join(__dirname, 'data', 'repair-list.json');
-    const fileData = fs.readFileSync(filePath);
-    const repairs = JSON.parse(fileData);
+    const repairs = data.getFeaturedRepairs();
 
     res.render('index', { meta: meta, repairs: repairs });
 });
@@ -30,40 +30,14 @@ app.post('/', function (req, res) {
     // get the form data
     const message = req.body;
     message.id = uuid.v4;
-    // get the file path to the data file to store the new form data
-    const filePath = path.join(__dirname, 'data', 'message.json');
-    // read the data file
-    const fileData = fs.readFileSync(filePath);
-    // convert the data file to a JS array
-    const storedMessages = JSON.parse(fileData);
+    // get the converted stored messages from the data file
+    const messages = data.getStoredMessages();
     // push the new form data into the array
-    storedMessages.push(message);
-    // convert it to raw data to send back to the file
-    fs.writeFileSync(filePath, JSON.stringify(storedMessages));
+    messages.push(message);
+    // convert it to raw data to send back to the data file
+    data.storeMessages(messages);
 
     res.redirect('/confirm');
-});
-
-app.get('/our-work/:id', function (req, res) {
-    const meta = {
-        title: 'HYDRAULIC COMPONENT SERVICE EXCHANGE & REAIRS TO OEM SPEC',
-        description:
-            'We offer service exchange on some hydraulic components and repair all components to OEM specification on machinery and trucks for the mining and agricultural industries. Fill in a contact form if you need assistance on any hydraulic component for repair or servicing. Feel free to contact us with any related queries - we are always willing to offer expert advice.',
-    };
-    const repairId = req.params.id;
-    const filePath = path.join(__dirname, 'data', 'repair-list.json');
-    const fileData = fs.readFileSync(filePath);
-    const repairs = JSON.parse(fileData);
-
-    for (const repair of repairs) {
-        if (repair.jobId === repairId) {
-            return res.render('our-work-detail', {
-                meta: meta,
-                repair: repair,
-            });
-        }
-    }
-    res.render('404');
 });
 
 // ----ENQUIRY
@@ -102,20 +76,13 @@ app.get('/contact', function (req, res) {
 });
 
 app.post('/contact', function (req, res) {
-    // get the form data
     const message = req.body;
     message.id = uuid.v4;
-    // get the file path to the data file to store the new form data
-    const filePath = path.join(__dirname, 'data', 'message.json');
-    // read the data file
-    const fileData = fs.readFileSync(filePath);
-    // convert the data file to a JS array
-    const storedMessages = JSON.parse(fileData);
-    // push the new form data into the array
-    storedMessages.push(message);
-    // convert it to raw data to send back to the file
-    fs.writeFileSync(filePath, JSON.stringify(storedMessages));
-    // send user to a different page to prevent the warning message and resubmission of the form data or invoke the success message on the form
+
+    const messages = data.getStoredMessages();
+    messages.push(message);
+    data.storeMessages(messages);
+
     res.redirect('/confirm');
 });
 
@@ -132,19 +99,14 @@ app.get('/confirm', function (req, res) {
 // ----DASHBOARD
 
 app.get('/dashboard', function (req, res) {
-    const messagesFilePath = path.join(__dirname, 'data', 'message.json');
-    const messagesFileData = fs.readFileSync(messagesFilePath);
-    const storedMessages = JSON.parse(messagesFileData);
-
-    const enquiriesFilePath = path.join(__dirname, 'data', 'enquiry.json');
-    const enquiriesFileData = fs.readFileSync(enquiriesFilePath);
-    const storedEnquiries = JSON.parse(enquiriesFileData);
+    const messages = data.getStoredMessages();
+    const enquiries = data.getStoredEnquires();
 
     res.render('dashboard', {
-        numberOfMessages: storedMessages.length,
-        contacts: storedMessages,
-        numberOfEnquiries: storedEnquiries.length,
-        enquiries: storedEnquiries,
+        numberOfMessages: messages.length,
+        messages: messages,
+        numberOfEnquiries: enquiries.length,
+        enquiries: enquiries,
     });
 });
 
@@ -156,6 +118,26 @@ app.get('/our-work', function (req, res) {
     };
     // route for dynamic content
     res.render('our-work', { meta: meta });
+});
+
+app.get('/our-work/:id', function (req, res) {
+    const meta = {
+        title: 'HYDRAULIC COMPONENT SERVICE EXCHANGE & REAIRS TO OEM SPEC',
+        description:
+            'We offer service exchange on some hydraulic components and repair all components to OEM specification on machinery and trucks for the mining and agricultural industries. Fill in a contact form if you need assistance on any hydraulic component for repair or servicing. Feel free to contact us with any related queries - we are always willing to offer expert advice.',
+    };
+    const repairId = req.params.id;
+    const repairs = data.getFeaturedRepairs();
+
+    for (const repair of repairs) {
+        if (repair.jobId === repairId) {
+            return res.render('our-work-detail', {
+                meta: meta,
+                repair: repair,
+            });
+        }
+    }
+    res.render('404');
 });
 
 // handle Errors
