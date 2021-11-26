@@ -11,11 +11,10 @@
         data-name="contactForm"
         method="post"
         action="/"
-        redirect="/confirm"
         data-redirect="/confirm"
         class="form"
     >
-        <input type="hidden" id="date" name="postDate" value="CurrentDate" />
+        <input type="hidden" id="day" name="postDate" value="CurrentDate" />
         <input type="hidden" id="time" name="postTime" value="CurrentTime" />
         <script>
             const date = new Date();
@@ -28,7 +27,7 @@
             if (mth < 10) {
                 mth = '0' + mth;
             }
-            document.getElementById('date').value = yr + '/' + mth + '/' + d;
+            document.getElementById('day').value = yr + '/' + mth + '/' + d;
 
             let hr = date.getHours();
             let min = date.getMinutes();

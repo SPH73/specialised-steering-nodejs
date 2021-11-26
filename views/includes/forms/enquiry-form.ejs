@@ -1,8 +1,7 @@
 <form
-                            id="wf-form-Contact-Form"
-                            name="wf-form-Contact-Form"
-                            data-name="Contact Form"
-                            redirect="/confirm"
+                            id="enquiryForm"
+                            name="enquiryForm"
+                            data-name="enquiryForm"
                             data-redirect="/confirm"
                             method="post"
                             action="/enquiry"
@@ -10,7 +9,7 @@
                         >
                             <input
                                 type="hidden"
-                                id="date"
+                                id="day"
                                 name="postDate"
                                 value="CurrentDate"
                             />
@@ -31,7 +30,7 @@
                                 if (mth < 10) {
                                     mth = '0' + mth;
                                 }
-                                document.getElementById('date').value =
+                                document.getElementById('day').value =
                                     yr + '/' + mth + '/' + d;
 
                                 let hr = date.getHours();
