@@ -4,14 +4,14 @@
 >
     <div class="featured-image">
         <img
-            src="images/travel-motor_hitachi.png"
+            src="<%= repair.mainImageUrl %>"
             loading="lazy"
             id="mainImage"
-            alt="Hitachi Travel Motor"
+            alt="<%= repair.mainImageUrl %>"
         />
     </div>
     <div class="job-info">
-        <h3 id="name"><%=repair.name %></h3>
+        <h3 id="name"><%=repair.repairName %></h3>
         <p id="date"><%=repair.date %></p>
         <p id="componentName">
             <strong>Component: </strong><br />
@@ -20,11 +20,11 @@
         <p id="partNo"><strong>Part No.: </strong><br /><%=repair.partNo %></p>
         <p id="componentDescription">
             <strong>Component Description: </strong><br />
-            <%=repair.componentDescr %>
+            <%=repair.componentDescription %>
         </p>
         <p id="repairDescription">
-            <strong>Reason for repair: </strong><br />
-            <%=repair.repairDescription %>
+            <strong>Reason for repair: </strong
+            ><br /><%=repair.repairDescription %>
         </p>
         <p id="clientName">
             <strong>Customer: </strong><br />
@@ -32,9 +32,10 @@
         </p>
         <p id="clientComment"><%=repair.clientComment %></p>
         <div class="card-footer">
-            <p id="linkToDetailsPage" class="repair-detail-link">
-                <a href="#"
-                    >See more about this repair <span class="arrow">→</span></a
+            <p id="linkToDetailsPage" class="detail-link">
+                <a href="/our-work/<%= repair.id %>"
+                    >See more detail on this repair
+                    <span class="arrow">→</span></a
                 >
             </p>
         </div>
