@@ -6,3 +6,6 @@ boiler.js
 images
 css
 js
+blockjs.ejs
+head.ejs
+config.env
