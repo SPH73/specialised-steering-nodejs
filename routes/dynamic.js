@@ -178,7 +178,7 @@ router.post('/enquiry', upload.single('image'), async (req, res) => {
         return;
     }
 
-    res.status(200).redirect('/enquiry');
+    res.render('/confirm');
 });
 
 // ----CONTACT
@@ -214,7 +214,7 @@ router.post('/contact', async (req, res) => {
         console.error(error);
     }
 
-    res.status(200).redirect('/confirm');
+    res.render('/confirm');
 });
 
 router.get('/confirm', (req, res) => {
