@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<!--  Last Updated: Tue Dec 07 2021  -->
+<html lang="en" site-id="614fadc3fad78b6e3c014f57">
+    <head>
+        <meta charset="utf-8" />
+        <title>Login</title>
+        <meta content="width=device-width, initial-scale=1" name="viewport" />
+        <meta
+            content="bfO_FRcQ04OZEPhoVFm6wUdNvjTp9zoDELpqD379NvM"
+            name="google-site-verification"
+        />
+        <%- include('includes/head.ejs') %>
+        <link href="https://segurohydraulics.com/login" rel="canonical" />
+    </head>
+    <body>
+        <%- include('includes/nav.ejs') %>
+        <main id="login" class="section main">
+            <div class="container">
+                <div class="auth-form">
+                    <h1 class="form-heading">Login</h1>
+                    <% if (inputData.hasError) { %>
+                    <p id="input-data"><%= inputData.message %></p>
+                    <% } %>
+
+                    <div class="w-form">
+                        <form
+                            id="login"
+                            name="login"
+                            data-name="login"
+                            method="post"
+                            action="/login"
+                            redirect="/dashboard"
+                            data-redirect="/dashboard"
+                            class="auth-form-block"
+                        >
+                            <input
+                                type="hidden"
+                                value="<%= csrfToken %>"
+                                name="_csrf"
+                            />
+                            <div class="login-form-elements">
+                                <div>
+                                    <input
+                                        type="email"
+                                        class="input-field w-input"
+                                        autocomplete="on"
+                                        autofocus="true"
+                                        maxlength="256"
+                                        name="email"
+                                        data-name="email"
+                                        value="<%= inputData.email %>"
+                                        placeholder="Your account email"
+                                        id="email"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <input
+                                        type="password"
+                                        class="input-field w-input"
+                                        autocomplete="current-password"
+                                        maxlength="256"
+                                        name="password"
+                                        data-name="password"
+                                        value="<%= inputData.email %>"
+                                        placeholder="Your account password"
+                                        id="password"
+                                        required
+                                    />
+                                </div>
+                                <input
+                                    type="submit"
+                                    value="Log in"
+                                    data-wait="Please wait..."
+                                    id="w-node-_3623b93b-4509-e41e-1df0-cd73d33503c2-3c014f57"
+                                    class="button auth w-button"
+                                />
+                            </div>
+                        </form>
+                    </div>
+                    <div id="auth-alternative">
+                        <a href="/register" class="btn-alt"
+                            >Create a new user?</a
+                        >
+                    </div>
+                </div>
+            </div>
+        </main>
+        <%- include('includes/footer') %> <%- include('includes/blockjs') %>
+    </body>
+</html>
