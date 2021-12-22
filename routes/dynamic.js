@@ -39,7 +39,6 @@ router.get('/', async (req, res) => {
             componentDescription: repair.fields.componentDescription,
             date: repair.fields.date,
             imagesGalleryList: repair.fields.imagesGallery[0],
-            // imagesGalleryUrl: repair.fields.imagesGallery[0].url,
             clientComment: repair.fields.clientComment,
             clientName: repair.fields.clientName,
             partNo: repair.fields.partNo,
@@ -57,6 +56,7 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
+    const table = base('webForms');
     const clientIp = requestIp.getClientIp(req);
     // get the form data
     const message = req.body;
@@ -77,7 +77,7 @@ router.post('/', async (req, res) => {
         console.error(error);
     }
 
-    res.redirect('/');
+    res.redirect('/confirm');
 });
 
 // ___ OUR WORK ___
@@ -196,6 +196,7 @@ router.get('/contact', (req, res) => {
 router.post('/contact', async (req, res) => {
     const clientIp = requestIp.getClientIp(req);
     const message = req.body;
+    const table = base('webForms');
 
     const record = {
         status: 'New',
@@ -218,62 +219,65 @@ router.post('/contact', async (req, res) => {
 });
 
 router.get('/confirm', (req, res) => {
-    const meta = {
-        title: '',
-        description: '',
-    };
     res.render('confirm');
 });
 
 // ___ DASHBOARD ___
 
-router.get('/dashboard', (req, res) => {
+router.get('/dashboard', async (req, res) => {
     // check user has a sessionID
     if (!res.locals.isAuth) {
-        console.log('User not authenticated');
         return res.status(401).render('login');
     }
 
     if (!res.locals.isAdmin) {
         // user forbidden
-        console.log('User is not admin');
         return res.status(403).render('index');
     }
 
-    let msgOrder = req.query.messageOrder;
-    let msgSort = req.query.messageSort;
+    // let msgOrder = req.query.messageOrder;
+    // let msgSort = req.query.messageSort;
 
-    if (msgOrder !== 'desc' && msgOrder !== 'asc') {
-        msgOrder = 'desc';
-    }
+    // if (msgOrder !== 'desc' && msgOrder !== 'asc') {
+    //     msgOrder = 'desc';
+    // }
 
-    if (msgSort !== 'date' && msgSort !== 'name') {
-        msgSort = 'date';
-    }
+    // if (msgSort !== 'date' && msgSort !== 'name') {
+    //     msgSort = 'date';
+    // }
 
-    const messages = storedData.getStoredMessages();
+    const table = base('webForms');
+    let messages = [];
+    const records = await table
+        .select({ view: 'Contact Messages' })
+        .eachPage(function page(records, fetchNextPage) {
+            for (let record of records) {
+                messages.push(record);
+            }
+            fetchNextPage();
+        });
 
-    messages.sort((msgA, msgB) => {
-        if (
-            (msgSort === 'date' &&
-                msgOrder === 'desc' &&
-                msgA.postDate > msgB.postDate) ||
-            (msgSort === 'name' &&
-                msgOrder === 'desc' &&
-                msgA.contactName > msgB.contactName)
-        ) {
-            return -1;
-        } else if (
-            (msgSort === 'date' &&
-                msgOrder === 'asc' &&
-                msgA.postDate > msgB.postDate) ||
-            (msgSort === 'name' &&
-                msgOrder === 'asc' &&
-                msgA.contactName > msgB.contactName)
-        ) {
-            return 1;
-        }
-    });
+    // messages.sort((msgA, msgB) => {
+    //     if (
+    //         (msgSort === 'date' &&
+    //             msgOrder === 'desc' &&
+    //             msgA.postDate > msgB.postDate) ||
+    //         (msgSort === 'name' &&
+    //             msgOrder === 'desc' &&
+    //             msgA.contactName > msgB.contactName)
+    //     ) {
+    //         return -1;
+    //     } else if (
+    //         (msgSort === 'date' &&
+    //             msgOrder === 'asc' &&
+    //             msgA.postDate > msgB.postDate) ||
+    //         (msgSort === 'name' &&
+    //             msgOrder === 'asc' &&
+    //             msgA.contactName > msgB.contactName)
+    //     ) {
+    //         return 1;
+    //     }
+    // });
 
     let enqOrder = req.query.enquiryOrder;
     let enqSort = req.query.enquirySort;
@@ -309,13 +313,17 @@ router.get('/dashboard', (req, res) => {
             return 1;
         }
     });
+    for (let message of messages) {
+        console.log(message.id);
+        console.log(message.fields);
+    }
+    // console.log('All messages: ', messages);
+
     const csrfToken = req.csrfToken();
     res.render('dashboard', {
-        numberOfMessages: messages.length,
-        messages: messages,
-        numberOfEnquiries: enquiries.length,
-        enquiries: enquiries,
         csrfToken: csrfToken,
+        messages: messages,
+        numberOfMessages: messages.length,
     });
 });
 
