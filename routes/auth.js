@@ -30,10 +30,9 @@ router.get('/register', (req, res) => {
         };
     }
     req.session.inputData = null;
-    const csrfToken = req.csrfToken();
+    //    add csrf
     res.render('register', {
         inputData: sessionInputData,
-        csrfToken: csrfToken,
     });
 });
 
@@ -110,8 +109,8 @@ router.get('/login', (req, res) => {
         };
     }
     req.session.inputData = null;
-    const csrfToken = req.csrfToken();
-    res.render('login', { inputData: sessionInputData, csrfToken: csrfToken });
+    //    add csrf
+    res.render('login', { inputData: sessionInputData });
 });
 
 router.post('/login', async (req, res) => {
@@ -156,7 +155,7 @@ router.post('/login', async (req, res) => {
     req.session.user = { id: existingUser._id, email: existingUser.email };
     req.session.isAuthenticated = true;
     req.session.save(() => {
-        res.redirect('/dashboard');
+        res.redirect('/');
     });
 });
 

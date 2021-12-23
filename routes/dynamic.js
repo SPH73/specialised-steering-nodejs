@@ -23,7 +23,7 @@ router.get('/', async (req, res) => {
 
     const featuredRepairs = await table
         .select({
-            maxRecords: 4,
+            maxRecords: 6,
             view: 'Featured Repairs',
         })
         .firstPage();
@@ -47,11 +47,10 @@ router.get('/', async (req, res) => {
 
         repairs.push(repair);
     }
-    const csrfToken = req.csrfToken();
+    // add csrf
     res.render('index', {
         meta: meta,
         repairs: repairs,
-        csrfToken: csrfToken,
     });
 });
 
@@ -123,13 +122,16 @@ router.get('/enquiry', (req, res) => {
         description:
             'We supply a wide range of industries with replacement hydraulic components from leading manufacturers. Fill out an enquiry form for the part you require and we will do our best to get you up and running again as soon as possible.',
     };
-    const csrfToken = req.csrfToken();
-    res.render('enquiry', { meta: meta, csrfToken: csrfToken });
+    // add csrf
+    res.render('enquiry', { meta: meta });
 });
 
 router.post('/enquiry', upload.single('image'), async (req, res) => {
     const clientIp = requestIp.getClientIp(req);
+    const image = req.file;
+    const path = req.file.path;
     const data = req.body;
+    console.log(image, path, data);
     const options = {
         use_filename: true,
         unique_filename: false,
@@ -178,7 +180,7 @@ router.post('/enquiry', upload.single('image'), async (req, res) => {
         return;
     }
 
-    res.render('/confirm');
+    res.render('confirm');
 });
 
 // ----CONTACT
@@ -189,8 +191,8 @@ router.get('/contact', (req, res) => {
         description:
             'With our combined 40 years of experience, we offer an expert and professional service for all your hydraulic component requirements. Please contact us today to let us know how we can help get you back up and running.',
     };
-    const csrfToken = req.csrfToken();
-    res.render('contact', { meta: meta, csrfToken: csrfToken });
+    // add csrf
+    res.render('contact', { meta: meta });
 });
 
 router.post('/contact', async (req, res) => {
@@ -224,7 +226,7 @@ router.get('/confirm', (req, res) => {
 
 // ___ DASHBOARD ___
 
-router.get('/dashboard', async (req, res) => {
+router.get('/dashboard', (req, res) => {
     // check user has a sessionID
     if (!res.locals.isAuth) {
         return res.status(401).render('login');
@@ -246,16 +248,16 @@ router.get('/dashboard', async (req, res) => {
     //     msgSort = 'date';
     // }
 
-    const table = base('webForms');
-    let messages = [];
-    const records = await table
-        .select({ view: 'Contact Messages' })
-        .eachPage(function page(records, fetchNextPage) {
-            for (let record of records) {
-                messages.push(record);
-            }
-            fetchNextPage();
-        });
+    // const table = base('webForms');
+    // let messages = [];
+    // const contactRecords = await table
+    //     .select({ view: 'Contact Messages' })
+    //     .eachPage(function page(messages, fetchNextPage) {
+    //         for (let record of messages) {
+    //             messages.push(record);
+    //         }
+    //         fetchNextPage();
+    //     });
 
     // messages.sort((msgA, msgB) => {
     //     if (
@@ -279,51 +281,58 @@ router.get('/dashboard', async (req, res) => {
     //     }
     // });
 
-    let enqOrder = req.query.enquiryOrder;
-    let enqSort = req.query.enquirySort;
+    // let enqOrder = req.query.enquiryOrder;
+    // let enqSort = req.query.enquirySort;
 
-    if (enqOrder !== 'desc' && enqOrder !== 'asc') {
-        enqOrder = 'desc';
-    }
+    // if (enqOrder !== 'desc' && enqOrder !== 'asc') {
+    //     enqOrder = 'desc';
+    // }
 
-    if (enqSort !== 'date' && enqSort !== 'name') {
-        enqSort = 'date';
-    }
+    // if (enqSort !== 'date' && enqSort !== 'name') {
+    //     enqSort = 'date';
+    // }
 
-    const enquiries = storedData.getStoredEnquires();
+    // let enquiries = [];
+    // const partsRecords = await table
+    //     .select({ view: 'Parts Enquiries' })
+    //     .eachPage(function page(partsRecords, fetchNextPage) {
+    //         for (let record of partsRecords) {
+    //             enquiries.push(record);
+    //         }
+    //         fetchNextPage();
+    //     });
 
-    enquiries.sort((msgA, msgB) => {
-        if (
-            (enqSort === 'date' &&
-                enqOrder === 'desc' &&
-                msgA.postDate > msgB.postDate) ||
-            (enqSort === 'name' &&
-                enqOrder === 'desc' &&
-                msgA.enquiryName > msgB.enquiryName)
-        ) {
-            return -1;
-        } else if (
-            (enqSort === 'date' &&
-                enqOrder === 'asc' &&
-                msgA.postDate > msgB.postDate) ||
-            (enqSort === 'name' &&
-                enqOrder === 'asc' &&
-                msgA.enquiryName > msgB.enquiryName)
-        ) {
-            return 1;
-        }
-    });
-    for (let message of messages) {
-        console.log(message.id);
-        console.log(message.fields);
-    }
+    // enquiries.sort((msgA, msgB) => {
+    //     if (
+    //         (enqSort === 'date' &&
+    //             enqOrder === 'desc' &&
+    //             msgA.postDate > msgB.postDate) ||
+    //         (enqSort === 'name' &&
+    //             enqOrder === 'desc' &&
+    //             msgA.enquiryName > msgB.enquiryName)
+    //     ) {
+    //         return -1;
+    //     } else if (
+    //         (enqSort === 'date' &&
+    //             enqOrder === 'asc' &&
+    //             msgA.postDate > msgB.postDate) ||
+    //         (enqSort === 'name' &&
+    //             enqOrder === 'asc' &&
+    //             msgA.enquiryName > msgB.enquiryName)
+    //     ) {
+    //         return 1;
+    //     }
+    // });
+
+    // for (let enquiry of enquiries) {
+    //     console.log(enquiry.id);
+    //     console.log(enquiry.fields);
+    // }
     // console.log('All messages: ', messages);
 
     const csrfToken = req.csrfToken();
     res.render('dashboard', {
         csrfToken: csrfToken,
-        messages: messages,
-        numberOfMessages: messages.length,
     });
 });
 

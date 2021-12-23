@@ -14,7 +14,7 @@
                 <h1>Amy&#x27;s Dashboard</h1>
                 <div id="contactMessages" class="messages-container">
                     <h2>Contact Messages</h2>
-                    <p>You have <%= numberOfMessages %> contact messages.</p>
+                    <p>You have X contact messages.</p>
                     <div class="w-form">
                         <form
                             id="messageSort"
@@ -115,36 +115,36 @@
                         </form>
                     </div>
                     <div class="message-list">
-                      <% for (message of messages){ %>
+ <!-- message loop -->
                         <div class="message-grid">
                             <div class="grid-cell">
                                 <div class="text">Date</div>
                                 <p id="date">
-                                    <%= message.get('postDate').split('T')[0] %>
+                                    postdate
                                 </p>
                             </div>
                             <div class="grid-cell">
                                 <div class="text">Name</div>
                                 <p id="contactName">
-                                    <%= message.get('name') %>
+                                    contact name
                                 </p>
                             </div>
                             <div class="grid-cell">
                                 <div class="text">Email</div>
                                 <p id="contactEmail">
-                                    <%= message.get('email') %>
+                                    contact email
                                 </p>
                             </div>
                             <div class="grid-cell">
                                 <div class="text">Phone</div>
                                 <p id="contactNumber">
-                                    <%= message.get('phone') %>
+                                    contact phone
                                 </p>
                             </div>
                             <div class="grid-cell">
                                 <div class="text">Country</div>
                                 <p id="country">
-                                   <%= message.get('country') %>
+                                   contact country
                                 </p>
                             </div>
                             <div
@@ -153,12 +153,12 @@
                             >
                                 <div class="text message">Message</div>
                                 <p id="contactMessage">
-                                    <%= message.get('message') %>
+                                    contact message
                                 </p>
                             </div>
                         </div>
                         <hr />
-                        <% } %>
+<!-- end message loop -->
                     </div>
                 </div>
                 <div id="enquiryMessages" class="messages-container">

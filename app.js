@@ -32,7 +32,7 @@ app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 // Sessions config
 app.use(session(sessionConfig.createSessionConfig(mongodbSessionStore)));
 // middleware security
-app.use(csrf());
+// **TODO CSRF
 // Auth
 app.use(authMiddleware);
 

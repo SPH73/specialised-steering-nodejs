@@ -8,7 +8,6 @@
     class="form"
     enctype="multipart/form-data"
 >
-    <input type="hidden" value="<%= csrfToken %>" name="_csrf" />
     <h3>Contact details</h3>
     <div class="w-layout-grid contact-info">
         <div>
@@ -68,7 +67,7 @@
                 maxlength="256"
                 name="street"
                 data-name="street"
-                placeholder="Street"
+                placeholder="Street address"
                 id="street"
                 required
             />
@@ -92,7 +91,7 @@
                 maxlength="256"
                 name="postal"
                 data-name="postal"
-                placeholder="Postal Code"
+                placeholder="Postal code"
                 id="postal"
                 required
             />
@@ -113,7 +112,7 @@
             <select
                 id="country"
                 name="country"
-                data-name="Country"
+                data-name="country"
                 required
                 class="select-field w-select"
             >
@@ -450,7 +449,7 @@
             />
         </div>
         <div>
-            <label for="serial-number" class="field-label">serial number</label
+            <label for="serialNo" class="field-label">serial number</label
             ><input
                 type="text"
                 class="input-field w-input"
@@ -462,7 +461,7 @@
             />
         </div>
         <div>
-            <label for="part-number" class="field-label">part number</label
+            <label for="partNo" class="field-label">part number</label
             ><input
                 type="text"
                 class="input-field w-input"
@@ -474,9 +473,8 @@
             />
         </div>
         <div>
-            <img id="image-preview" src="" alt="Chosen image" />
-            <label for="image" class="field-label">name plate image</label>
-            <input
+            <label for="image" class="field-label">nameplate image</label
+            ><input
                 type="file"
                 class="input-field w-input"
                 name="image"
@@ -485,13 +483,16 @@
                 accept="image/*"
             />
         </div>
+        <div>
+            <img src="" alt="Chosen image" id="image-preview" />
+        </div>
     </div>
     <textarea
         data-name="message"
         maxlength="5000"
         id="message"
         name="message"
-        placeholder="Anything else you want to mention? Include an explanation of any images uploaded."
+        placeholder="Any other info you need to provide?"
         class="textarea w-input"
     ></textarea
     ><input

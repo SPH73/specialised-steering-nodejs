@@ -30,21 +30,12 @@
                                 <% } %>
                             </div>
                             <div class="job-info">
-                                <p id="date"><%= repair.date %></p>
-                                <p id="componentName">
-                                    <strong>Component Name:</strong> <%=
-                                    repair.componentName %>
-                                </p>
-                                <p id="partNo">
-                                    <strong>Part no.:</strong> <%= repair.partNo
-                                    %>
-                                </p>
                                 <p id="componentDescription">
                                     <strong>Component Description:</strong> <%=
                                     repair.componentDescription %>
                                 </p>
                                 <p id="repairDescription">
-                                    <strong>Repair Description:</strong> <%=
+                                    <strong>Problem solved:</strong> <%=
                                     repair.repairDescription %>
                                 </p>
                                 <p id="clientName"><%= repair.clientName %></p>
@@ -56,8 +47,8 @@
                                         id="linkToDetailsPage"
                                         class="detail-link"
                                     >
-                                        <a href="<%= repair.clientWebsite %>"
-                                            >View customer<span class="arrow"
+                                        <a href="../#our-work-list"
+                                            >Back to our work<span class="arrow"
                                                 >→</span
                                             ></a
                                         >
