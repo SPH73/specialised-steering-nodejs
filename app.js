@@ -1,4 +1,4 @@
-require('dotenv').config({ path: './config.env' });
+require('dotenv').config();
 
 const express = require('express');
 const session = require('express-session');
@@ -14,6 +14,7 @@ const dynamicRoutes = require('./routes/dynamic');
 const defaultRoutes = require('./routes/default');
 const authRoutes = require('./routes/auth');
 const authMiddleware = require('./middleware/auth-middleware');
+const cacheMiddleware = require('./middleware/cache-middleware');
 
 const mongodbSessionStore = sessionConfig.createSessionStore(session);
 
@@ -24,6 +25,7 @@ const PORT = process.env.PORT || 3000;
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+app.use(cacheMiddleware);
 app.use(express.static('public'));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));
@@ -32,7 +34,8 @@ app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 // Sessions config
 app.use(session(sessionConfig.createSessionConfig(mongodbSessionStore)));
 // middleware security
-// **TODO CSRF
+// **TODO ADD & TEST CSRF
+
 // Auth
 app.use(authMiddleware);
 
