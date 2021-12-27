@@ -9,3 +9,4 @@ js
 blockjs.ejs
 head.ejs
 config.env
+.env

@@ -129,9 +129,7 @@ router.get('/enquiry', (req, res) => {
 router.post('/enquiry', upload.single('image'), async (req, res) => {
     const clientIp = requestIp.getClientIp(req);
     const image = req.file;
-    const path = req.file.path;
     const data = req.body;
-    console.log(image, path, data);
     const options = {
         use_filename: true,
         unique_filename: false,
@@ -140,18 +138,6 @@ router.post('/enquiry', upload.single('image'), async (req, res) => {
     };
 
     try {
-        const result = await cloudinary.uploader.upload(
-            req.file.path,
-            options,
-            function (error) {
-                console.log(error);
-            },
-        );
-        if (!result) {
-            console.log('********* Image not stored to cloudinary');
-            return;
-        }
-
         const record = {
             status: 'New',
             name: data.enquiryName,
@@ -168,18 +154,41 @@ router.post('/enquiry', upload.single('image'), async (req, res) => {
             postal: data.postal,
             region: data.province,
             country: data.country,
-            imageUploads: [{ url: result.secure_url }],
             ip: clientIp,
             form: 'parts',
         };
         const table = base('webForms');
         const createdRecord = await table.create(record);
-        console.log('Record created: ', createdRecord);
+
+        if (req.file) {
+            console.log('****File was uploaded: ', req.file);
+            const result = await cloudinary.uploader.upload(
+                req.file.path,
+                options,
+                function (error) {
+                    console.log(error);
+                },
+            );
+            if (!result) {
+                console.log('********* Image not stored to cloudinary');
+                return;
+            }
+            const secure_url = result.secure_url;
+            const recordId = createdRecord.id;
+            const updatedRecord = await table.update(recordId, {
+                imageUploads: [{ url: secure_url }],
+            });
+            console.log('********* Record updated:', updatedRecord.id);
+        } else {
+            console.log(
+                '****No file was uploaded created record id: ',
+                createdRecord.id,
+            );
+        }
     } catch (error) {
         console.error(error);
         return;
     }
-
     res.render('confirm');
 });
 
