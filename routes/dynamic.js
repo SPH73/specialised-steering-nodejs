@@ -178,7 +178,6 @@ router.post('/enquiry', upload.single('image'), async (req, res) => {
             const updatedRecord = await table.update(recordId, {
                 imageUploads: [{ url: secure_url }],
             });
-            console.log('********* Record updated:', updatedRecord.id);
         } else {
             console.log(
                 '****No file was uploaded created record id: ',
