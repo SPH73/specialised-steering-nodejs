@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const express = require('express');
 const session = require('express-session');
+const compression = require('compression');
 
 const csrf = require('csurf');
 
@@ -25,6 +26,7 @@ const PORT = process.env.PORT || 3000;
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+app.use(compression());
 app.use(cacheMiddleware);
 app.use(express.static('public'));
 app.use(express.json({ limit: '50mb' }));
