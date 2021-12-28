@@ -36,7 +36,7 @@
             redirect="/"
             data-redirection="/logout"
         >
-            <!-- csrf -->
+            <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>" />
             <input
                 type="submit"
                 value="LOGOUT"

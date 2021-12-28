@@ -4,7 +4,7 @@
     data-name="enquiryForm"
     data-redirect="/confirm"
     method="post"
-    action="/enquiry"
+    action="/enquiry?_csrf=<%=csrfToken%>"
     class="form"
     enctype="multipart/form-data"
 >

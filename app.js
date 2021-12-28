@@ -15,7 +15,7 @@ const dynamicRoutes = require('./routes/dynamic');
 const defaultRoutes = require('./routes/default');
 const authRoutes = require('./routes/auth');
 const authMiddleware = require('./middleware/auth-middleware');
-const cacheMiddleware = require('./middleware/cache-middleware');
+const addCSRFTokenMiddleware = require('./middleware/csrf-token-middlware');
 
 const mongodbSessionStore = sessionConfig.createSessionStore(session);
 
@@ -27,7 +27,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use(compression());
-app.use(cacheMiddleware);
+// app.use(cacheMiddleware);
 app.use(express.static('public'));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));
@@ -37,7 +37,8 @@ app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 app.use(session(sessionConfig.createSessionConfig(mongodbSessionStore)));
 // middleware security
 // **TODO ADD & TEST CSRF
-
+app.use(csrf());
+app.use(addCSRFTokenMiddleware);
 // Auth
 app.use(authMiddleware);
 

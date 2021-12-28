@@ -23,7 +23,7 @@ router.get('/', async (req, res) => {
 
     const featuredRepairs = await table
         .select({
-            maxRecords: 6,
+            maxRecords: 4,
             view: 'Featured Repairs',
         })
         .firstPage();
@@ -47,7 +47,7 @@ router.get('/', async (req, res) => {
 
         repairs.push(repair);
     }
-    // add csrf
+
     res.render('index', {
         meta: meta,
         repairs: repairs,
@@ -122,7 +122,7 @@ router.get('/enquiry', (req, res) => {
         description:
             'We supply a wide range of industries with replacement hydraulic components from leading manufacturers. Fill out an enquiry form for the part you require and we will do our best to get you up and running again as soon as possible.',
     };
-    // add csrf
+
     res.render('enquiry', { meta: meta });
 });
 
@@ -199,7 +199,6 @@ router.get('/contact', (req, res) => {
         description:
             'With our combined 40 years of experience, we offer an expert and professional service for all your hydraulic component requirements. Please contact us today to let us know how we can help get you back up and running.',
     };
-    // add csrf
     res.render('contact', { meta: meta });
 });
 
@@ -338,10 +337,7 @@ router.get('/dashboard', (req, res) => {
     // }
     // console.log('All messages: ', messages);
 
-    const csrfToken = req.csrfToken();
-    res.render('dashboard', {
-        csrfToken: csrfToken,
-    });
+    res.render('dashboard');
 });
 
 module.exports = router;

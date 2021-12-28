@@ -30,7 +30,6 @@ router.get('/register', (req, res) => {
         };
     }
     req.session.inputData = null;
-    //    add csrf
     res.render('register', {
         inputData: sessionInputData,
     });
@@ -109,7 +108,6 @@ router.get('/login', (req, res) => {
         };
     }
     req.session.inputData = null;
-    //    add csrf
     res.render('login', { inputData: sessionInputData });
 });
 

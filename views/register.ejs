@@ -32,7 +32,11 @@
                             data-redirect="/login"
                             class="register-form-elements"
                         >
-                            <!-- csrf -->
+                            <input
+                                type="hidden"
+                                name="_csrf"
+                                value="<%= locals.csrfToken %>"
+                            />
                             <div>
                                 <input
                                     type="email"
