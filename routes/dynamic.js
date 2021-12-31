@@ -29,20 +29,21 @@ router.get('/', async (req, res) => {
         .firstPage();
     const repairs = [];
     for (let repair of featuredRepairs) {
+        let aTURL = repair.fields.mainImage[0].url.slice(37);
+        let ext = aTURL.lastIndexOf('.');
+
+        aTURL = aTURL.slice(0, ext);
+        const imageURL = `https://res.cloudinary.com/seguro-form-uploads/image/upload/q_auto:good/remote_media/${aTURL}.webp`;
         repair = {
             id: repair.id,
             repairName: repair.fields.repairName,
             repairDescription: repair.fields.repairDescription,
-            mainImageUrl: repair.fields.mainImage[0].url,
+            mainImageUrl: imageURL,
             mainImageName: repair.fields.mainImage[0].filename,
             componentName: repair.fields.componentName,
             componentDescription: repair.fields.componentDescription,
             date: repair.fields.date,
             imagesGalleryList: repair.fields.imagesGallery[0],
-            clientComment: repair.fields.clientComment,
-            clientName: repair.fields.clientName,
-            partNo: repair.fields.partNo,
-            clientWebsite: repair.fields.clientWebsite,
         };
 
         repairs.push(repair);
@@ -54,7 +55,7 @@ router.get('/', async (req, res) => {
     });
 });
 
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
     const table = base('webForms');
     const clientIp = requestIp.getClientIp(req);
     // get the form data
@@ -71,9 +72,11 @@ router.post('/', async (req, res) => {
     };
 
     try {
-        const createdRecord = await table.create(record);
+        await table.create(record);
     } catch (error) {
         console.error(error);
+        next(error);
+        return;
     }
 
     res.redirect('/confirm');
@@ -101,16 +104,17 @@ router.get('/our-work/:id', async (req, res) => {
     const table = base('repairsWork');
 
     const repairDetail = await table.find(repairId);
+    console.log(repairDetail.fields);
     let repairImages = [];
     for (const images of repairDetail.fields.imagesGallery) {
         repairImages.push(images);
     }
-    console.log('**********Repairs images list: ', repairImages[0]);
 
     res.render('our-work-detail', {
         meta: meta,
         repair: repairDetail.fields,
         repairImages: repairImages,
+        repairId: repairId,
     });
 });
 
@@ -126,7 +130,7 @@ router.get('/enquiry', (req, res) => {
     res.render('enquiry', { meta: meta });
 });
 
-router.post('/enquiry', upload.single('image'), async (req, res) => {
+router.post('/enquiry', upload.single('image'), async (req, res, next) => {
     const clientIp = requestIp.getClientIp(req);
     const image = req.file;
     const data = req.body;
@@ -178,14 +182,10 @@ router.post('/enquiry', upload.single('image'), async (req, res) => {
             const updatedRecord = await table.update(recordId, {
                 imageUploads: [{ url: secure_url }],
             });
-        } else {
-            console.log(
-                '****No file was uploaded created record id: ',
-                createdRecord.id,
-            );
         }
     } catch (error) {
         console.error(error);
+        next(error);
         return;
     }
     res.render('confirm');
@@ -202,7 +202,7 @@ router.get('/contact', (req, res) => {
     res.render('contact', { meta: meta });
 });
 
-router.post('/contact', async (req, res) => {
+router.post('/contact', async (req, res, next) => {
     const clientIp = requestIp.getClientIp(req);
     const message = req.body;
     const table = base('webForms');
@@ -219,9 +219,11 @@ router.post('/contact', async (req, res) => {
     };
 
     try {
-        const createdRecord = await table.create(record);
+        await table.create(record);
     } catch (error) {
         console.error(error);
+        next(error);
+        return;
     }
 
     res.render('/confirm');

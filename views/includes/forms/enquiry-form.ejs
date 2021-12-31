@@ -4,7 +4,7 @@
     data-name="enquiryForm"
     data-redirect="/confirm"
     method="post"
-    action="/enquiry?_csrf=<%=csrfToken%>"
+    action="/enquiry?_csrf=<%=locals.csrfToken%>"
     class="form"
     enctype="multipart/form-data"
 >
@@ -20,7 +20,7 @@
                 data-name="enquiryName"
                 placeholder="Full name"
                 id="enquiryName"
-                required=""
+                required
             />
         </div>
         <div>

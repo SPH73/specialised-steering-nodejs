@@ -35,13 +35,12 @@ router.get('/register', (req, res) => {
     });
 });
 
-router.post('/register', async (req, res) => {
+router.post('/register', async (req, res, next) => {
     const userData = req.body;
     const email = userData.email;
     const confirmEmail = userData['confirm-email'];
     const password = userData.password;
     const hashedPwd = await bcrypt.hash(password, 12);
-    console.log('****** req received', userData, hashedPwd);
 
     if (
         !email ||
@@ -86,13 +85,14 @@ router.post('/register', async (req, res) => {
         }
     } catch (error) {
         console.error(error);
+        next(error);
+        return;
     }
 
     const user = {
         email: email,
         password: hashedPwd,
     };
-    console.log('****** attempting to connect to db.....');
     await db.getDb().collection('staff').insertOne(user);
     res.redirect('/login');
 });
@@ -111,15 +111,22 @@ router.get('/login', (req, res) => {
     res.render('login', { inputData: sessionInputData });
 });
 
-router.post('/login', async (req, res) => {
+router.post('/login', async (req, res, next) => {
     const userData = req.body;
     const email = userData.email;
     const password = userData.password;
 
-    const existingUser = await db
-        .getDb()
-        .collection('staff')
-        .findOne({ email: email });
+    let existingUser;
+
+    try {
+        existingUser = await db
+            .getDb()
+            .collection('staff')
+            .findOne({ email: email });
+    } catch (error) {
+        next(error);
+        return;
+    }
 
     if (!existingUser) {
         req.session.inputData = {

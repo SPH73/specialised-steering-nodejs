@@ -11,11 +11,13 @@ const db = require('./data/db');
 
 const path = require('path');
 
+const authMiddleware = require('./middleware/auth-middleware');
+const addCSRFTokenMiddleware = require('./middleware/csrf-token-middlware');
+const errorsHandlerMiddleware = require('./middleware/error-handler');
+
 const dynamicRoutes = require('./routes/dynamic');
 const defaultRoutes = require('./routes/default');
 const authRoutes = require('./routes/auth');
-const authMiddleware = require('./middleware/auth-middleware');
-const addCSRFTokenMiddleware = require('./middleware/csrf-token-middlware');
 
 const mongodbSessionStore = sessionConfig.createSessionStore(session);
 
@@ -27,18 +29,25 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use(compression());
-// app.use(cacheMiddleware);
-app.use(express.static('public'));
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: false, limit: '50mb' }));
+
+app.use(
+    express.static('public', {
+        etag: true,
+        maxAge: 31536000000,
+        redirect: true,
+    }),
+);
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 
 // Middleware
 // Sessions config
 app.use(session(sessionConfig.createSessionConfig(mongodbSessionStore)));
-// middleware security
-// **TODO ADD & TEST CSRF
+
+// csrf
 app.use(csrf());
 app.use(addCSRFTokenMiddleware);
+
 // Auth
 app.use(authMiddleware);
 
@@ -47,15 +56,15 @@ app.use(dynamicRoutes);
 app.use(defaultRoutes);
 app.use(authRoutes);
 
-// TODO - uncomment out before production
-// // handle Errors
-// app.use((req, res) => {
-//     res.status(404).render('404');
-// });
+// app.use(errorsHandlerMiddleware.handleServerError);
+// app.use(errorsHandlerMiddleware.handleNotFoundError);
 
-// app.use((error, req, res, next) => {
-//     res.status(500).render('500');
-// });
+app.use((req, res, next) => {
+    res.status(404).render('404');
+});
+app.use((error, req, res, next) => {
+    res.status(500).render('500');
+});
 
 // Connect to MongoDB when the server starts
 db.connectToDatabase(function (err) {
