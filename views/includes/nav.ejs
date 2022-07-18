@@ -1,68 +1,64 @@
 <nav data-w-id="15c6fe86-0da0-6554-a202-c50b959f2b40" class="navbar">
-    <a id="home" href="../" class="navbar_logo w-inline-block"
-        ><img
-            src="../images/Logo.svg"
-            loading="eager"
-            alt="Seguro Hydraulics Logo"
-            class="navbar_logo-img"
-    /></a>
-    <a
-        href="#"
-        class="navbar_menu-icon w-inline-block"
-        title="Mobile menu icon"
+  <a id="home" href="../" class="navbar_logo w-inline-block"
+    ><img
+      src="../images/Logo.svg"
+      loading="eager"
+      alt="Specialised Steering Logo"
+      class="navbar_logo-img"
+  /></a>
+  <a href="#" class="navbar_menu-icon w-inline-block" title="Mobile menu icon">
+    <div
+      data-w-id="15c6fe86-0da0-6554-a202-c50b959f2b44"
+      data-animation-type="lottie"
+      data-src="../documents/menu-icon-animation.json"
+      data-loop="0"
+      data-direction="1"
+      data-autoplay="0"
+      data-is-ix2-target="1"
+      data-renderer="svg"
+      data-default-duration="4.5"
+      data-duration="0"
+      class="icon-animation"
+    ></div>
+  </a>
+  <% if(locals.isAuth) { %>
+  <div class="w-form">
+    <form
+      action="/logout"
+      method="post"
+      id="logout"
+      name="logout"
+      data-name="logout"
+      redirect="/"
+      data-redirection="/logout"
     >
-        <div
-            data-w-id="15c6fe86-0da0-6554-a202-c50b959f2b44"
-            data-animation-type="lottie"
-            data-src="../documents/menu-icon-animation.json"
-            data-loop="0"
-            data-direction="1"
-            data-autoplay="0"
-            data-is-ix2-target="1"
-            data-renderer="svg"
-            data-default-duration="4.5"
-            data-duration="0"
-            class="icon-animation"
-        ></div>
+      <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>" />
+      <input
+        type="submit"
+        value="LOGOUT"
+        data-wait="Please wait..."
+        class="submit-button w-button"
+      />
+    </form>
+  </div>
+  <% } %>
+  <div class="navbar_menu">
+    <% if(locals.isAdmin) { %>
+    <a href="../dashboard" class="navbar_menu-link w-inline-block">
+      <div>Dashboard</div>
     </a>
-    <% if(locals.isAuth) { %>
-    <div class="w-form">
-        <form
-            action="/logout"
-            method="post"
-            id="logout"
-            name="logout"
-            data-name="logout"
-            redirect="/"
-            data-redirection="/logout"
-        >
-            <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>" />
-            <input
-                type="submit"
-                value="LOGOUT"
-                data-wait="Please wait..."
-                class="submit-button w-button"
-            />
-        </form>
-    </div>
     <% } %>
-    <div class="navbar_menu">
-        <% if(locals.isAdmin) { %>
-        <a href="../dashboard" class="navbar_menu-link w-inline-block">
-            <div>Dashboard</div>
-        </a>
-        <% } %>
-        <!-- <a href="../#our-work-list" class="navbar_menu-link w-inline-block">
+    <!-- <a href="../#our-work-list" class="navbar_menu-link w-inline-block">
             <div>Our Work</div>
         </a> -->
-        <a href="../enquiry" class="navbar_menu-link w-inline-block">
-            <div>components enquiry</div>
-        </a>
-        <a href="../about" class="navbar_menu-link w-inline-block">
-            <div>about</div>
-        </a>
-        <a href="../contact" class="navbar_menu-link contact w-inline-block">
-            <div>contact</div>
-        </a>
-    </div>
+    <a href="../enquiry" class="navbar_menu-link w-inline-block">
+      <div>components enquiry</div>
+    </a>
+    <a href="../about" class="navbar_menu-link w-inline-block">
+      <div>about</div>
+    </a>
+    <a href="../contact" class="navbar_menu-link contact w-inline-block">
+      <div>contact</div>
+    </a>
+  </div>
 </nav>
