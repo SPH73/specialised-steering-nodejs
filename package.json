@@ -1,14 +1,14 @@
 {
-  "name": "seguro-hydraulics-webapp",
+  "name": "specialised-steering-webapp",
   "version": "1.0.0",
-  "description": "Seguro Hydarulics Web Application",
+  "description": "Specialised Steering CC Web Application",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon app.js"
   },
   "keywords": [
-    "seguro-hydraulics",
+    "specialised-steering",
     "web-application"
   ],
   "author": "Sue Holder",
