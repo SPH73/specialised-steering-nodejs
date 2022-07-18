@@ -1,245 +1,99 @@
 <!DOCTYPE html>
 <!--  Last Updated: Tue Dec 07 2021 -->
 <html lang="en" site-id="614fadaea58d4b3ce4b7ee23">
-    <head>
-        <meta charset="utf-8" />
-        <title>Register</title>
+  <head>
+    <meta charset="utf-8" />
+    <title>Register</title>
 
-        <meta content="width=device-width, initial-scale=1" name="viewport" />
-        <meta
-            content="bfO_FRcQ04OZEPhoVFm6wUdNvjTp9zoDELpqD379NvM"
-            name="google-site-verification"
-        />
-        <%- include('includes/head') %>
-    </head>
-    <body>
-        <%- include('includes/nav') %>
-        <main id="register" class="section main">
-            <div class="container">
-                <div class="auth-form">
-                    <h1 class="form-heading">Register</h1>
-                    <% if (inputData.hasError) { %>
-                    <p id="input-error"><%= inputData.message %></p>
-                    <% } %>
-                    <div class="auth-form-block w-form">
-                        <form
-                            id="register"
-                            name="register"
-                            data-name="register"
-                            method="post"
-                            action="/register"
-                            redirect="/login"
-                            data-redirect="/login"
-                            class="register-form-elements"
-                        >
-                            <input
-                                type="hidden"
-                                name="_csrf"
-                                value="<%= locals.csrfToken %>"
-                            />
-                            <div>
-                                <input
-                                    type="email"
-                                    class="input-field w-input"
-                                    autocomplete="on"
-                                    autofocus="true"
-                                    maxlength="256"
-                                    name="email"
-                                    data-name="email"
-                                    value="<%= inputData.email %>"
-                                    placeholder="Your email"
-                                    id="email"
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <input
-                                    type="email"
-                                    class="input-field w-input"
-                                    autocomplete="on"
-                                    maxlength="256"
-                                    name="confirm-email"
-                                    data-name="confirm-email"
-                                    value="<%= inputData.confirmEmail %>"
-                                    placeholder="Confirm email"
-                                    id="confirm-email"
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <input
-                                    type="password"
-                                    class="input-field w-input"
-                                    autocomplete="new-password"
-                                    maxlength="256"
-                                    name="password"
-                                    data-name="password"
-                                    value="<%= inputData.password %>"
-                                    placeholder="Create password"
-                                    id="password"
-                                    required
-                                />
-                            </div>
-                            <input
-                                type="submit"
-                                value="Create user"
-                                data-wait="Please wait..."
-                                class="button auth w-button"
-                            />
-                        </form>
-                    </div>
-                    <div id="auth-alternative">
-                        <a href="/login" class="btn-alt">Login instead?</a>
-                    </div>
-                </div>
-            </div>
-        </main>
-        <footer id="footer" class="section footer">
-            <div class="container">
-                <div class="w-layout-grid footer-content">
-                    <img
-                        src="images/inverse-Logo.svg"
-                        loading="lazy"
-                        width="169"
-                        id="w-node-_1f095eb7-1d94-a44c-448d-cbd0ba45b8dc-ba45b8da"
-                        alt="Seguro Hydraulics Inverted footer logo"
-                        class="footer-logo"
-                    />
-                    <div
-                        id="w-node-_1f095eb7-1d94-a44c-448d-cbd0ba45b8f5-ba45b8da"
-                        class="footer-office"
-                    >
-                        <h3 class="footer-heading">office</h3>
-                        <a
-                            href="mailto:contact@segurohydraulics.com?subject=Website%20enquiry"
-                            class="footer-link"
-                            >Email</a
-                        >
-                        <a href="tel:++27670096822" class="footer-link">Cell</a>
-                        <div class="footer-text">Mon-Thur: 7.30am - 4.30pm</div>
-                        <div class="footer-text">Friday: 7.30am - 12.30pm</div>
-                    </div>
-                    <div
-                        id="w-node-_1f095eb7-1d94-a44c-448d-cbd0ba45b8dd-ba45b8da"
-                        class="footer-nav"
-                    >
-                        <h3 class="footer-heading">navigation</h3>
-                        <a href="index.html" class="footer-link">Home</a>
-                        <a href="#" class="footer-link">Our work</a>
-                        <a href="#" class="footer-link">Repair process</a>
-                        <a href="about.html" class="footer-link">About us</a>
-                        <a href="contact.html" class="footer-link">Contact</a>
-                    </div>
-                    <div
-                        id="w-node-_1f095eb7-1d94-a44c-448d-cbd0ba45b8ea-ba45b8da"
-                        class="footer-legal"
-                    >
-                        <h3 class="footer-heading">legal &amp; site map</h3>
-                        <a href="disclaimer.html" class="footer-link"
-                            >Disclaimer</a
-                        >
-                        <a
-                            href="terms-of-sale.html"
-                            id="terms"
-                            class="footer-link"
-                            >Terms of sale</a
-                        >
-                        <a
-                            rel="noopener nofollow"
-                            href="documents/Privacy-Policy.pdf"
-                            target="_blank"
-                            class="footer-link"
-                            >Privacy policy</a
-                        >
-                        <a href="#" class="footer-link">Site map</a>
-                    </div>
-                </div>
-                <div class="w-layout-grid footer-copyright-social">
-                    <div class="copyright">
-                        <div>
-                            © <span class="year">2021</span> Seguro Hydraulics
-                            <br />All rights reserved.
-                        </div>
-                    </div>
-                    <div class="social">
-                        <div class="w-layout-grid social-grid">
-                            <a
-                                rel="noreferrer noopener"
-                                href="https://www.linkedin.com/in/amy-abbot-acca-88b7457a/"
-                                target="_blank"
-                                class="social-icons w-inline-block"
-                                ><img
-                                    src="images/LI-In-Bug.png"
-                                    loading="lazy"
-                                    width="40"
-                                    height="40"
-                                    alt="LinkedIn social media icon"
-                                    class="icon"
-                            /></a>
-                            <a
-                                rel="noreferrer noopener"
-                                href="https://facebook.com"
-                                target="_blank"
-                                class="social-icons w-inline-block"
-                                ><img
-                                    src="images/f_logo_RGB-Blue_58.png"
-                                    loading="lazy"
-                                    width="65"
-                                    height="65"
-                                    alt="Facebook icon"
-                                    class="icon facebook"
-                            /></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="recognition">
-                    <div>
-                        <a
-                            href="http://https:designdevelophost.co.uk"
-                            rel="noreferrer noopener"
-                            target="_blank"
-                            >Website by <span class="text-span">Design</span>
-                            <span class="dark-turq">Develop</span>
-                            <span class="light-turq">Host</span></a
-                        >
-                    </div>
-                </div>
-            </div>
-        </footer>
-        <script
-            src="https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.5.1.min.dc5e7f18c8.js?site=60a3c2136060df09f0d05666"
-            type="text/javascript"
-            integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
-            crossorigin="anonymous"
-        ></script>
-        <script src="js/webflow.js" type="text/javascript"></script>
-        <!-- [if lte IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/placeholders/3.0.2/placeholders.min.js"></script><![endif] -->
-        <script>
-            var thisYear = new Date().getFullYear();
-            var yearEl = document.querySelector('.year');
-            yearEl.textContent = thisYear;
-            let img = document.getElementsByTagName('img');
-            img.onContextMenu = 'return false';
-        </script>
-        <style>
-            .w-webflow-badge {
-                position: fixed !important;
-                display: None !important;
-                visibility: hidden !important;
-            }
-            body {
-                -webkit-user-select: none; /* Chrome all / Safari all */
-                -moz-user-select: none; /* Firefox all */
-                -ms-user-select: none; /* IE 10+ */
-                -o-user-select: none;
-                user-select: none;
-            }
-            a {
-                color: currentColor;
-            }
-            p {
-                color: currentColor;
-            }
-        </style>
-    </body>
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta
+      content="yaK1iJom9Oy429CSfJAVFV8Z1Vz1axsXpKCVnVdCILY"
+      name="google-site-verification"
+    />
+    <%- include('includes/head') %>
+  </head>
+  <body>
+    <%- include('includes/nav') %>
+    <main id="register" class="section main">
+      <div class="container">
+        <div class="auth-form">
+          <h1 class="form-heading">Register</h1>
+          <% if (inputData.hasError) { %>
+          <p id="input-error"><%= inputData.message %></p>
+          <% } %>
+          <div class="auth-form-block w-form">
+            <form
+              id="register"
+              name="register"
+              data-name="register"
+              method="post"
+              action="/register"
+              redirect="/login"
+              data-redirect="/login"
+              class="register-form-elements"
+            >
+              <input
+                type="hidden"
+                name="_csrf"
+                value="<%= locals.csrfToken %>"
+              />
+              <div>
+                <input
+                  type="email"
+                  class="input-field w-input"
+                  autocomplete="on"
+                  autofocus="true"
+                  maxlength="256"
+                  name="email"
+                  data-name="email"
+                  value="<%= inputData.email %>"
+                  placeholder="Your email"
+                  id="email"
+                  required
+                />
+              </div>
+              <div>
+                <input
+                  type="email"
+                  class="input-field w-input"
+                  autocomplete="on"
+                  maxlength="256"
+                  name="confirm-email"
+                  data-name="confirm-email"
+                  value="<%= inputData.confirmEmail %>"
+                  placeholder="Confirm email"
+                  id="confirm-email"
+                  required
+                />
+              </div>
+              <div>
+                <input
+                  type="password"
+                  class="input-field w-input"
+                  autocomplete="new-password"
+                  maxlength="256"
+                  name="password"
+                  data-name="password"
+                  value="<%= inputData.password %>"
+                  placeholder="Create password"
+                  id="password"
+                  required
+                />
+              </div>
+              <input
+                type="submit"
+                value="Create user"
+                data-wait="Please wait..."
+                class="button auth w-button"
+              />
+            </form>
+          </div>
+          <div id="auth-alternative">
+            <a href="/login" class="btn-alt">Login instead?</a>
+          </div>
+        </div>
+      </div>
+    </main>
+    <%- include('includes/footer') %> <%- include('includes/blockjs') %>
+  </body>
 </html>

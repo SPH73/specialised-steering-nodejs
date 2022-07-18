@@ -1,66 +1,58 @@
 <!DOCTYPE html>
-<!--  Last Updated: Wed Nov 24 2021   -->
+<!--  Last Updated: 18 July 2022   -->
 <html lang="en" site-id="619e512053fba7c0375067da">
-    <head>
-        <%- include('includes/head') %>
-        <title><%= repair.repairName %> | <%= repair.componentName %></title>
-        <link
-            href="https://segurohydraulics.com/our-work/<%= repairId %>"
-            rel="canonical"
-        />
-    </head>
-    <body>
-        <%- include('includes/nav') %>
-        <section id="repair-detail" class="section">
-            <div class="container">
-                <h1 class="page-heading"><%= repair.repairName %></h1>
-                <div id="repairs">
-                    <div id="featured-detail" class="api-detail">
-                        <article
-                            id="repair-item-[]"
-                            class="
-                                repair-card
-                                w-node-_31c5f1eb-a8c8-5cfc-0d61-0cfd030b15f2-375067da
-                            "
-                        >
-                            <div id="imagesGallery" class="gallery">
-                                <%for(image of repairImages){%>
-                                <img
-                                    src="<%= image.url %>"
-                                    loading="lazy"
-                                    id="w-node-_31c5f1eb-a8c8-5cfc-0d61-0cfd030b15f4-375067da"
-                                    alt="<%= image.filename %>"
-                                    class="galleryimage"
-                                />
-                                <%}%>
-                            </div>
-                            <div class="job-info">
-                                <p id="componentDescription">
-                                    <strong>Component Description:</strong> <%=
-                                    repair.componentDescription %>
-                                </p>
-                                <p id="repairDescription">
-                                    <strong>Problem solved:</strong> <%=
-                                    repair.repairDescription %>
-                                </p>
-                                <div class="card-footer">
-                                    <p
-                                        id="linkToDetailsPage"
-                                        class="detail-link"
-                                    >
-                                        <a href="../#our-work-list"
-                                            >Back to our work<span class="arrow"
-                                                >→</span
-                                            ></a
-                                        >
-                                    </p>
-                                </div>
-                            </div>
-                        </article>
-                    </div>
+  <head>
+    <%- include('includes/head') %>
+    <title><%= repair.repairName %> | <%= repair.componentName %></title>
+    <link
+      href="https://specialisedsteering.com/our-work/<%= repairId %>"
+      rel="canonical"
+    />
+  </head>
+  <body>
+    <%- include('includes/nav') %>
+    <section id="repair-detail" class="section">
+      <div class="container">
+        <h1 class="page-heading"><%= repair.repairName %></h1>
+        <div id="repairs">
+          <div id="featured-detail" class="api-detail">
+            <article
+              id="repair-item-[]"
+              class="repair-card w-node-_31c5f1eb-a8c8-5cfc-0d61-0cfd030b15f2-375067da"
+            >
+              <div id="imagesGallery" class="gallery">
+                <%for(image of repairImages){%>
+                <img
+                  src="<%= image.url %>"
+                  loading="lazy"
+                  id="w-node-_31c5f1eb-a8c8-5cfc-0d61-0cfd030b15f4-375067da"
+                  alt="<%= image.filename %>"
+                  class="galleryimage"
+                />
+                <%}%>
+              </div>
+              <div class="job-info">
+                <p id="componentDescription">
+                  <strong>Component Description:</strong> <%=
+                  repair.componentDescription %>
+                </p>
+                <p id="repairDescription">
+                  <strong>Problem solved:</strong> <%= repair.repairDescription
+                  %>
+                </p>
+                <div class="card-footer">
+                  <p id="linkToDetailsPage" class="detail-link">
+                    <a href="../#our-work-list"
+                      >Back to our work<span class="arrow">→</span></a
+                    >
+                  </p>
                 </div>
-            </div>
-        </section>
-        <%- include('includes/footer') %> <%- include('includes/blockjs') %>
-    </body>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+    <%- include('includes/footer') %> <%- include('includes/blockjs') %>
+  </body>
 </html>
