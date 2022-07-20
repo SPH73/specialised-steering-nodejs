@@ -30,7 +30,9 @@
   --color-primary: #4f4f4f;
   --color-secondary: #f9b101;
   --color-light: #fff;
-  --color-accent: #ccc;
+  --color-box-shadow: rgba(38, 35, 29, 0.15);
+  --color-box-shadow-card: rgba(38, 35, 29, 0.25);
+  --color-border: #cec4ab;
 }
 #image-preview {
   display: none;
@@ -54,10 +56,10 @@
   border-bottom-width: 1px;
   border-left-width: 1px;
   border-right-width: 1px;
-  border-top-color: #ccc;
-  border-bottom-color: #ccc;
-  border-left-color: #ccc;
-  border-right-color: #ccc;
+  border-top-color: var(--color-border);
+  border-bottom-color: var(--color-border);
+  border-left-color: var(--color-border);
+  border-right-color: var(--color-border);
   border-top-style: solid;
   border-bottom-style: solid;
   border-left-style: solid;
@@ -307,7 +309,7 @@ a {
   padding: 0.7em 1em;
   border-radius: 4px;
   background-color: var(--color-secondary);
-  box-shadow: 3px 3px 12px 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 3px 3px 12px 3px var(--color-box-shadow);
   -webkit-transition: all 400ms ease;
   transition: all 400ms ease;
   color: var(--color-primary);
@@ -432,7 +434,7 @@ a {
 }
 
 .brand-image {
-  box-shadow: 3px 3px 11px 3px rgba(0, 0, 0, 0.15);
+  box-shadow: 3px 3px 11px 3px var(--color-box-shadow);
 }
 
 .submit-button {
@@ -474,7 +476,7 @@ a {
 .form-block {
   padding: 2rem;
   background-color: var(--color-light);
-  box-shadow: 28px 28px 150px 0 rgba(0, 0, 0, 0.15);
+  box-shadow: 3px 3px 12px 3px var(--color-box-shadow);
   color: #000;
 }
 
@@ -573,7 +575,7 @@ a {
   grid-template-columns: 1fr 1fr;
   -ms-grid-rows: auto auto;
   grid-template-rows: auto auto;
-  box-shadow: 3px 9px 35px 2px rgba(0, 0, 0, 0.25);
+  box-shadow: 3px 9px 35px 2px var(--color-box-shadow);
 }
 
 .featured-image {
@@ -879,7 +881,7 @@ a {
   padding: 1.2em 1.5em;
   border-radius: 0.2rem;
   background-color: var(--color-primary);
-  box-shadow: 3px 3px 12px 3px rgba(0, 0, 0, 0.15);
+  box-shadow: 3px 3px 12px 3px var(--color-box-shadow);
   color: var(--color-secondary);
   font-size: 0.7rem;
   letter-spacing: 0.1em;
@@ -954,7 +956,7 @@ a {
   padding: 0.4em;
   border-style: solid;
   border-width: 1px;
-  border-color: var(--color-primary);
+  border-color: var(--color-border);
 }
 
 .error-message {
@@ -1045,7 +1047,7 @@ a {
   margin-left: auto;
   padding: 1rem;
   border-radius: 0.6em;
-  box-shadow: 1px 1px 8px 2px rgba(38, 35, 29, 0.25);
+  box-shadow: 1px 1px 8px 2px var(--color-box-shadow);
   text-align: center;
 }
 
@@ -1327,11 +1329,11 @@ a {
   }
 
   .button {
-    box-shadow: 6px 6px 10px 0 rgba(0, 0, 0, 0.2);
+    box-shadow: 6px 6px 10px 0 var(--color-box-shadow);
   }
 
   .button.submit-button {
-    box-shadow: 3px 3px 12px 3px rgba(0, 0, 0, 0.2);
+    box-shadow: 3px 3px 12px 3px var(--color-box-shadow);
   }
 
   .button_container {
