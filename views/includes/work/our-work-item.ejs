@@ -1,29 +1,27 @@
 <article
-    id="repair-item-{}"
-    class="repair-card w-node-_8aefed1a-6bcc-a852-bb0f-3a4c3e66662e-a620ef40"
+  id="repair-item-{}"
+  class="repair-card w-node-_8aefed1a-6bcc-a852-bb0f-3a4c3e66662e-a620ef40"
 >
-    <div class="featured-image">
-        <img
-            src="<%= repair.mainImageUrl %>"
-            loading="lazy"
-            id="mainImage"
-            alt="<%= repair.componentName %>"
-        />
+  <div class="featured-image">
+    <img
+      src="<%= repair.mainImageUrl %>"
+      loading="lazy"
+      id="mainImage"
+      alt="<%= repair.componentName %>"
+    />
+  </div>
+  <div class="job-info">
+    <h3 id="name"><%=repair.repairName %></h3>
+    <p id="componentName">
+      <strong>Component: </strong><br />
+      <%=repair.componentName %>
+    </p>
+    <div class="card-footer">
+      <p id="linkToDetailsPage" class="detail-link">
+        <a href="/our-work/<%= repair.id %>"
+          >See more detail on this repair <span class="arrow">→</span></a
+        >
+      </p>
     </div>
-    <div class="job-info">
-        <h3 id="name"><%=repair.repairName %></h3>
-        <p id="date"><%=repair.date %></p>
-        <p id="componentName">
-            <strong>Component: </strong><br />
-            <%=repair.componentName %>
-        </p>
-        <div class="card-footer">
-            <p id="linkToDetailsPage" class="detail-link">
-                <a href="/our-work/<%= repair.id %>"
-                    >See more detail on this repair
-                    <span class="arrow">→</span></a
-                >
-            </p>
-        </div>
-    </div>
+  </div>
 </article>
