@@ -1,5 +1,5 @@
 <nav data-w-id="15c6fe86-0da0-6554-a202-c50b959f2b40" class="navbar">
-  <a id="home" href="../" class="navbar_logo w-inline-block"
+  <a id="home" href="../" class="navbar_logo"
     ><img
       src="../images/Logo.svg"
       loading="eager"
@@ -21,36 +21,7 @@
       class="icon-animation"
     ></div>
   </a>
-  <% if(locals.isAuth) { %>
-  <div class="w-form">
-    <form
-      action="/logout"
-      method="post"
-      id="logout"
-      name="logout"
-      data-name="logout"
-      redirect="/"
-      data-redirection="/logout"
-    >
-      <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>" />
-      <input
-        type="submit"
-        value="LOGOUT"
-        data-wait="Please wait..."
-        class="submit-button w-button"
-      />
-    </form>
-  </div>
-  <% } %>
   <div class="navbar_menu">
-    <% if(locals.isAdmin) { %>
-    <a href="../dashboard" class="navbar_menu-link w-inline-block">
-      <div>Dashboard</div>
-    </a>
-    <% } %>
-    <!-- <a href="../#our-work-list" class="navbar_menu-link w-inline-block">
-            <div>Our Work</div>
-        </a> -->
     <a href="../enquiry" class="navbar_menu-link w-inline-block">
       <div>components enquiry</div>
     </a>
