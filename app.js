@@ -34,7 +34,7 @@ app.use(
   express.static("public", {
     etag: true,
     maxAge: 31536000000,
-    redirect: true,
+    lastModified: true,
   }),
 );
 app.use(express.json({ limit: "10mb" }));
@@ -76,6 +76,7 @@ db.connectToDatabase(function (err) {
   // start the Express server
   app.listen(PORT, () => {
     console.log(`Server is running on port: ${PORT}`);
+    console.log(__dirname);
     console.log("http://localhost:3000");
   });
 });
