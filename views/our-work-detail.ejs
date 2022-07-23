@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<!--  Last Updated: 18 July 2022   -->
-<html lang="en" site-id="619e512053fba7c0375067da">
+<!--  Last Updated: 22 July 2022   -->
+<html data-wf-page="619e512053fba7c0375067da" lang="en">
   <head>
-    <%- include('includes/head') %>
     <title><%= repair.repairName %> | <%= repair.componentName %></title>
+    <%- include('includes/head') %> <%- include('includes/meta') %>
     <link
       href="https://specialisedsteering.com/our-work/<%= repairId %>"
       rel="canonical"
@@ -17,7 +17,7 @@
         <div id="repairs">
           <div id="featured-detail" class="api-detail">
             <article
-              id="repair-item-[]"
+              id="repair-[<%= repairId %>]"
               class="repair-card w-node-_31c5f1eb-a8c8-5cfc-0d61-0cfd030b15f2-375067da"
             >
               <div id="imagesGallery" class="gallery">
@@ -43,7 +43,7 @@
                 <div class="card-footer">
                   <p id="linkToDetailsPage" class="detail-link">
                     <a href="../#our-work-list"
-                      >Back to our work<span class="arrow">→</span></a
+                      >Back to our work<span class="arrow">&rarr;</span></a
                     >
                   </p>
                 </div>
