@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const session = require("express-session");
 const compression = require("compression");
+const favicon = require("serve-favicon");
 
 const csrf = require("csurf");
 
@@ -21,9 +22,9 @@ const authRoutes = require("./routes/auth");
 
 const mongodbSessionStore = sessionConfig.createSessionStore(session);
 
-const app = express();
+const PORT = process.env.PORT || 3300;
 
-const PORT = process.env.PORT || 3000;
+const app = express();
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
@@ -37,7 +38,11 @@ app.use(
     lastModified: true,
   }),
 );
+
+app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
+
 app.use(express.json({ limit: "10mb" }));
+
 app.use(express.urlencoded({ extended: false, limit: "10mb" }));
 
 // Middleware
@@ -77,6 +82,6 @@ db.connectToDatabase(function (err) {
   app.listen(PORT, () => {
     console.log(`Server is running on port: ${PORT}`);
     console.log(__dirname);
-    console.log("http://localhost:3000");
+    console.log(`http://localhost:${PORT}`);
   });
 });
