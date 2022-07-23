@@ -1,24 +1,24 @@
 const db = require('../data/db');
 
 const auth = async (req, res, next) => {
-    const user = req.session.user;
-    const isAuth = req.session.isAuthenticated;
+  const user = req.session.user;
+  const isAuth = req.session.isAuthenticated;
 
-    if (!user || !isAuth) {
-        return next();
-    }
+  if (!user || !isAuth) {
+    return next();
+  }
 
-    const userDoc = await db
-        .getDb()
-        .collection('staff')
-        .findOne({ _id: user.id });
+  const userDoc = await db
+    .getDb()
+    .collection('staff')
+    .findOne({ _id: user.id });
 
-    const isAdmin = userDoc.isAdmin;
+  const isAdmin = userDoc.isAdmin;
 
-    res.locals.isAdmin = isAdmin;
-    res.locals.isAuth = isAuth;
+  res.locals.isAdmin = isAdmin;
+  res.locals.isAuth = isAuth;
 
-    next();
+  next();
 };
 
 module.exports = auth;

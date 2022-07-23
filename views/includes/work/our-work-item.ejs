@@ -1,5 +1,5 @@
 <article
-  id="repair-item-{}"
+  id="repair-item-{<%= repair.id %>}"
   class="repair-card w-node-_8aefed1a-6bcc-a852-bb0f-3a4c3e66662e-a620ef40"
 >
   <div class="featured-image">
@@ -19,7 +19,8 @@
     <div class="card-footer">
       <p id="linkToDetailsPage" class="detail-link">
         <a href="/our-work/<%= repair.id %>"
-          >See more detail on this repair <span class="arrow">→</span></a
+          ><strong>See more detail on this repair</strong>
+          <span class="arrow">&rarr;</span></a
         >
       </p>
     </div>
