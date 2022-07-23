@@ -3,14 +3,17 @@
     <div class="w-layout-grid footer-content">
       <img
         class="footer-logo"
-        src="images/SS-Logo-Inv.png"
+        src="../images/SS-Logo-Inv.png"
         width="Auto"
         height="Auto"
         alt=""
         sizes="(max-width: 479px) 90vw, (max-width: 991px) 127.99715423583984px, (max-width: 1919px) 10vw, 100vw"
         id="w-node-_1f095eb7-1d94-a44c-448d-cbd0ba45b8dc-ba45b8da"
         loading="lazy"
-        srcset="images/SS-Logo-Inv-p-500.png 500w, images/SS-Logo-Inv.png 991w"
+        srcset="
+          ../images/SS-Logo-Inv-p-500.png 500w,
+          ../images/SS-Logo-Inv.png       991w
+        "
       />
       <div
         id="w-node-_1f095eb7-1d94-a44c-448d-cbd0ba45b8f5-ba45b8da"
@@ -74,7 +77,7 @@
         >
         <a
           rel="noreferrer noopener"
-          href="../documents/sitemap.xml"
+          href="#"
           target="_blank"
           class="footer-link"
           >Site map</a
@@ -84,7 +87,7 @@
     <div class="w-layout-grid footer-copyright-social">
       <div class="copyright">
         <div>
-          © <span class="year">2021</span> Specialised Steering CC <br />All
+          © <span class="year">2022</span> SPECIALISED STEERING CC <br />All
           rights reserved.
         </div>
       </div>
@@ -148,8 +151,8 @@
 </footer>
 <script>
   var thisYear = new Date().getFullYear();
-  var yearEl = document.querySelector(".year");
+  var yearEl = document.querySelector('.year');
   yearEl.textContent = thisYear;
-  let img = document.getElementsByTagName("img");
-  img.onContextMenu = "return false";
+  let img = document.getElementsByTagName('img');
+  img.oncontextmenu = 'return false';
 </script>
