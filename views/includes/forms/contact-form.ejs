@@ -1,4 +1,4 @@
-<div id="contact-form" autocomplete="true" class="form-block w-form">
+<div id="contact-form" class="form-block w-form">
   <h2>Get in Touch!</h2>
   <p>
     If you have a component for repair or you have any other query, reach out
@@ -15,7 +15,7 @@
     class="form"
   >
     <!-- csrf -->
-    <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>" />
+    <!-- <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>" /> -->
     <input type="hidden" id="day" name="postDate" value="CurrentDate" />
     <input type="hidden" id="time" name="postTime" value="CurrentTime" />
     <script>
@@ -24,23 +24,23 @@
       let mth = date.getMonth() + 1;
       const yr = date.getFullYear();
       if (d < 10) {
-        d = "0" + d;
+        d = '0' + d;
       }
       if (mth < 10) {
-        mth = "0" + mth;
+        mth = '0' + mth;
       }
-      document.getElementById("day").value = yr + "/" + mth + "/" + d;
+      document.getElementById('day').value = yr + '/' + mth + '/' + d;
 
       let hr = date.getHours();
       let min = date.getMinutes();
       if (hr < 10) {
-        hr = "0" + hr;
+        hr = '0' + hr;
       }
       if (min < 10) {
-        min = "0" + min;
+        min = '0' + min;
       }
 
-      document.getElementById("time").value = hr + ":" + min;
+      document.getElementById('time').value = hr + ':' + min;
     </script>
     <div class="w-layout-grid contact-info">
       <div>
@@ -52,7 +52,20 @@
           data-name="contactName"
           placeholder="Your full name"
           id="contactName"
+          autocomplete="name"
           required
+        />
+      </div>
+      <div>
+        <input
+          type="text"
+          class="input-field w-input"
+          maxlength="256"
+          name="contactCompany"
+          data-name="contactCompany"
+          placeholder="Company/Organisation"
+          id="contactCompany"
+          autocomplete="organization"
         />
       </div>
       <div>
@@ -64,6 +77,7 @@
           data-name="contactEmail"
           placeholder="Your best email"
           id="contactEmail"
+          autocomplete="email"
           required
         />
       </div>
@@ -76,6 +90,7 @@
           data-name="contactNumber"
           placeholder="Your best contact number"
           id="contactNumber"
+          autocomplete="tel"
           required
         />
       </div>
@@ -85,6 +100,7 @@
           name="contactCountry"
           data-name="contactCountry"
           required
+          autocomplete="country"
           class="input-field w-select"
         >
           <option value="">Select country</option>
@@ -388,7 +404,32 @@
       required
       class="textarea w-input"
     ></textarea
-    ><input
+    ><label class="w-checkbox accept-terms"
+      ><input
+        type="checkbox"
+        name="accept-terms"
+        id="accept-terms"
+        data-name="accept-terms"
+        required=""
+        class="w-checkbox-input checkbox"
+      /><span class="field-label accept-terms w-form-label" for="accept-terms"
+        >Accept T&#x27;s &amp; C&#x27;s</span
+      ></label
+    >
+    <p class="small">
+      By submitting this form, you agree to us storing your information for the
+      purpose of responding to your query. Please read our
+      <strong
+        ><a
+          href='http://href="https://drive.google.com/file/d/1CuwGmbcaMlDpLbovL-IHfzCdPcAvd9WG/view?usp=sharing"'
+          rel="noreferrer nofollow"
+          target="_blank"
+          >privacy policy</a
+        ></strong
+      >
+      for more information.
+    </p>
+    <input
       type="submit"
       value="Submit"
       data-wait="Please wait..."

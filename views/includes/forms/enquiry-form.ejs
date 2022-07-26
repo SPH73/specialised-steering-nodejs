@@ -1,13 +1,16 @@
+<!-- action="/enquiry?_csrf=<%=locals.csrfToken%>" -->
+
 <form
   id="enquiryForm"
   name="enquiryForm"
   data-name="enquiryForm"
   data-redirect="/confirm"
   method="post"
-  action="/enquiry?_csrf=<%=locals.csrfToken%>"
+  action="/enquiry"
   class="form"
   enctype="multipart/form-data"
 >
+  <!-- <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>" /> -->
   <h3>Contact details</h3>
   <div class="w-layout-grid contact-info">
     <div>
@@ -20,6 +23,7 @@
         data-name="enquiryName"
         placeholder="Full name"
         id="enquiryName"
+        autocomplete="name"
         required
       />
     </div>
@@ -44,6 +48,7 @@
         data-name="enquiryEmail"
         placeholder="Email address"
         id="enquiryEmail"
+        autocomplete="email"
         required
       />
     </div>
@@ -57,6 +62,7 @@
         data-name="enquiryPhone"
         placeholder="Contact number"
         id="enquiryPhone"
+        autocomplete="tel"
         required
       />
     </div>
@@ -69,6 +75,7 @@
         data-name="street"
         placeholder="Street address"
         id="street"
+        autocomplete="street-address"
         required
       />
     </div>
@@ -80,6 +87,7 @@
         name="town"
         data-name="town"
         placeholder="Town/Suburb"
+        autocomplete="on"
         id="town"
         required
       />
@@ -93,6 +101,7 @@
         data-name="postal"
         placeholder="Postal code"
         id="postal"
+        autocomplete="postal-code"
         required
       />
     </div>
@@ -103,9 +112,10 @@
         maxlength="256"
         name="province"
         data-name="province"
-        placeholder="Region/Province"
+        placeholder="Region/Province/State"
         id="province"
-        required=""
+        autocomplete="on"
+        required
       />
     </div>
     <div>
@@ -113,6 +123,7 @@
         id="country"
         name="country"
         data-name="country"
+        autocomplete="country"
         required
         class="select-field w-select"
       >
@@ -406,7 +417,7 @@
   </div>
   <h3>Part details</h3>
   <div class="w-layout-grid part-info">
-    <div>
+    <div id="w-node-c7903652-5c69-e550-1f21-63323d3e808e-8a7c4380">
       <label for="brand" class="field-label">Brand</label
       ><input
         type="text"
@@ -419,7 +430,7 @@
         required
       />
     </div>
-    <div>
+    <div id="w-node-c7903652-5c69-e550-1f21-63323d3e8092-8a7c4380">
       <label for="type" class="field-label">Type</label
       ><input
         type="text"
@@ -432,7 +443,7 @@
         required
       />
     </div>
-    <div>
+    <div id="w-node-c7903652-5c69-e550-1f21-63323d3e8096-8a7c4380">
       <label for="serialNo" class="field-label">serial number</label
       ><input
         type="text"
@@ -444,7 +455,7 @@
         id="serialNo"
       />
     </div>
-    <div>
+    <div id="w-node-_3f107591-1e0d-06f8-125c-39bcce8149e2-8a7c4380">
       <label for="partNo" class="field-label">part number</label
       ><input
         type="text"
@@ -456,7 +467,20 @@
         id="partNo"
       />
     </div>
-    <div>
+    <div id="w-node-_8580882f-8ebd-353f-40d1-bd16423116a4-8a7c4380">
+      <label for="partDesc" class="field-label">part description</label
+      ><input
+        type="text"
+        class="input-field w-input"
+        maxlength="256"
+        name="partDesc"
+        data-name="partDesc"
+        placeholder="e.g. Main pump"
+        id="partDesc"
+        required
+      />
+    </div>
+    <div id="w-node-a783f977-9552-c008-473a-3ca359adf550-8a7c4380">
       <label for="image" class="field-label">nameplate image</label
       ><input
         type="file"
@@ -467,7 +491,10 @@
         accept="image/*"
       />
     </div>
-    <div>
+    <div
+      id="img-preview"
+      class="w-node-_9c0d6004-cd35-ebd8-6b73-be422e6528fd-8a7c4380"
+    >
       <img src="" alt="Chosen image" id="image-preview" />
     </div>
   </div>
@@ -476,10 +503,35 @@
     maxlength="5000"
     id="message"
     name="message"
-    placeholder="Any other info you need to provide?"
+    placeholder="Please provide some details about the part you need."
     class="textarea w-input"
-  ></textarea
-  ><input
+  ></textarea>
+  <label class="w-checkbox accept-terms"
+    ><input
+      type="checkbox"
+      name="accept-terms"
+      id="accept-terms"
+      data-name="accept-terms"
+      required=""
+      class="w-checkbox-input checkbox"
+    /><span class="field-label accept-terms w-form-label" for="accept-terms"
+      >Accept T&#x27;s &amp; C&#x27;s</span
+    ></label
+  >
+  <p class="small">
+    By submitting this form, you agree to us storing your information for the
+    purpose of responding to your query. Please read our
+    <strong
+      ><a
+        href='http://href="https://drive.google.com/file/d/1CuwGmbcaMlDpLbovL-IHfzCdPcAvd9WG/view?usp=sharing"'
+        rel="noreferrer nofollow"
+        target="_blank"
+        >privacy policy</a
+      ></strong
+    >
+    for more information.
+  </p>
+  <input
     type="submit"
     value="Submit"
     data-wait="Please wait..."
