@@ -8,15 +8,50 @@
   </head>
   <body>
     <%- include('includes/nav') %>
-    <section class="section">
-      <div class="container">
-        <h1>Success</h1>
-        <p>
-          Thank you, we have received your form submission and will respond
-          soon.
-        </p>
-      </div>
-    </section>
+    <main>
+      <section class="section">
+        <div class="container">
+          <h1>Success</h1>
+          <p>
+            Thank you, <strong><%= message.enquiryName %></strong>, we have
+            received your form submission sent on
+            <strong><%= message.postDate%></strong> at
+            <strong><%= message.postTime %></strong> and will respond soon.
+          </p>
+          <div class="print">
+            <ul>
+              <p>
+                We will use the following information you have provided to
+                contact you regarding your request.
+              </p>
+              <li>
+                <p>Email: <strong><%= message.enquiryEmail %></strong></p>
+              </li>
+              <li>
+                <p>
+                  Contact Number: <strong> <%= message.enquiryNumber %></strong>
+                </p>
+              </li>
+              <p>As a reminder, your message was:</p>
+              <li>
+                <p><strong><%= message.enquiryMessage %></strong></p>
+              </li>
+            </ul>
+
+            <p>
+              The reference for your contact request is:
+              <strong><%= ref %></strong>
+            </p>
+            <p class="print">
+              <a href="#" onclick="window.print();return false;"
+                ><strong>Print this page</strong> to keep a copy for your
+                records.</a
+              >
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
     <%- include('includes/footer') %> <%- include('includes/blockjs') %>
   </body>
 </html>

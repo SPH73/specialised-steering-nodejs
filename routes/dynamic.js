@@ -58,28 +58,33 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res, next) => {
   const table = base('webForms');
   const clientIp = requestIp.getClientIp(req);
-  // get the form data
-  const message = req.body;
+  const data = req.body;
+  console.log(message);
 
   const record = {
-    status: 'New',
-    name: message.contactName,
-    email: message.contactEmail,
-    phone: message.contactNumber,
-    country: message.contactCountry,
-    message: message.contactMessage,
+    name: data.enquiryName,
+    company: data.enquiryCompany,
+    email: data.enquiryEmail,
+    phone: data.enquiryNumber,
+    country: data.enquiryCountry,
+    message: data.enquiryMessage,
     ip: clientIp,
+    status: 'New',
+    form: 'contact',
   };
-
+  let reference = '';
   try {
-    await table.create(record);
+    const createdRecord = await table.create(record);
+    if (createdRecord) {
+      reference = createdRecord.id;
+    }
   } catch (error) {
     console.error(error);
     next(error);
     return;
   }
 
-  res.redirect('/confirm');
+  res.render('confirm', { message: data, ref: reference });
 });
 
 // ___ OUR WORK ___
@@ -140,32 +145,31 @@ router.post('/enquiry', upload.single('image'), async (req, res, next) => {
     folder: `Seguro/public/uploads/${data.enquiryName.replace(/\s/g, '')}`,
     flags: 'attachment',
   };
-
+  const record = {
+    status: 'New',
+    name: data.enquiryName,
+    email: data.enquiryEmail,
+    company: data.company,
+    phone: data.enquiryNumber,
+    message: data.enquiryMessage,
+    brand: data.brand,
+    type: data.type,
+    partNo: data.partNo,
+    serialNo: data.serialNo,
+    street: data.street,
+    town: data.town,
+    postal: data.postal,
+    region: data.province,
+    country: data.country,
+    ip: clientIp,
+    form: 'parts',
+  };
+  let reference = '';
   try {
-    const record = {
-      status: 'New',
-      name: data.enquiryName,
-      email: data.enquiryEmail,
-      company: data.company,
-      phone: data.enquiryPhone,
-      message: data.message,
-      brand: data.brand,
-      type: data.type,
-      partNo: data.partNo,
-      serialNo: data.serialNo,
-      street: data.street,
-      town: data.town,
-      postal: data.postal,
-      region: data.province,
-      country: data.country,
-      ip: clientIp,
-      form: 'parts',
-    };
     const table = base('webForms');
     const createdRecord = await table.create(record);
 
     if (image) {
-      console.log('****File was uploaded: ', image);
       const result = await cloudinary.uploader.upload(
         image.path,
         options,
@@ -174,7 +178,7 @@ router.post('/enquiry', upload.single('image'), async (req, res, next) => {
         },
       );
       if (!result) {
-        console.log('********* Image not stored to cloudinary');
+        next();
         return;
       }
       const secure_url = result.secure_url;
@@ -182,13 +186,14 @@ router.post('/enquiry', upload.single('image'), async (req, res, next) => {
       const updatedRecord = await table.update(recordId, {
         imageUploads: [{ url: secure_url }],
       });
+      reference = updatedRecord.id;
     }
   } catch (error) {
     console.error(error);
     next(error);
     return;
   }
-  res.render('confirm');
+  res.render('confirm', { message: data, ref: reference });
 });
 
 // ----CONTACT
@@ -205,29 +210,33 @@ router.get('/contact', (req, res) => {
 
 router.post('/contact', async (req, res, next) => {
   const clientIp = requestIp.getClientIp(req);
-  const message = req.body;
+  const data = req.body;
   const table = base('webForms');
 
   const record = {
-    status: 'New',
-    name: message.contactName,
-    email: message.contactEmail,
-    phone: message.contactNumber,
-    country: message.contactCountry,
-    message: message.contactMessage,
+    name: data.enquiryName,
+    company: data.enquiryCompany,
+    email: data.enquiryEmail,
+    phone: data.enquiryNumber,
+    country: data.enquiryCountry,
+    message: data.enquiryMessage,
     ip: clientIp,
+    status: 'New',
     form: 'contact',
   };
-
+  let reference = '';
   try {
-    await table.create(record);
+    const createdRecord = await table.create(record);
+    if (createdRecord) {
+      reference = createdRecord.id;
+    }
   } catch (error) {
     console.error(error);
     next(error);
     return;
   }
 
-  res.render('/confirm');
+  res.render('confirm', { message: data, ref: reference });
 });
 
 router.get('/confirm', (req, res) => {
@@ -236,111 +245,111 @@ router.get('/confirm', (req, res) => {
 
 // ___ DASHBOARD ___
 
-router.get('/dashboard', (req, res) => {
-  // check user has a sessionID
-  if (!res.locals.isAuth) {
-    return res.status(401).render('login');
-  }
+// router.get('/dashboard', (req, res) => {
+// check user has a sessionID
+//   if (!res.locals.isAuth) {
+//     return res.status(401).render('login');
+//   }
 
-  if (!res.locals.isAdmin) {
-    // user forbidden
-    return res.status(403).render('index');
-  }
+//   if (!res.locals.isAdmin) {
+//     // user forbidden
+//     return res.status(403).render('index');
+//   }
 
-  // let msgOrder = req.query.messageOrder;
-  // let msgSort = req.query.messageSort;
+//   // let msgOrder = req.query.messageOrder;
+//   // let msgSort = req.query.messageSort;
 
-  // if (msgOrder !== 'desc' && msgOrder !== 'asc') {
-  //     msgOrder = 'desc';
-  // }
+//   // if (msgOrder !== 'desc' && msgOrder !== 'asc') {
+//   //     msgOrder = 'desc';
+//   // }
 
-  // if (msgSort !== 'date' && msgSort !== 'name') {
-  //     msgSort = 'date';
-  // }
+//   // if (msgSort !== 'date' && msgSort !== 'name') {
+//   //     msgSort = 'date';
+//   // }
 
-  // const table = base('webForms');
-  // let messages = [];
-  // const contactRecords = await table
-  //     .select({ view: 'Contact Messages' })
-  //     .eachPage(function page(messages, fetchNextPage) {
-  //         for (let record of messages) {
-  //             messages.push(record);
-  //         }
-  //         fetchNextPage();
-  //     });
+//   // const table = base('webForms');
+//   // let messages = [];
+//   // const contactRecords = await table
+//   //     .select({ view: 'Contact Messages' })
+//   //     .eachPage(function page(messages, fetchNextPage) {
+//   //         for (let record of messages) {
+//   //             messages.push(record);
+//   //         }
+//   //         fetchNextPage();
+//   //     });
 
-  // messages.sort((msgA, msgB) => {
-  //     if (
-  //         (msgSort === 'date' &&
-  //             msgOrder === 'desc' &&
-  //             msgA.postDate > msgB.postDate) ||
-  //         (msgSort === 'name' &&
-  //             msgOrder === 'desc' &&
-  //             msgA.contactName > msgB.contactName)
-  //     ) {
-  //         return -1;
-  //     } else if (
-  //         (msgSort === 'date' &&
-  //             msgOrder === 'asc' &&
-  //             msgA.postDate > msgB.postDate) ||
-  //         (msgSort === 'name' &&
-  //             msgOrder === 'asc' &&
-  //             msgA.contactName > msgB.contactName)
-  //     ) {
-  //         return 1;
-  //     }
-  // });
+//   // messages.sort((msgA, msgB) => {
+//   //     if (
+//   //         (msgSort === 'date' &&
+//   //             msgOrder === 'desc' &&
+//   //             msgA.postDate > msgB.postDate) ||
+//   //         (msgSort === 'name' &&
+//   //             msgOrder === 'desc' &&
+//   //             msgA.contactName > msgB.contactName)
+//   //     ) {
+//   //         return -1;
+//   //     } else if (
+//   //         (msgSort === 'date' &&
+//   //             msgOrder === 'asc' &&
+//   //             msgA.postDate > msgB.postDate) ||
+//   //         (msgSort === 'name' &&
+//   //             msgOrder === 'asc' &&
+//   //             msgA.contactName > msgB.contactName)
+//   //     ) {
+//   //         return 1;
+//   //     }
+//   // });
 
-  // let enqOrder = req.query.enquiryOrder;
-  // let enqSort = req.query.enquirySort;
+//   // let enqOrder = req.query.enquiryOrder;
+//   // let enqSort = req.query.enquirySort;
 
-  // if (enqOrder !== 'desc' && enqOrder !== 'asc') {
-  //     enqOrder = 'desc';
-  // }
+//   // if (enqOrder !== 'desc' && enqOrder !== 'asc') {
+//   //     enqOrder = 'desc';
+//   // }
 
-  // if (enqSort !== 'date' && enqSort !== 'name') {
-  //     enqSort = 'date';
-  // }
+//   // if (enqSort !== 'date' && enqSort !== 'name') {
+//   //     enqSort = 'date';
+//   // }
 
-  // let enquiries = [];
-  // const partsRecords = await table
-  //     .select({ view: 'Parts Enquiries' })
-  //     .eachPage(function page(partsRecords, fetchNextPage) {
-  //         for (let record of partsRecords) {
-  //             enquiries.push(record);
-  //         }
-  //         fetchNextPage();
-  //     });
+//   // let enquiries = [];
+//   // const partsRecords = await table
+//   //     .select({ view: 'Parts Enquiries' })
+//   //     .eachPage(function page(partsRecords, fetchNextPage) {
+//   //         for (let record of partsRecords) {
+//   //             enquiries.push(record);
+//   //         }
+//   //         fetchNextPage();
+//   //     });
 
-  // enquiries.sort((msgA, msgB) => {
-  //     if (
-  //         (enqSort === 'date' &&
-  //             enqOrder === 'desc' &&
-  //             msgA.postDate > msgB.postDate) ||
-  //         (enqSort === 'name' &&
-  //             enqOrder === 'desc' &&
-  //             msgA.enquiryName > msgB.enquiryName)
-  //     ) {
-  //         return -1;
-  //     } else if (
-  //         (enqSort === 'date' &&
-  //             enqOrder === 'asc' &&
-  //             msgA.postDate > msgB.postDate) ||
-  //         (enqSort === 'name' &&
-  //             enqOrder === 'asc' &&
-  //             msgA.enquiryName > msgB.enquiryName)
-  //     ) {
-  //         return 1;
-  //     }
-  // });
+//   // enquiries.sort((msgA, msgB) => {
+//   //     if (
+//   //         (enqSort === 'date' &&
+//   //             enqOrder === 'desc' &&
+//   //             msgA.postDate > msgB.postDate) ||
+//   //         (enqSort === 'name' &&
+//   //             enqOrder === 'desc' &&
+//   //             msgA.enquiryName > msgB.enquiryName)
+//   //     ) {
+//   //         return -1;
+//   //     } else if (
+//   //         (enqSort === 'date' &&
+//   //             enqOrder === 'asc' &&
+//   //             msgA.postDate > msgB.postDate) ||
+//   //         (enqSort === 'name' &&
+//   //             enqOrder === 'asc' &&
+//   //             msgA.enquiryName > msgB.enquiryName)
+//   //     ) {
+//   //         return 1;
+//   //     }
+//   // });
 
-  // for (let enquiry of enquiries) {
-  //     console.log(enquiry.id);
-  //     console.log(enquiry.fields);
-  // }
-  // console.log('All messages: ', messages);
+//   // for (let enquiry of enquiries) {
+//   //     console.log(enquiry.id);
+//   //     console.log(enquiry.fields);
+//   // }
+//   // console.log('All messages: ', messages);
 
-  res.render('dashboard');
-});
+//   res.render('dashboard');
+// });
 
 module.exports = router;

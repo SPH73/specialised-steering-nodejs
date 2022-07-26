@@ -11,6 +11,32 @@
   enctype="multipart/form-data"
 >
   <!-- <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>" /> -->
+  <input type="hidden" id="day" name="postDate" value="CurrentDate" />
+  <input type="hidden" id="time" name="postTime" value="CurrentTime" />
+  <script>
+    const date = new Date();
+    let d = date.getDate();
+    let mth = date.getMonth() + 1;
+    const yr = date.getFullYear();
+    if (d < 10) {
+      d = '0' + d;
+    }
+    if (mth < 10) {
+      mth = '0' + mth;
+    }
+    document.getElementById('day').value = yr + '/' + mth + '/' + d;
+
+    let hr = date.getHours();
+    let min = date.getMinutes();
+    if (hr < 10) {
+      hr = '0' + hr;
+    }
+    if (min < 10) {
+      min = '0' + min;
+    }
+
+    document.getElementById('time').value = hr + ':' + min;
+  </script>
   <h3>Contact details</h3>
   <div class="w-layout-grid contact-info">
     <div>
@@ -58,10 +84,10 @@
         class="input-field w-input"
         autocomplete="on"
         maxlength="256"
-        name="enquiryPhone"
-        data-name="enquiryPhone"
+        name="enquiryNumber"
+        data-name="enquiryNumber"
         placeholder="Contact number"
-        id="enquiryPhone"
+        id="enquiryNumber"
         autocomplete="tel"
         required
       />
@@ -499,10 +525,10 @@
     </div>
   </div>
   <textarea
-    data-name="message"
+    data-name="enquiryMessage"
     maxlength="5000"
-    id="message"
-    name="message"
+    id="enquiryMessage"
+    name="enquiryMessage"
     placeholder="Please provide some details about the part you need."
     class="textarea w-input"
   ></textarea>
