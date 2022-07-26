@@ -9,8 +9,6 @@ const base = Airtable.base(process.env.BASE);
 
 const router = express.Router();
 
-const storedData = require('../utils/stored-data');
-
 // ----HOME
 
 router.get('/', async (req, res) => {
@@ -242,114 +240,5 @@ router.post('/contact', async (req, res, next) => {
 router.get('/confirm', (req, res) => {
   res.render('confirm');
 });
-
-// ___ DASHBOARD ___
-
-// router.get('/dashboard', (req, res) => {
-// check user has a sessionID
-//   if (!res.locals.isAuth) {
-//     return res.status(401).render('login');
-//   }
-
-//   if (!res.locals.isAdmin) {
-//     // user forbidden
-//     return res.status(403).render('index');
-//   }
-
-//   // let msgOrder = req.query.messageOrder;
-//   // let msgSort = req.query.messageSort;
-
-//   // if (msgOrder !== 'desc' && msgOrder !== 'asc') {
-//   //     msgOrder = 'desc';
-//   // }
-
-//   // if (msgSort !== 'date' && msgSort !== 'name') {
-//   //     msgSort = 'date';
-//   // }
-
-//   // const table = base('webForms');
-//   // let messages = [];
-//   // const contactRecords = await table
-//   //     .select({ view: 'Contact Messages' })
-//   //     .eachPage(function page(messages, fetchNextPage) {
-//   //         for (let record of messages) {
-//   //             messages.push(record);
-//   //         }
-//   //         fetchNextPage();
-//   //     });
-
-//   // messages.sort((msgA, msgB) => {
-//   //     if (
-//   //         (msgSort === 'date' &&
-//   //             msgOrder === 'desc' &&
-//   //             msgA.postDate > msgB.postDate) ||
-//   //         (msgSort === 'name' &&
-//   //             msgOrder === 'desc' &&
-//   //             msgA.contactName > msgB.contactName)
-//   //     ) {
-//   //         return -1;
-//   //     } else if (
-//   //         (msgSort === 'date' &&
-//   //             msgOrder === 'asc' &&
-//   //             msgA.postDate > msgB.postDate) ||
-//   //         (msgSort === 'name' &&
-//   //             msgOrder === 'asc' &&
-//   //             msgA.contactName > msgB.contactName)
-//   //     ) {
-//   //         return 1;
-//   //     }
-//   // });
-
-//   // let enqOrder = req.query.enquiryOrder;
-//   // let enqSort = req.query.enquirySort;
-
-//   // if (enqOrder !== 'desc' && enqOrder !== 'asc') {
-//   //     enqOrder = 'desc';
-//   // }
-
-//   // if (enqSort !== 'date' && enqSort !== 'name') {
-//   //     enqSort = 'date';
-//   // }
-
-//   // let enquiries = [];
-//   // const partsRecords = await table
-//   //     .select({ view: 'Parts Enquiries' })
-//   //     .eachPage(function page(partsRecords, fetchNextPage) {
-//   //         for (let record of partsRecords) {
-//   //             enquiries.push(record);
-//   //         }
-//   //         fetchNextPage();
-//   //     });
-
-//   // enquiries.sort((msgA, msgB) => {
-//   //     if (
-//   //         (enqSort === 'date' &&
-//   //             enqOrder === 'desc' &&
-//   //             msgA.postDate > msgB.postDate) ||
-//   //         (enqSort === 'name' &&
-//   //             enqOrder === 'desc' &&
-//   //             msgA.enquiryName > msgB.enquiryName)
-//   //     ) {
-//   //         return -1;
-//   //     } else if (
-//   //         (enqSort === 'date' &&
-//   //             enqOrder === 'asc' &&
-//   //             msgA.postDate > msgB.postDate) ||
-//   //         (enqSort === 'name' &&
-//   //             enqOrder === 'asc' &&
-//   //             msgA.enquiryName > msgB.enquiryName)
-//   //     ) {
-//   //         return 1;
-//   //     }
-//   // });
-
-//   // for (let enquiry of enquiries) {
-//   //     console.log(enquiry.id);
-//   //     console.log(enquiry.fields);
-//   // }
-//   // console.log('All messages: ', messages);
-
-//   res.render('dashboard');
-// });
 
 module.exports = router;

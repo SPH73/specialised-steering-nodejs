@@ -1,87 +1,49 @@
-require("dotenv").config();
+require('dotenv').config();
 
-const express = require("express");
-const session = require("express-session");
-const compression = require("compression");
-const favicon = require("serve-favicon");
+const express = require('express');
+const compression = require('compression');
+const favicon = require('serve-favicon');
+const path = require('path');
 
-const csrf = require("csurf");
+const errorsHandlerMiddleware = require('./middleware/error-handler');
 
-const sessionConfig = require("./utils/session");
-const db = require("./data/db");
-
-const path = require("path");
-
-const authMiddleware = require("./middleware/auth-middleware");
-const addCSRFTokenMiddleware = require("./middleware/csrf-token-middlware");
-const errorsHandlerMiddleware = require("./middleware/error-handler");
-
-const dynamicRoutes = require("./routes/dynamic");
-const defaultRoutes = require("./routes/default");
-const authRoutes = require("./routes/auth");
-
-const mongodbSessionStore = sessionConfig.createSessionStore(session);
+const dynamicRoutes = require('./routes/dynamic');
+const defaultRoutes = require('./routes/default');
 
 const PORT = process.env.PORT || 3300;
 
 const app = express();
 
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "ejs");
-
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
 app.use(compression());
-
 app.use(
-  express.static("public", {
+  express.static('public', {
     etag: true,
     maxAge: 31536000000,
     lastModified: true,
   }),
 );
-
-app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
-
-app.use(express.json({ limit: "10mb" }));
-
-app.use(express.urlencoded({ extended: false, limit: "10mb" }));
-
-// Middleware
-// Sessions config
-app.use(session(sessionConfig.createSessionConfig(mongodbSessionStore)));
-
-// csrf
-app.use(csrf());
-app.use(addCSRFTokenMiddleware);
-
-// Auth
-app.use(authMiddleware);
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 
 // Routes
 app.use(dynamicRoutes);
 app.use(defaultRoutes);
-app.use(authRoutes);
 
 // app.use(errorsHandlerMiddleware.handleServerError);
 // app.use(errorsHandlerMiddleware.handleNotFoundError);
 
 app.use((req, res, next) => {
-  res.status(404).render("404");
+  res.status(404).render('404');
 });
 app.use((error, req, res, next) => {
-  res.status(500).render("500");
+  res.status(500).render('500');
 });
 
-// Connect to MongoDB when the server starts
-db.connectToDatabase(function (err) {
-  if (err) {
-    console.error(err);
-    process.exit();
-  }
-
-  // start the Express server
-  app.listen(PORT, () => {
-    console.log(`Server is running on port: ${PORT}`);
-    console.log(__dirname);
-    console.log(`http://localhost:${PORT}`);
-  });
+app.listen(PORT, () => {
+  console.log(`Server is running on port: ${PORT}`);
+  console.log(__dirname);
+  console.log(`http://localhost:${PORT}`);
 });
