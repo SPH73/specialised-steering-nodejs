@@ -5,6 +5,7 @@
   <head>
     <%- include('includes/head') %> <%- include('includes/meta') %>
     <link href="https://specialisedsteering.com/contact" rel="canonical" />
+    <script src="../js/block-scripts.js" defer></script>
   </head>
   <body>
     <%- include('includes/nav') %>
@@ -12,7 +13,15 @@
       <section id="contact-us" class="section main">
         <div class="container">
           <h1>Contact us - we're here to help!</h1>
-          <%- include('includes/forms/contact-form') %>
+          <div id="contact-form" class="form-block w-form">
+            <h2>Get in Touch!</h2>
+            <p>
+              If you have a component for repair or you have any other query,
+              reach out with as much info as necessary and we will be in touch
+              within one business day.
+            </p>
+            <%- include('includes/forms/contact-form') %>
+          </div>
         </div>
       </section>
     </main>
