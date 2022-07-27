@@ -18,4 +18,8 @@ router.get('/disclaimer', (req, res) => {
   res.render('disclaimer', { meta: meta });
 });
 
+router.post('/__cspreport__', (req, res) => {
+  console.log(req.body);
+});
+
 module.exports = router;
