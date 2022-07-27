@@ -57,7 +57,6 @@ router.post('/', async (req, res, next) => {
   const table = base('webForms');
   const clientIp = requestIp.getClientIp(req);
   const data = req.body;
-  console.log(message);
 
   const record = {
     name: data.enquiryName,
