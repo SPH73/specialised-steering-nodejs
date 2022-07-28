@@ -21,7 +21,6 @@ router.get('/', async (req, res) => {
 
   const featuredRepairs = await table
     .select({
-      maxRecords: 4,
       view: 'Featured Repairs',
     })
     .firstPage();
@@ -31,7 +30,8 @@ router.get('/', async (req, res) => {
     let ext = aTURL.lastIndexOf('.');
 
     aTURL = aTURL.slice(0, ext);
-    const imageURL = `https://res.cloudinary.com/seguro-form-uploads/image/upload/q_auto:good/remote_media/${aTURL}.webp`;
+
+    const imageURL = `https://res.cloudinary.com/ss-uploads/image/upload/q_auto:good/remote_media/${aTURL}.webp`;
     repair = {
       id: repair.id,
       repairName: repair.fields.repairName,
@@ -139,7 +139,7 @@ router.post('/enquiry', upload.single('image'), async (req, res, next) => {
   const options = {
     use_filename: true,
     unique_filename: false,
-    folder: `Seguro/public/uploads/${data.enquiryName.replace(/\s/g, '')}`,
+    folder: `Specialised/public/uploads/${data.enquiryName.replace(/\s/g, '')}`,
     flags: 'attachment',
   };
   const record = {
@@ -152,6 +152,7 @@ router.post('/enquiry', upload.single('image'), async (req, res, next) => {
     brand: data.brand,
     type: data.type,
     partNo: data.partNo,
+    partDesc: data.partDesc,
     serialNo: data.serialNo,
     street: data.street,
     town: data.town,

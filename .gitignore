@@ -1,7 +1,7 @@
 node_modules
 settings.json
 .DS_Store
-boiler.js
 images
+uploads
 config.env
 .env
