@@ -20,11 +20,11 @@ app.set('view engine', 'ejs');
 app.use((req, res, next) => {
   res.setHeader(
     'Report-To',
-    '{"group":"csp-endpoint","max_age":10886400,"endpoints":[{"url":"http://192.168.0.12:3300/__cspreport__"}],"include_subdomains":true}',
+    `{"group":"csp-endpoint","max_age":10886400,"endpoints":[{"url":"http://192.168.0.12:${PORT}/__cspreport__"}],"include_subdomains":true}`,
   );
   res.setHeader(
     'Content-Security-Policy-Report-Only',
-    "default-src 'self'; font-src 'self'; img-src 'self' https://res.cloudinary.com https://sswebimages.mo.cloudinary.net; script-src 'self' 'unsafe-inline' https://ajax.googleapis.com https://d3e54v103j8qbb.cloudfront.net 'sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0='; style-src 'self' 'unsafe-inline'; frame-src 'self'",
+    "default-src 'self'; font-src 'self'; img-src 'self' https://dl.airtable.com https://res.cloudinary.com https://sswebimages.mo.cloudinary.net; script-src 'self' 'unsafe-inline' https://ajax.googleapis.com https://d3e54v103j8qbb.cloudfront.net 'sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0='; style-src 'self' 'unsafe-inline'; frame-src 'self'",
   );
   next();
 });
