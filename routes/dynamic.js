@@ -17,34 +17,71 @@ router.get('/', async (req, res) => {
     description:
       'We source hydraulic components for a wide range of industries and applications. We also service, test and repair components to OEM specification. View our range and examples of client work. We are here to help.',
   };
+
   const table = base('repairsWork');
-
-  const featuredRepairs = await table
-    .select({
-      view: 'Featured Repairs',
-    })
-    .firstPage();
+  let error = null;
   const repairs = [];
-  for (let repair of featuredRepairs) {
-    let aTURL = repair.fields.mainImage[0].url.slice(37);
-    let ext = aTURL.lastIndexOf('.');
+  let imgURL;
+  const imageGalleryList = [];
+  let img = {};
 
-    aTURL = aTURL.slice(0, ext);
+  try {
+    const featuredRepairs = await table
+      .select({
+        view: 'Featured Repairs',
+        filterByFormula: "NOT({featured} = 'false')",
+        fields: [
+          'repairName',
+          'repairDescription',
+          'mainImage',
+          'componentName',
+          'componentDescription',
+          'imagesGallery',
+        ],
+      })
+      .firstPage();
+    if (!featuredRepairs) {
+      throw Error('Unable to fetch repairs');
+    }
+    featuredRepairs.forEach(repair => {
+      let imagesGallery = repair.fields.imagesGallery;
+      imagesGallery.forEach(image => {
+        imgURL = image.url.slice(37);
+        let string = imgURL.indexOf('?');
+        imgURL = imgURL.slice(0, string);
+        imgURL = `https://res.cloudinary.com/ss-uploads/image/upload/q_auto:good,f_webp/remote_media/${imgURL}`;
+        img = {
+          url: imgURL,
+          id: image.id,
+          filename: image.filename,
+          width: image.width,
+          height: image.height,
+          size: image.size,
+          type: image.type,
+        };
+        imageGalleryList.push(img);
+      });
+      let imageURL = repair.fields.mainImage[0].url.slice(37);
+      const ext = imageURL.indexOf('?');
+      imageURL = imageURL.slice(0, ext);
 
-    const imageURL = `https://res.cloudinary.com/ss-uploads/image/upload/q_auto:good/remote_media/${aTURL}.webp`;
-    repair = {
-      id: repair.id,
-      repairName: repair.fields.repairName,
-      repairDescription: repair.fields.repairDescription,
-      mainImageUrl: imageURL,
-      mainImageName: repair.fields.mainImage[0].filename,
-      componentName: repair.fields.componentName,
-      componentDescription: repair.fields.componentDescription,
-      date: repair.fields.date,
-      imagesGalleryList: repair.fields.imagesGallery[0],
-    };
+      imageURL = `https://res.cloudinary.com/ss-uploads/image/upload/q_auto:good,f_webp/remote_media/${imageURL}`;
+      repair = {
+        id: repair.id,
+        repairName: repair.fields.repairName,
+        repairDescription: repair.fields.repairDescription,
+        mainImageUrl: imageURL,
+        mainImageName: repair.fields.mainImage[0].filename,
+        componentName: repair.fields.componentName,
+        componentDescription: repair.fields.componentDescription,
+        imagesGalleryList: imageGalleryList,
+      };
 
-    repairs.push(repair);
+      repairs.push(repair);
+    });
+  } catch (err) {
+    error = err.message;
+    console.error(error);
   }
 
   res.render('index', {
@@ -104,16 +141,47 @@ router.get('/our-work/:id', async (req, res) => {
   };
   const repairId = req.params.id;
   const table = base('repairsWork');
+  let error = null;
+  const repairImages = [];
+  let img = {};
+  let repair = {};
 
-  const repairDetail = await table.find(repairId);
-  let repairImages = [];
-  for (const images of repairDetail.fields.imagesGallery) {
-    repairImages.push(images);
+  try {
+    const repairDetail = await table.find(repairId);
+    if (!repairDetail) {
+      throw Error('Unable to find this repair');
+    }
+    let imagesGallery = repairDetail.fields.imagesGallery;
+    imagesGallery.forEach(image => {
+      let URL = image.url.slice(37);
+      let imgString = URL.indexOf('?');
+      URL = URL.slice(0, imgString);
+      URL = `https://res.cloudinary.com/ss-uploads/image/upload/q_auto:good,f_webp/remote_media/${URL}`;
+      img = {
+        id: image.id,
+        url: URL,
+        filename: image.filename,
+        width: image.width,
+        height: image.height,
+        size: image.size,
+        type: image.type,
+      };
+      repairImages.push(img);
+    });
+    repair = {
+      repairName: repairDetail.fields.repairName,
+      repairDescription: repairDetail.fields.repairDescription,
+      componentName: repairDetail.fields.componentName,
+      componentDescription: repairDetail.fields.componentDescription,
+    };
+  } catch (err) {
+    error = err.message;
+    console.log(error);
   }
 
   res.render('our-work-detail', {
     meta: meta,
-    repair: repairDetail.fields,
+    repair: repair,
     repairImages: repairImages,
     repairId: repairId,
   });
