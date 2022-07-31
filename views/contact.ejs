@@ -42,7 +42,11 @@
     </main>
     <%- include('includes/footer') %> <%- include('includes/blockjs') %>
     <!-- ReCaptcha v3 -->
-    <script src="https://www.google.com/recaptcha/api.js?render=6Lc9VjYhAAAAADrFcrR-iZ56DPQnCFESM5J-Apaq"></script>
+    <script
+      asyn
+      defer
+      src="https://www.google.com/recaptcha/api.js?render=6Lc9VjYhAAAAADrFcrR-iZ56DPQnCFESM5J-Apaq"
+    ></script>
     <script>
       function showResult(text) {
         document.querySelector('#result').innerHTML = text;
