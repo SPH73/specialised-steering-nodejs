@@ -11,7 +11,6 @@ const router = express.Router();
 
 // ----HOME
 const handleSend = (req, res) => {
-  console.log('Send Cookies: ', req.cookies);
   const secret_key = process.env.reCAPTCHA_SECRET_KEY;
   const token = req.body.token;
   const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${token}`;
@@ -32,7 +31,6 @@ router.get('/', async (req, res) => {
     description:
       'We source hydraulic components for a wide range of industries and applications. We also service, test and repair components to OEM specification. View our range and examples of client work. We are here to help.',
   };
-  console.log('Homepage Get Cookies: ', req.cookies);
   const table = base('repairsWork');
   let error = null;
   const repairs = [];
@@ -144,7 +142,7 @@ router.get('/our-work', (req, res) => {
     description:
       'We offer service exchange on some hydraulic components and repair all components to OEM specification on machinery and trucks for the mining and agricultural industries. Fill in a contact form if you need assistance on any hydraulic component for repair or servicing. Feel free to contact us with any related queries - we are always willing to offer expert advice.',
   };
-  console.log('Cookies: ', req.cookies);
+  console.log('Our work Cookies: ', req.cookies);
 
   res.render('our-work', { meta: meta });
 });
@@ -194,7 +192,7 @@ router.get('/our-work/:id', async (req, res) => {
     error = err.message;
     console.log(error);
   }
-  console.log('Cookies: ', req.cookies);
+  console.log('Our work detail Cookies: ', req.cookies);
   res.render('our-work-detail', {
     meta: meta,
     repair: repair,
@@ -212,7 +210,7 @@ router.get('/enquiry', (req, res) => {
     description:
       'We supply a wide range of industries with replacement hydraulic components from leading manufacturers. Fill out an enquiry form for the part you require and we will do our best to get you up and running again as soon as possible.',
   };
-  console.log('Enquiry Cookies: ', req.cookies);
+  console.log('Enquiry Get Cookies: ', req.cookies);
   res.render('enquiry', { meta: meta });
 });
 
@@ -250,6 +248,7 @@ router.post('/enquiry', upload.single('image'), async (req, res, next) => {
   try {
     const table = base('webForms');
     const createdRecord = await table.create(record);
+    reference = createdRecord.id;
 
     if (image) {
       const result = await cloudinary.uploader.upload(
@@ -275,7 +274,7 @@ router.post('/enquiry', upload.single('image'), async (req, res, next) => {
     next(error);
     return;
   }
-  console.log('Cookies: ', req.cookies);
+  console.log('Enquiry post Cookies: ', req.cookies);
   res.render('confirm', { message: data, ref: reference });
 });
 
@@ -288,7 +287,7 @@ router.get('/contact', (req, res) => {
     description:
       'With our combined 40 years of experience, we offer an expert and professional service for all your hydraulic component requirements. Please contact us today to let us know how we can help get you back up and running.',
   };
-  console.log('Contact Cookies: ', req.cookies);
+  console.log('Contact Get Cookies: ', req.cookies);
   res.render('contact', { meta: meta });
 });
 
@@ -319,7 +318,7 @@ router.post('/contact', async (req, res, next) => {
     next(error);
     return;
   }
-  console.log('Cookies: ', req.cookies);
+  console.log('Contact Post Cookies: ', req.cookies);
   res.render('confirm', { message: data, ref: reference });
 });
 
