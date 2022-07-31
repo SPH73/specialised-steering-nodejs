@@ -8,6 +8,12 @@
     <!-- file upload preview -->
     <script src="../js/upload-preview.js" defer></script>
     <script src="../js/block-scripts.js" defer></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script>
+      function onSubmit(token) {
+        document.getElementById('enquiryForm').submit();
+      }
+    </script>
   </head>
   <body>
     <!-- Global site tag (gtag.js) - Google Analytics -->

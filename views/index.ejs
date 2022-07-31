@@ -5,6 +5,12 @@
     <%- include('includes/meta') %> <%- include('includes/head') %>
     <link href="https://specialisedsteering.com/" rel="canonical" />
     <script src="../js/block-scripts.js" defer></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script>
+      function onSubmit(token) {
+        document.getElementById('contactForm').submit();
+      }
+    </script>
   </head>
   <body>
     <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -304,48 +310,5 @@
       <div class="container"><%- include('includes/forms/contact-form') %></div>
     </section>
     <%- include('includes/footer') %> <%- include('includes/blockjs') %>
-    <!-- ReCaptcha v3 -->
-    <script
-      async
-      defer
-      src="https://www.google.com/recaptcha/api.js?render=6Lc9VjYhAAAAADrFcrR-iZ56DPQnCFESM5J-Apaq"
-    ></script>
-    <script>
-      function showResult(text) {
-        document.querySelector('#result').innerHTML = text;
-      }
-
-      function handleClick(token) {
-        return function () {
-          let data = {
-            token: token,
-          };
-
-          fetch('/send', {
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-            },
-            method: 'post',
-            body: JSON.stringify(data),
-          })
-            .then(response => response.text())
-            .then(text => showResult(text))
-            .catch(error => showResult(error));
-        };
-      }
-
-      grecaptcha.ready(function () {
-        grecaptcha
-          .execute('6Lc9VjYhAAAAADrFcrR-iZ56DPQnCFESM5J-Apaq', {
-            action: 'homepage',
-          })
-          .then(function (token) {
-            document
-              .querySelector('#send_button')
-              .addEventListener('click', handleClick(token));
-          });
-      });
-    </script>
   </body>
 </html>

@@ -6,6 +6,12 @@
     <%- include('includes/head') %> <%- include('includes/meta') %>
     <link href="https://specialisedsteering.com/contact" rel="canonical" />
     <script src="../js/block-scripts.js" defer></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script>
+      function onSubmit(token) {
+        document.getElementById('contactForm').submit();
+      }
+    </script>
   </head>
   <body>
     <!-- Global site tag (gtag.js) - Google Analytics -->

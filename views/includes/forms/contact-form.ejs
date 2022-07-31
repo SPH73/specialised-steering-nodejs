@@ -3,7 +3,7 @@
   name="contactForm"
   data-name="contactForm"
   method="post"
-  action="/"
+  action="/contact"
   data-redirect="/confirm"
   class="form"
 >
@@ -396,7 +396,8 @@
     type="submit"
     value="Submit"
     data-wait="Please wait..."
-    class="button submit-button w-button"
-    id="send_button"
+    class="button submit-button w-button g-recaptcha"
+    data-sitekey="6LeHBjchAAAAAMqLOiZomWlJYsUevVgZOPoZZ1Iw"
+    data-callback="onSubmit"
   />
 </form>
