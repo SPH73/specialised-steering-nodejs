@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!--  Last updated: 18 July 2022 -->
+<!--  Last updated: 31 July 2022 -->
 <html lang="en" data-wf-page="60b27efeb5434b7ea97c437c">
   <head>
     <%- include('includes/meta') %> <%- include('includes/head') %>
@@ -7,6 +7,22 @@
     <script src="../js/block-scripts.js" defer></script>
   </head>
   <body>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-V4W8VP4GL8"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+
+      gtag('config', 'G-V4W8VP4GL8');
+    </script>
+    <!-- G-tag end -->
+
     <%- include('includes/nav') %> <%- include('includes/header') %>
     <main>
       <div class="parallax-1">
@@ -288,5 +304,44 @@
       <div class="container"><%- include('includes/forms/contact-form') %></div>
     </section>
     <%- include('includes/footer') %> <%- include('includes/blockjs') %>
+    <!-- ReCaptcha v3 -->
+    <script src="https://www.google.com/recaptcha/api.js?render=6Lc9VjYhAAAAADrFcrR-iZ56DPQnCFESM5J-Apaq"></script>
+    <script>
+      function showResult(text) {
+        document.querySelector('#result').innerHTML = text;
+      }
+
+      function handleClick(token) {
+        return function () {
+          let data = {
+            token: token,
+          };
+
+          fetch('/send', {
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+            },
+            method: 'post',
+            body: JSON.stringify(data),
+          })
+            .then(response => response.text())
+            .then(text => showResult(text))
+            .catch(error => showResult(error));
+        };
+      }
+
+      grecaptcha.ready(function () {
+        grecaptcha
+          .execute('6Lc9VjYhAAAAADrFcrR-iZ56DPQnCFESM5J-Apaq', {
+            action: 'homepage',
+          })
+          .then(function (token) {
+            document
+              .querySelector('#send_button')
+              .addEventListener('click', handleClick(token));
+          });
+      });
+    </script>
   </body>
 </html>
