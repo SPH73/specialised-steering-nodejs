@@ -306,8 +306,18 @@
         </div>
       </section>
     </main>
-    <section id="contact-us" class="section">
-      <div class="container"><%- include('includes/forms/contact-form') %></div>
+    <section id="contact-us" class="section main">
+      <div class="container">
+        <div id="contact-form" class="form-block w-form">
+          <h2>Get in Touch!</h2>
+          <p>
+            If you have a hydraulic component needing repair or any other query,
+            reach out with as much info as necessary and we will be in touch
+            within one business day.
+          </p>
+          <%- include('includes/forms/contact-form') %>
+        </div>
+      </div>
     </section>
     <%- include('includes/footer') %> <%- include('includes/blockjs') %>
   </body>
