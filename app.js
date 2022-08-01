@@ -26,14 +26,14 @@ app.use((req, res, next) => {
   );
   res.setHeader(
     'Content-Security-Policy-Report-Only',
-    "default-src 'self'; font-src 'self'; img-src 'self' https://cdn-cookieyes.com https://dl.airtable.com https://res.cloudinary.com https://sswebimages.mo.cloudinary.net; script-src 'self' 'unsafe-inline' https://cdn-cookieyes.com https://region1.google-analytics.com/ https://google.com https://www.gstatic.com https://www.googletagmanager.com https://ajax.googleapis.com https://d3e54v103j8qbb.cloudfront.net; style-src 'self' 'unsafe-inline'; frame-src 'self' https://cdn-cookieyes.com https://www.google.com; connect-src 'self' https://active.cookieyes.com/api/fc1fd1fcf281525614c1466b/log https://log.cookieyes.com https://cdn-cookieyes.com https://region1.google-analytics.com/; script-src-elem 'self' 'unsafe-inline' https://cdn-cookieyes.com https://www.google.com https://www.googletagmanager.com https://www.gstatic.com https://ajax.googleapis.com https://d3e54v103j8qbb.cloudfront.net",
+    "default-src 'self'; font-src 'self'; img-src 'self' https://cdn-cookieyes.com https://dl.airtable.com https://res.cloudinary.com https://sswebimages.mo.cloudinary.net; script-src 'self' 'unsafe-inline' https://cdn-cookieyes.com https://region1.google-analytics.com/ https://www.recaptcha.net https://www.gstatic.com https://www.googletagmanager.com https://ajax.googleapis.com https://d3e54v103j8qbb.cloudfront.net; style-src 'self' 'unsafe-inline'; frame-src 'self' https://cdn-cookieyes.com https://www.recaptcha.net; connect-src 'self' https://consentlog.cookieyes.com https://active.cookieyes.com/api/fc1fd1fcf281525614c1466b/log https://log.cookieyes.com https://cdn-cookieyes.com https://region1.google-analytics.com/; script-src-elem 'self' 'unsafe-inline' https://cdn-cookieyes.com https://www.recaptcha.net https://www.googletagmanager.com https://www.gstatic.com https://ajax.googleapis.com https://d3e54v103j8qbb.cloudfront.net",
   );
   res.setHeader('set-cookie', [
-    'SNID=AKJei18cI6WrM82pnZzz5bXsN4Aul10GZ3sC0o_ZPK5at2tHIAXWpuG3W7xgPLwfcdRC2sF6s43Cu60412fN5ylnfLCdZw; SameSite=None; Secure; Domain=.google.com; Path=/verify',
-    'AEC=AakniGOnSxOtqUQLtCr7imMV6bR3dXbC_Fd; SameSite=None; Secure; Domain=.google.com;',
-    'NID=aKWcrH3dIdnZ6mJO4dWg9XQJer6RCHDIwGgMoLIMYHX9ua0dZX1ZdgeFzXmPenarKZcsLb108659qesfw2ggSyWSqTjtwiyuMJhAjDNP818yxetcx2eWz; SameSite=None; Secure; Domain=.google.com',
-    '_GRECAPTCHA=09AMjm62WAYKsXsUwOoRyF; SameSite=None; Secure; Domain=www.google.com; Path=/recaptcha',
+    '_ga:GA1.1.376191239.1659268542; SameSite=Strict',
+    '_ga_V4W8VP4GL8:GA1.1.376191239.1659268542; SameSite=Strict',
+    '_GRECAPTCHA=09AMjm62UjUi9gunpNhie9zFn-6UPNnedIXhe3Y603QUMzv_HaMV83xZxO1UNsxkL3TaxfRB1N9CS4Gws4xoiXDCw; SameSite=None; Secure; Domain=www.google.com; Path=/recaptcha',
   ]);
+
   next();
 });
 
