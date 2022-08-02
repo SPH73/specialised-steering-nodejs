@@ -4,9 +4,10 @@ const router = express.Router();
 
 router.get('/about', (req, res) => {
   const meta = {
-    title: 'ABOUT SPECIALISED STEERING - Johannesburg',
+    title:
+      'Hydraulic Repairs to OEM Specification and Component Sourcing Service - Germiston, Gauteng',
     description:
-      'Specialised Steering supports the industries we serve by providing a platform to bridge the gap between manufacturers and end-users of hydraulic componentry.',
+      'Specialised Steering CC offer hydraulic repairs services and a service exchange on some hydraulic components from our Germiston OEM repair workshop as well as on-site in underground and open pit mines.',
   };
   res.render('about', { meta: meta });
 });
@@ -16,6 +17,13 @@ router.get('/disclaimer', (req, res) => {
     title: 'SPECIALISED STEERING CC',
   };
   res.render('disclaimer', { meta: meta });
+});
+
+router.get('/cookie-policy', (req, res) => {
+  const meta = {
+    title: 'Cookie Policy',
+  };
+  res.render('cookie-policy', { meta: meta });
 });
 
 router.post('/__cspreport__', (req, res) => {

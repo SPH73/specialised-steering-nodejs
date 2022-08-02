@@ -294,6 +294,15 @@ img {
   display: none;
 }
 
+.cky-banner-element {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: #d9dfe7;
+  border: 1px solid #d9dfe7;
+  border-radius: 0.2rem;
+  font-size: 0.6rem;
+}
+
 /* Grids / Card */
 
 .brands-logo-grid {
@@ -1670,7 +1679,9 @@ img {
   p {
     font-size: 0.9rem;
   }
-
+  .footer.section {
+    padding-bottom: 5rem;
+  }
   .footer-content {
     display: -webkit-box;
     display: -webkit-flex;
