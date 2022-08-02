@@ -267,7 +267,7 @@ img {
 
 .parallax-1 {
   background-color: var(--color-primary);
-  background-image: url('../images/lrg_komatsu-earth-moving-machinery.jpg');
+  background-image: url('https://sswebimages.mo.cloudinary.net/lrg_komatsu-earth-moving-machinery.jpg');
   background-position: 100% 100%;
   background-size: cover;
   background-repeat: no-repeat;
@@ -278,7 +278,7 @@ img {
 }
 .parallax-2 {
   background-color: var(--color-primary);
-  background-image: url('../images/lrg_bulldozer-cement-boulders.jpg');
+  background-image: url('https://sswebimages.mo.cloudinary.net/lrg_bulldozer-cement-boulders.jpg');
   background-position: 50% 50%;
   background-size: cover;
   background-repeat: no-repeat;
@@ -1287,7 +1287,7 @@ img {
     display: -ms-flexbox;
     display: flex;
     background-color: var(--color-primary);
-    background-image: url('../images/xl_komatsu-earth-moving-machinery.jpg');
+    background-image: url('https://sswebimages.mo.cloudinary.net/xl_komatsu-earth-moving-machinery.jpg');
     background-position: 50% 50%;
     background-size: cover;
     background-repeat: no-repeat;
@@ -1372,14 +1372,14 @@ img {
   }
 
   .parallax-1 {
-    background-image: url('../images/med_komatsu-earth-moving-machinery.jpeg');
+    background-image: url('https://sswebimages.mo.cloudinary.net/med_komatsu-earth-moving-machinery.jpeg');
     background-position: 0% 50%;
     background-size: cover;
     background-attachment: scroll;
   }
 
   .parallax-2 {
-    background-image: url('../images/med_bulldozer-cement-boulders.jpeg');
+    background-image: url('https://sswebimages.mo.cloudinary.net/med_bulldozer-cement-boulders.jpeg');
     background-attachment: scroll;
   }
 
@@ -1809,11 +1809,11 @@ img {
   }
 
   .parallax-1 {
-    background-image: url('../images/sml_komatsu-earth-moving-machinery.jpeg');
+    background-image: url('https://sswebimages.mo.cloudinary.net/sml_komatsu-earth-moving-machinery.jpeg');
   }
 
   .parallax-2 {
-    background-image: url('../images/sml_bulldozer-cement-boulders.jpeg');
+    background-image: url('https://sswebimages.mo.cloudinary.net/sml_bulldozer-cement-boulders.jpeg');
     background-position: 50% 50%;
     background-attachment: scroll;
   }
