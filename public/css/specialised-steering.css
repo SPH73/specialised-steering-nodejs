@@ -110,6 +110,13 @@ a {
 .page-heading {
   margin-top: 2em;
 }
+ul {
+  list-style: none;
+  margin-bottom: 2rem;
+}
+li {
+  margin-bottom: 1rem;
+}
 
 .doc-link {
   color: var(--color-primary);

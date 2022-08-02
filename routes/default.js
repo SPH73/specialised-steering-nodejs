@@ -12,6 +12,13 @@ router.get('/about', (req, res) => {
   res.render('about', { meta: meta });
 });
 
+router.get('/sitemap', (req, res) => {
+  const meta = {
+    title: 'specialisedsteering.com Site Map',
+  };
+  res.render('sitemap', { meta: meta });
+});
+
 router.get('/disclaimer', (req, res) => {
   const meta = {
     title: 'SPECIALISED STEERING CC',
