@@ -4,6 +4,8 @@ const express = require('express');
 const compression = require('compression');
 const favicon = require('serve-favicon');
 const path = require('path');
+const bodyParser = require('body-parser');
+const request = require('request');
 
 const cookieParser = require('cookie-parser');
 
@@ -22,18 +24,17 @@ app.set('view engine', 'ejs');
 app.use((req, res, next) => {
   res.setHeader(
     'Report-To',
-    `{"group":"csp-endpoint","max_age":10886400,"endpoints":[{"url":"http://192.168.0.12:${PORT}/__cspreport__"}],"include_subdomains":true}`,
+    `{"group":"csp-endpoint","max_age":10886400,"endpoints":[{"url":"https://specialisedsteering.com/__cspreport__"}],"include_subdomains":true}`,
   );
   res.setHeader(
     'Content-Security-Policy-Report-Only',
-    "default-src 'self'; font-src 'self'; img-src 'self' https://cdn-cookieyes.com https://dl.airtable.com https://res.cloudinary.com https://sswebimages.mo.cloudinary.net; script-src 'self' 'unsafe-inline' https://cdn-cookieyes.com https://region1.google-analytics.com/ https://www.recaptcha.net https://www.gstatic.com https://www.googletagmanager.com https://ajax.googleapis.com https://d3e54v103j8qbb.cloudfront.net; style-src 'self' 'unsafe-inline'; frame-src 'self' https://cdn-cookieyes.com https://www.recaptcha.net; connect-src 'self' https://consentlog.cookieyes.com https://active.cookieyes.com/api/fc1fd1fcf281525614c1466b/log https://log.cookieyes.com https://cdn-cookieyes.com https://region1.google-analytics.com/; script-src-elem 'self' 'unsafe-inline' https://cdn-cookieyes.com https://www.recaptcha.net https://www.googletagmanager.com https://www.gstatic.com https://ajax.googleapis.com https://d3e54v103j8qbb.cloudfront.net",
+    "default-src 'self'; font-src 'self'; img-src 'self' https://googletagmanager.com https://cdn-cookieyes.com https://dl.airtable.com https://res.cloudinary.com https://sswebimages.mo.cloudinary.net; script-src 'self' 'unsafe-inline' https://cdn-cookieyes.com https://region1.google-analytics.com/ https://www.recaptcha.net https://www.gstatic.com https://www.googletagmanager.com https://ajax.googleapis.com https://d3e54v103j8qbb.cloudfront.net; style-src 'self' 'unsafe-inline'; frame-src 'self' https://cdn-cookieyes.com https://www.recaptcha.net; connect-src 'self' https://consentlog.cookieyes.com https://active.cookieyes.com/api/fc1fd1fcf281525614c1466b/log https://log.cookieyes.com https://cdn-cookieyes.com https://region1.google-analytics.com/; script-src-elem 'self' 'unsafe-inline' https://cdn-cookieyes.com https://www.recaptcha.net https://www.googletagmanager.com https://www.gstatic.com https://ajax.googleapis.com https://d3e54v103j8qbb.cloudfront.net",
   );
   res.setHeader('set-cookie', [
     '_ga:GA1.1.376191239.1659268542; SameSite=Strict',
     '_ga_V4W8VP4GL8:GA1.1.376191239.1659268542; SameSite=Strict',
-    '_GRECAPTCHA=09AMjm62UjUi9gunpNhie9zFn-6UPNnedIXhe3Y603QUMzv_HaMV83xZxO1UNsxkL3TaxfRB1N9CS4Gws4xoiXDCw; SameSite=None; Secure; Domain=www.google.com; Path=/recaptcha',
+    '_GRECAPTCHA=09AMjm62UjUi9gunpNhie9zFn-6UPNnedIXhe3Y603QUMzv_HaMV83xZxO1UNsxkL3TaxfRB1N9CS4Gws4xoiXDCw; SameSite=None; Secure; Domain=www.recaptcha.net; Path=/recaptcha',
   ]);
-
   next();
 });
 
