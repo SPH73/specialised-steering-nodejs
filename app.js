@@ -4,9 +4,6 @@ const express = require('express');
 const compression = require('compression');
 const favicon = require('serve-favicon');
 const path = require('path');
-const bodyParser = require('body-parser');
-const request = require('request');
-
 const cookieParser = require('cookie-parser');
 
 const errorsHandlerMiddleware = require('./middleware/error-handler');
