@@ -1,7 +1,7 @@
 # Webflow to Modern CSS Migration Guide
 
-**Date**: December 18, 2025  
-**Project**: Specialised Steering Web Application  
+**Date**: December 18, 2025
+**Project**: Specialised Steering Web Application
 **Goal**: Remove Webflow dependencies and convert to maintainable, lightweight modern CSS
 
 ---
@@ -90,7 +90,7 @@
 
 #### Current (Lottie):
 ```html
-<div data-animation-type="lottie" 
+<div data-animation-type="lottie"
      data-src="../documents/menu-icon-animation.json">
 </div>
 ```
@@ -177,7 +177,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const menuToggle = document.querySelector('.menu-toggle');
   const navMenu = document.querySelector('.navbar_menu');
-  
+
   if (menuToggle && navMenu) {
     menuToggle.addEventListener('click', () => {
       const isExpanded = menuToggle.getAttribute('aria-expanded') === 'true';
