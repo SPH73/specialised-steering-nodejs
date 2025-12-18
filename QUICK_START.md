@@ -16,16 +16,17 @@ This will install `nodemailer` and all other required packages.
 
 1. **Enable 2-Factor Authentication** on your Gmail account:
 
-   - Go to https://myaccount.google.com/security
+   - Go to [https://myaccount.google.com/security]
    - Turn on 2-Step Verification
 
 2. **Create App Password**:
 
-   - Go to https://myaccount.google.com/apppasswords
+   - Go to [https://myaccount.google.com/apppasswords]
    - Select "Mail" and your device
    - Copy the 16-character password (e.g., `abcd efgh ijkl mnop`)
 
 3. **Add to `.env` file**:
+
    ```env
    EMAIL_HOST=smtp.gmail.com
    EMAIL_PORT=587
@@ -71,13 +72,14 @@ NOTIFICATION_EMAIL=admin@ssteering.co.za
 
 2. **Submit a test form** on your website:
 
-   - Go to http://localhost:3300/contact
+   - Go to [http://localhost:3300/contact]
    - Fill out and submit the form
 
 3. **Check your email** at the `NOTIFICATION_EMAIL` address
 
 4. **Check server logs** for confirmation:
-   ```
+
+   ```txt
    ✅ Success: "Contact form notification email sent: <message-id>"
    ❌ Error: "Error sending contact form notification email: [details]"
    ```
@@ -107,14 +109,14 @@ See `EMAIL_SETUP.md` for detailed troubleshooting steps.
 
 ## What You'll Receive
 
-### Contact Form Emails:
+### Contact Form Emails
 
 - Customer details (name, company, email, phone, country)
 - Their message
 - IP address
 - Link to Airtable record
 
-### Parts Enquiry Emails:
+### Parts Enquiry Emails
 
 - All contact form info PLUS:
 - Part details (brand, type, part number, serial number)

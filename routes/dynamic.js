@@ -1,24 +1,27 @@
-require('dotenv').config({ path: '../config.env' });
-const express = require('express');
-const requestIp = require('request-ip');
+require("dotenv").config({ path: "../config.env" });
+const express = require("express");
+const requestIp = require("request-ip");
 
-const upload = require('../utils/multer');
-const { cloudinary } = require('../utils/cloudinary');
-const { Airtable } = require('../utils/airtable');
-const { sendContactFormNotification, sendEnquiryFormNotification } = require('../utils/email');
+const upload = require("../utils/multer");
+const { cloudinary } = require("../utils/cloudinary");
+const { Airtable } = require("../utils/airtable");
+const {
+  sendContactFormNotification,
+  sendEnquiryFormNotification,
+} = require("../utils/email");
 const base = Airtable.base(process.env.BASE);
 
 const router = express.Router();
 
 // ----HOME
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   const meta = {
     title:
-      'Hydraulic Repairs and Component Sourcing | Germiston, Gauteng, ZA - Service Worldwide',
+      "Hydraulic Repairs and Component Sourcing | Germiston, Gauteng, ZA - Service Worldwide",
     description:
-      'We repair and source hydraulic components for a wide range of industries and applications. We also service, test and repair components to OEM specification. View our range and examples of client work.',
+      "We repair and source hydraulic components for a wide range of industries and applications. We also service, test and repair components to OEM specification. View our range and examples of client work.",
   };
-  const table = base('repairsWork');
+  const table = base("repairsWork");
   let error = null;
   const repairs = [];
   let imgURL;
@@ -28,26 +31,26 @@ router.get('/', async (req, res) => {
   try {
     const featuredRepairs = await table
       .select({
-        view: 'Featured Repairs',
+        view: "Featured Repairs",
         filterByFormula: "NOT({featured} = 'false')",
         fields: [
-          'repairName',
-          'repairDescription',
-          'mainImage',
-          'componentName',
-          'componentDescription',
-          'imagesGallery',
+          "repairName",
+          "repairDescription",
+          "mainImage",
+          "componentName",
+          "componentDescription",
+          "imagesGallery",
         ],
       })
       .firstPage();
     if (!featuredRepairs) {
-      throw Error('Unable to fetch repairs');
+      throw Error("Unable to fetch repairs");
     }
     featuredRepairs.forEach(repair => {
       let imagesGallery = repair.fields.imagesGallery;
       imagesGallery.forEach(image => {
         imgURL = image.url.slice(37);
-        let string = imgURL.indexOf('?');
+        let string = imgURL.indexOf("?");
         imgURL = imgURL.slice(0, string);
         imgURL = `https://res.cloudinary.com/ss-uploads/image/upload/q_auto:good,f_webp/remote_media/${imgURL}`;
         img = {
@@ -62,7 +65,7 @@ router.get('/', async (req, res) => {
         imageGalleryList.push(img);
       });
       let imageURL = repair.fields.mainImage[0].url.slice(37);
-      const ext = imageURL.indexOf('?');
+      const ext = imageURL.indexOf("?");
       imageURL = imageURL.slice(0, ext);
 
       imageURL = `https://res.cloudinary.com/ss-uploads/image/upload/q_auto:good,f_webp/remote_media/${imageURL}`;
@@ -84,7 +87,7 @@ router.get('/', async (req, res) => {
     console.error(error);
   }
 
-  res.render('index', {
+  res.render("index", {
     meta: meta,
     repairs: repairs,
   });
@@ -92,25 +95,25 @@ router.get('/', async (req, res) => {
 
 // ___ OUR WORK ___
 
-router.get('/our-work', (req, res) => {
+router.get("/our-work", (req, res) => {
   const meta = {
-    title: 'HYDRAULIC COMPONENT SERVICE EXCHANGE & REAIRS TO OEM SPEC',
+    title: "HYDRAULIC COMPONENT SERVICE EXCHANGE & REAIRS TO OEM SPEC",
     description:
-      'We offer service exchange on some hydraulic components and repair all components to OEM specification on machinery and trucks for the mining and agricultural industries.',
+      "We offer service exchange on some hydraulic components and repair all components to OEM specification on machinery and trucks for the mining and agricultural industries.",
   };
-  console.log('Our work Cookies: ', req.cookies);
+  console.log("Our work Cookies: ", req.cookies);
 
-  res.render('our-work', { meta: meta });
+  res.render("our-work", { meta: meta });
 });
 
-router.get('/our-work/:id', async (req, res) => {
+router.get("/our-work/:id", async (req, res) => {
   const meta = {
-    title: 'HYDRAULIC COMPONENT SERVICE EXCHANGE & REAIRS TO OEM SPEC',
+    title: "HYDRAULIC COMPONENT SERVICE EXCHANGE & REAIRS TO OEM SPEC",
     description:
-      'We offer service exchange on some hydraulic components and repair all components to OEM specification on machinery and trucks for the mining and agricultural industries.',
+      "We offer service exchange on some hydraulic components and repair all components to OEM specification on machinery and trucks for the mining and agricultural industries.",
   };
   const repairId = req.params.id;
-  const table = base('repairsWork');
+  const table = base("repairsWork");
   let error = null;
   const repairImages = [];
   let img = {};
@@ -119,12 +122,12 @@ router.get('/our-work/:id', async (req, res) => {
   try {
     const repairDetail = await table.find(repairId);
     if (!repairDetail) {
-      throw Error('Unable to find this repair');
+      throw Error("Unable to find this repair");
     }
     let imagesGallery = repairDetail.fields.imagesGallery;
     imagesGallery.forEach(image => {
       let URL = image.url.slice(37);
-      let imgString = URL.indexOf('?');
+      let imgString = URL.indexOf("?");
       URL = URL.slice(0, imgString);
       URL = `https://res.cloudinary.com/ss-uploads/image/upload/q_auto:good,f_webp/remote_media/${URL}`;
       img = {
@@ -148,8 +151,8 @@ router.get('/our-work/:id', async (req, res) => {
     error = err.message;
     console.log(error);
   }
-  console.log('Our work detail Cookies: ', req.cookies);
-  res.render('our-work-detail', {
+  console.log("Our work detail Cookies: ", req.cookies);
+  res.render("our-work-detail", {
     meta: meta,
     repair: repair,
     repairImages: repairImages,
@@ -159,28 +162,28 @@ router.get('/our-work/:id', async (req, res) => {
 
 // ----ENQUIRY
 
-router.get('/enquiry', (req, res) => {
+router.get("/enquiry", (req, res) => {
   const meta = {
     title:
-      'HYDRAULIC COMPONENTS FOR MINING AND AGRICULTURAL MACHINERY AND TRUCKS',
+      "HYDRAULIC COMPONENTS FOR MINING AND AGRICULTURAL MACHINERY AND TRUCKS",
     description:
-      'We supply a wide range of industries with replacement hydraulic components from leading manufacturers. Fill out an enquiry form for the part you require and we will do our best to get you up and running again as soon as possible.',
+      "We supply a wide range of industries with replacement hydraulic components from leading manufacturers. Fill out an enquiry form for the part you require and we will do our best to get you up and running again as soon as possible.",
   };
-  res.render('enquiry', { meta: meta });
+  res.render("enquiry", { meta: meta });
 });
 
-router.post('/enquiry', upload.single('image'), async (req, res, next) => {
+router.post("/enquiry", upload.single("image"), async (req, res, next) => {
   const clientIp = requestIp.getClientIp(req);
   const image = req.file;
   const data = req.body;
   const options = {
     use_filename: true,
     unique_filename: false,
-    folder: `Specialised/public/uploads/${data.enquiryName.replace(/\s/g, '')}`,
-    flags: 'attachment',
+    folder: `Specialised/public/uploads/${data.enquiryName.replace(/\s/g, "")}`,
+    flags: "attachment",
   };
   const record = {
-    status: 'New',
+    status: "New",
     name: data.enquiryName,
     email: data.enquiryEmail,
     company: data.company,
@@ -197,12 +200,12 @@ router.post('/enquiry', upload.single('image'), async (req, res, next) => {
     region: data.province,
     country: data.country,
     ip: clientIp,
-    form: 'parts',
+    form: "parts",
   };
-  let reference = '';
+  let reference = "";
   let imageUrl = null;
   try {
-    const table = base('webForms');
+    const table = base("webForms");
     const createdRecord = await table.create(record);
     reference = createdRecord.id;
 
@@ -226,7 +229,7 @@ router.post('/enquiry', upload.single('image'), async (req, res, next) => {
       });
       reference = updatedRecord.id;
     }
-    
+
     // Send email notification (non-blocking)
     const emailData = {
       name: data.enquiryName,
@@ -247,7 +250,7 @@ router.post('/enquiry', upload.single('image'), async (req, res, next) => {
       ip: clientIp,
     };
     sendEnquiryFormNotification(emailData, reference, imageUrl).catch(err => {
-      console.error('Failed to send enquiry form notification email:', err);
+      console.error("Failed to send enquiry form notification email:", err);
       // Don't fail the request if email fails
     });
   } catch (error) {
@@ -255,25 +258,25 @@ router.post('/enquiry', upload.single('image'), async (req, res, next) => {
     next(error);
     return;
   }
-  res.render('confirm', { message: data, ref: reference });
+  res.render("confirm", { message: data, ref: reference });
 });
 
 // ----CONTACT
 
-router.get('/contact', (req, res) => {
+router.get("/contact", (req, res) => {
   const meta = {
     title:
-      'CONTACT US FOR ALL YOUR HYDRAULIC REPAIRS AND PART SERVICE EXCHANGE',
+      "CONTACT US FOR ALL YOUR HYDRAULIC REPAIRS AND PART SERVICE EXCHANGE",
     description:
-      'With our combined 40 years of experience, we offer an expert and professional service for all your hydraulic component requirements. Please contact us today to let us know how we can help get you back up and running.',
+      "With our combined 40 years of experience, we offer an expert and professional service for all your hydraulic component requirements. Please contact us today to let us know how we can help get you back up and running.",
   };
-  res.render('contact', { meta: meta });
+  res.render("contact", { meta: meta });
 });
 
-router.post('/contact', async (req, res, next) => {
+router.post("/contact", async (req, res, next) => {
   const clientIp = requestIp.getClientIp(req);
   const data = req.body;
-  const table = base('webForms');
+  const table = base("webForms");
 
   const record = {
     name: data.enquiryName,
@@ -283,15 +286,15 @@ router.post('/contact', async (req, res, next) => {
     country: data.enquiryCountry,
     message: data.enquiryMessage,
     ip: clientIp,
-    status: 'New',
-    form: 'contact',
+    status: "New",
+    form: "contact",
   };
-  let reference = '';
+  let reference = "";
   try {
     const createdRecord = await table.create(record);
     if (createdRecord) {
       reference = createdRecord.id;
-      
+
       // Send email notification (non-blocking)
       const emailData = {
         name: data.enquiryName,
@@ -303,7 +306,7 @@ router.post('/contact', async (req, res, next) => {
         ip: clientIp,
       };
       sendContactFormNotification(emailData, reference).catch(err => {
-        console.error('Failed to send contact form notification email:', err);
+        console.error("Failed to send contact form notification email:", err);
         // Don't fail the request if email fails
       });
     }
@@ -312,11 +315,11 @@ router.post('/contact', async (req, res, next) => {
     next(error);
     return;
   }
-  res.render('confirm', { message: data, ref: reference });
+  res.render("confirm", { message: data, ref: reference });
 });
 
-router.get('/confirm', (req, res) => {
-  res.render('confirm');
+router.get("/confirm", (req, res) => {
+  res.render("confirm");
 });
 
 module.exports = router;
