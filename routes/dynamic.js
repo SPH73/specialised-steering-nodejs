@@ -5,6 +5,7 @@ const requestIp = require('request-ip');
 const upload = require('../utils/multer');
 const { cloudinary } = require('../utils/cloudinary');
 const { Airtable } = require('../utils/airtable');
+const { sendContactFormNotification, sendEnquiryFormNotification } = require('../utils/email');
 const base = Airtable.base(process.env.BASE);
 
 const router = express.Router();
@@ -199,6 +200,7 @@ router.post('/enquiry', upload.single('image'), async (req, res, next) => {
     form: 'parts',
   };
   let reference = '';
+  let imageUrl = null;
   try {
     const table = base('webForms');
     const createdRecord = await table.create(record);
@@ -217,12 +219,37 @@ router.post('/enquiry', upload.single('image'), async (req, res, next) => {
         return;
       }
       const secure_url = result.secure_url;
+      imageUrl = secure_url;
       const recordId = createdRecord.id;
       const updatedRecord = await table.update(recordId, {
         imageUploads: [{ url: secure_url }],
       });
       reference = updatedRecord.id;
     }
+    
+    // Send email notification (non-blocking)
+    const emailData = {
+      name: data.enquiryName,
+      email: data.enquiryEmail,
+      company: data.company,
+      phone: data.enquiryNumber,
+      message: data.enquiryMessage,
+      brand: data.brand,
+      type: data.type,
+      partNo: data.partNo,
+      partDesc: data.partDesc,
+      serialNo: data.serialNo,
+      street: data.street,
+      town: data.town,
+      postal: data.postal,
+      region: data.province,
+      country: data.country,
+      ip: clientIp,
+    };
+    sendEnquiryFormNotification(emailData, reference, imageUrl).catch(err => {
+      console.error('Failed to send enquiry form notification email:', err);
+      // Don't fail the request if email fails
+    });
   } catch (error) {
     console.error(error);
     next(error);
@@ -264,6 +291,21 @@ router.post('/contact', async (req, res, next) => {
     const createdRecord = await table.create(record);
     if (createdRecord) {
       reference = createdRecord.id;
+      
+      // Send email notification (non-blocking)
+      const emailData = {
+        name: data.enquiryName,
+        company: data.enquiryCompany,
+        email: data.enquiryEmail,
+        phone: data.enquiryNumber,
+        country: data.enquiryCountry,
+        message: data.enquiryMessage,
+        ip: clientIp,
+      };
+      sendContactFormNotification(emailData, reference).catch(err => {
+        console.error('Failed to send contact form notification email:', err);
+        // Don't fail the request if email fails
+      });
     }
   } catch (error) {
     console.error(error);
