@@ -94,10 +94,12 @@ async function main() {
   const { client_secret, client_id, redirect_uris } = credentials.web;
 
   // Create OAuth2 client
+  // Use out-of-band URI for command-line flow (shows code on page instead of redirecting)
+  const redirectUri = "urn:ietf:wg:oauth:2.0:oob";
   const oAuth2Client = new google.auth.OAuth2(
     client_id,
     client_secret,
-    redirect_uris[0]
+    redirectUri
   );
 
   // Check if we already have a token
