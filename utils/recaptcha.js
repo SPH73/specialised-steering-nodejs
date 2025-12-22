@@ -87,11 +87,12 @@ const verifyRecaptcha = async (token, secretKey, remoteip = null) => {
  */
 const verifyRecaptchaFromRequest = async req => {
   const token = req.body["g-recaptcha-response"];
-  const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+  // Support both naming conventions
+  const secretKey = process.env.RECAPTCHA_SECRET_KEY || process.env.reCAPTCHA_v2_SECRET_KEY;
   const remoteip = req.headers["x-forwarded-for"]?.split(",")[0] || req.ip;
 
   if (!secretKey) {
-    console.warn("⚠️ RECAPTCHA_SECRET_KEY not set in environment");
+    console.warn("⚠️ RECAPTCHA_SECRET_KEY or reCAPTCHA_v2_SECRET_KEY not set in environment");
     return {
       success: false,
       error: "reCAPTCHA not configured",
