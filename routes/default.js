@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
-// Google Photos integration available if needed
-// const { getAlbumPhotos } = require("../utils/google-photos");
+const { getAlbumPhotos } = require("../utils/google-photos");
 
 router.get("/about", (req, res) => {
   const meta = {
@@ -13,9 +12,6 @@ router.get("/about", (req, res) => {
   res.render("about", { meta: meta });
 });
 
-// Gallery route is in routes/dynamic.js (using Airtable images)
-// Google Photos version commented out below - uncomment if you want to use Google Photos instead
-/*
 router.get("/gallery", async (req, res) => {
   const meta = {
     title: "Completed Jobs Photo Gallery | Specialised Steering",
@@ -49,7 +45,6 @@ router.get("/gallery", async (req, res) => {
     hasPhotos: photos.length > 0,
   });
 });
-*/
 
 router.get("/sitemap", (req, res) => {
   const meta = {

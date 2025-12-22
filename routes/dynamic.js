@@ -197,67 +197,6 @@ router.get("/our-work/:id", async (req, res) => {
   });
 });
 
-// ----GALLERY
-router.get("/gallery", async (req, res) => {
-  const meta = {
-    title: "Photo Gallery | Completed Hydraulic Repairs",
-    description:
-      "View our gallery of completed hydraulic component repairs and service exchange work.",
-  };
-  const table = base("repairsWork");
-  let error = null;
-  const allImages = [];
-
-  try {
-    const allRepairs = await table
-      .select({
-        fields: ["repairName", "imagesGallery", "mainImage"],
-      })
-      .all();
-
-    allRepairs.forEach(repair => {
-      // Add main image
-      if (repair.fields.mainImage && repair.fields.mainImage.length > 0) {
-        let imgURL = repair.fields.mainImage[0].url.slice(37);
-        let string = imgURL.indexOf("?");
-        imgURL = imgURL.slice(0, string);
-        imgURL = `https://res.cloudinary.com/ss-uploads/image/upload/q_auto:good,f_webp/remote_media/${imgURL}`;
-        allImages.push({
-          url: imgURL,
-          thumbnail: imgURL,
-          title: repair.fields.repairName || "Repair Work",
-          id: repair.id,
-        });
-      }
-
-      // Add gallery images
-      if (repair.fields.imagesGallery) {
-        repair.fields.imagesGallery.forEach(image => {
-          let imgURL = image.url.slice(37);
-          let string = imgURL.indexOf("?");
-          imgURL = imgURL.slice(0, string);
-          imgURL = `https://res.cloudinary.com/ss-uploads/image/upload/q_auto:good,f_webp/remote_media/${imgURL}`;
-          allImages.push({
-            url: imgURL,
-            thumbnail: imgURL,
-            title: repair.fields.repairName || "Repair Work",
-            id: `${repair.id}-${image.id}`,
-          });
-        });
-      }
-    });
-  } catch (err) {
-    error = err.message;
-    console.error("Error fetching gallery images:", error);
-  }
-
-  res.render("gallery", {
-    meta: meta,
-    images: allImages,
-    error: error,
-  });
-});
-
 // ----ENQUIRY
 
 router.get("/enquiry", (req, res) => {

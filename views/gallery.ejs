@@ -49,19 +49,24 @@
             <p><strong>Gallery Unavailable</strong></p>
             <p><%= error %></p>
           </div>
-          <% } else if (images && images.length > 0) { %>
+          <% } else if (hasPhotos) { %>
           <div id="photo-gallery" class="photo-gallery" data-layout="auto">
-            <% images.forEach((image, index) => { %>
-            <div class="gallery-item" data-index="<%= index %>" data-photo-id="<%= image.id %>">
+            <% photos.forEach((photo, index) => { %>
+            <div class="gallery-item" data-photo-id="<%= photo.id %>">
               <img
-                src="<%= image.thumbnail || image.url %>"
-                data-src="<%= image.url %>"
-                alt="<%= image.title %>"
+                src="<%= photo.thumbnailUrl %>"
+                data-src="<%= photo.url %>"
+                data-width="<%= photo.width %>"
+                data-height="<%= photo.height %>"
+                alt="<%= photo.description || photo.filename %>"
                 class="gallery-photo"
                 loading="lazy"
               />
             </div>
             <% }); %>
+          </div>
+          <div id="gallery-loading" class="gallery-loading" style="display: none;">
+            <p>Loading gallery...</p>
           </div>
           <% } else { %>
           <div class="gallery-empty">
