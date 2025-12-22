@@ -363,6 +363,8 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
     const data = req.body;
 
     console.log("📝 Contact form submission received from IP:", clientIp);
+    console.log("📦 Form data received:", JSON.stringify(data, null, 2));
+    console.log("📦 req.body keys:", Object.keys(data));
 
     // 1. Verify reCAPTCHA
     let recaptchaResult;

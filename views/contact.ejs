@@ -21,7 +21,21 @@
       });
 
       function onSubmit(token) {
-        document.getElementById("contactForm").submit();
+        // Ensure reCAPTCHA token is added to form
+        const form = document.getElementById("contactForm");
+        if (token) {
+          // Create hidden input for reCAPTCHA token if it doesn't exist
+          let recaptchaInput = form.querySelector('input[name="g-recaptcha-response"]');
+          if (!recaptchaInput) {
+            recaptchaInput = document.createElement("input");
+            recaptchaInput.type = "hidden";
+            recaptchaInput.name = "g-recaptcha-response";
+            form.appendChild(recaptchaInput);
+          }
+          recaptchaInput.value = token;
+        }
+        // Submit the form
+        form.submit();
       }
     </script>
   </head>
