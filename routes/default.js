@@ -2,12 +2,15 @@ const express = require("express");
 const router = express.Router();
 
 // Google Photos integration - handle gracefully if module not available
-let getAlbumPhotos;
+let getAlbumPhotos = null;
 try {
+  // Check if googleapis is available first
+  require("googleapis");
   const googlePhotos = require("../utils/google-photos");
   getAlbumPhotos = googlePhotos.getAlbumPhotos;
 } catch (error) {
   console.warn("⚠️ Google Photos utility not available:", error.message);
+  console.warn("⚠️ Gallery will show error message. Install 'googleapis' package and configure credentials.json to enable.");
   getAlbumPhotos = null;
 }
 
