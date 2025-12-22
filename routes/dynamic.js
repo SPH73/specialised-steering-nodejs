@@ -357,6 +357,25 @@ router.get("/contact", (req, res) => {
   res.render("contact", { meta: meta });
 });
 
+// Debug endpoint to see what data is being received
+router.post("/contact-debug", (req, res) => {
+  res.json({
+    body: req.body,
+    bodyKeys: Object.keys(req.body),
+    headers: {
+      'content-type': req.headers['content-type'],
+      'content-length': req.headers['content-length'],
+    },
+    recaptchaToken: req.body['g-recaptcha-response'] ? 'present' : 'missing',
+    hasFormData: {
+      enquiryName: !!req.body.enquiryName,
+      enquiryEmail: !!req.body.enquiryEmail,
+      enquiryNumber: !!req.body.enquiryNumber,
+      enquiryMessage: !!req.body.enquiryMessage,
+    },
+  });
+});
+
 router.post("/contact", formRateLimit, async (req, res, next) => {
   try {
     const clientIp = requestIp.getClientIp(req);
@@ -387,10 +406,19 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
       logRecaptchaFailure(req, recaptchaResult, "contact").catch(err =>
         console.error("Failed to log reCAPTCHA failure:", err),
       );
-      return res.status(400).render("confirm", {
-        message: { error: "reCAPTCHA verification failed. Please try again." },
-        ref: null,
+      // TEMPORARY: Return JSON for debugging
+      return res.status(400).json({
+        error: "reCAPTCHA verification failed",
+        recaptchaResult: recaptchaResult,
+        receivedData: data,
+        bodyKeys: Object.keys(req.body),
+        recaptchaToken: req.body['g-recaptcha-response'] ? 'present' : 'missing',
       });
+      // Original response (commented out for debugging):
+      // return res.status(400).render("confirm", {
+      //   message: { error: "reCAPTCHA verification failed. Please try again." },
+      //   ref: null,
+      // });
     }
 
     // 2. Check for spam
@@ -413,14 +441,21 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
       logSpamAttempt(req, spamCheck, "contact", data).catch(err =>
         console.error("Failed to log spam attempt:", err),
       );
-      // Log spam attempt but don't reveal it's spam to the user
-      return res.status(400).render("confirm", {
-        message: {
-          error:
-            "There was an error processing your submission. Please try again.",
-        },
-        ref: null,
+      // TEMPORARY: Return JSON for debugging
+      return res.status(400).json({
+        error: "Spam detected",
+        spamCheck: spamCheck,
+        receivedData: data,
+        bodyKeys: Object.keys(req.body),
       });
+      // Original response (commented out for debugging):
+      // return res.status(400).render("confirm", {
+      //   message: {
+      //     error:
+      //       "There was an error processing your submission. Please try again.",
+      //   },
+      //   ref: null,
+      // });
     }
 
     const table = base("webForms");
