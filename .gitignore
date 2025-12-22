@@ -5,8 +5,10 @@ images
 uploads
 config.env
 .env
-credentials.json
 token.json
+
+# Google OAuth credentials - never commit
+credentials.json
 *-todo.md
 *.txt
 MD/

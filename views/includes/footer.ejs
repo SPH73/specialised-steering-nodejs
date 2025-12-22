@@ -95,7 +95,7 @@
     <div class="w-layout-grid footer-copyright-social">
       <div class="copyright">
         <div>
-          © <span class="year">2024</span> SPECIALISED STEERING CC <br />All
+          © <span class="year"></span> SPECIALISED STEERING CC <br />All
           rights reserved.
         </div>
       </div>
@@ -157,3 +157,10 @@
     </div>
   </div>
 </footer>
+<script>
+  const year = new Date().getFullYear();
+  const yearElement = document.querySelector('.year');
+  if (yearElement) {
+    yearElement.textContent = year;
+  }
+</script>
