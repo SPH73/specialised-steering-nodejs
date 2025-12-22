@@ -197,6 +197,67 @@ router.get("/our-work/:id", async (req, res) => {
   });
 });
 
+// ----GALLERY
+router.get("/gallery", async (req, res) => {
+  const meta = {
+    title: "Photo Gallery | Completed Hydraulic Repairs",
+    description:
+      "View our gallery of completed hydraulic component repairs and service exchange work.",
+  };
+  const table = base("repairsWork");
+  let error = null;
+  const allImages = [];
+
+  try {
+    const allRepairs = await table
+      .select({
+        fields: ["repairName", "imagesGallery", "mainImage"],
+      })
+      .all();
+
+    allRepairs.forEach(repair => {
+      // Add main image
+      if (repair.fields.mainImage && repair.fields.mainImage.length > 0) {
+        let imgURL = repair.fields.mainImage[0].url.slice(37);
+        let string = imgURL.indexOf("?");
+        imgURL = imgURL.slice(0, string);
+        imgURL = `https://res.cloudinary.com/ss-uploads/image/upload/q_auto:good,f_webp/remote_media/${imgURL}`;
+        allImages.push({
+          url: imgURL,
+          thumbnail: imgURL,
+          title: repair.fields.repairName || "Repair Work",
+          id: repair.id,
+        });
+      }
+
+      // Add gallery images
+      if (repair.fields.imagesGallery) {
+        repair.fields.imagesGallery.forEach(image => {
+          let imgURL = image.url.slice(37);
+          let string = imgURL.indexOf("?");
+          imgURL = imgURL.slice(0, string);
+          imgURL = `https://res.cloudinary.com/ss-uploads/image/upload/q_auto:good,f_webp/remote_media/${imgURL}`;
+          allImages.push({
+            url: imgURL,
+            thumbnail: imgURL,
+            title: repair.fields.repairName || "Repair Work",
+            id: `${repair.id}-${image.id}`,
+          });
+        });
+      }
+    });
+  } catch (err) {
+    error = err.message;
+    console.error("Error fetching gallery images:", error);
+  }
+
+  res.render("gallery", {
+    meta: meta,
+    images: allImages,
+    error: error,
+  });
+});
+
 // ----ENQUIRY
 
 router.get("/enquiry", (req, res) => {
@@ -458,6 +519,16 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
       // });
     }
 
+    // Check if base is initialized
+    if (!base) {
+      console.error("❌ Airtable base not initialized. Check BASE environment variable.");
+      return res.status(500).json({
+        error: "Server configuration error",
+        details: "Airtable base not initialized",
+        receivedData: data,
+      });
+    }
+
     const table = base("webForms");
 
     const record = {
@@ -494,15 +565,34 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
       }
     } catch (error) {
       console.error("❌ Error creating Airtable record:", error);
+      console.error("Error message:", error.message);
+      console.error("Error stack:", error.stack);
       console.error("Record data:", record);
-      return res.status(500).render("confirm", {
-        message: {
-          error: "Error saving your submission. Please try again later.",
-        },
-        ref: null,
+      // TEMPORARY: Return JSON for debugging
+      return res.status(500).json({
+        error: "Error creating Airtable record",
+        errorMessage: error.message,
+        errorStack: error.stack,
+        recordData: record,
+        receivedData: data,
       });
+      // Original response (commented out for debugging):
+      // return res.status(500).render("confirm", {
+      //   message: {
+      //     error: "Error saving your submission. Please try again later.",
+      //   },
+      //   ref: null,
+      // });
     }
-    res.render("confirm", { message: data, ref: reference });
+    // TEMPORARY: Return JSON to see if we get here
+    return res.json({
+      success: true,
+      message: "Form submitted successfully",
+      receivedData: data,
+      reference: reference,
+    });
+    // Original response (commented out for debugging):
+    // res.render("confirm", { message: data, ref: reference });
   } catch (error) {
     console.error("❌ Unexpected error in contact form handler:", error);
     console.error("Error stack:", error.stack);

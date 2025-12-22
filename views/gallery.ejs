@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<!--  Last Updated: 22 Dec 2025   -->
+<html lang="en" data-wf-page="619520505b916bffa81f67bb">
+  <head>
+    <%- include('includes/meta') %> <%- include('includes/head') %>
+
+    <link href="https://specialisedsteering.com/gallery" rel="canonical" />
+    <script src="../js/gallery.js" defer></script>
+  </head>
+  <body>
+    <%- include('includes/nav') %>
+    <main>
+      <section class="section main">
+        <div class="container">
+          <h1>Welcome to our gallery of completed projects!</h1>
+          <p>
+            At Specialised Steering, we are a hydraulic component repair service
+            specialising in the mining, agricultural, and automotive industries.
+            We take immense pride in the quality of our work and the
+            satisfaction of our customers. Each photo you see here represents a
+            project we've completed for our valued clients in these industries,
+            showcasing the craftsmanship and dedication we bring to every job.
+          </p>
+          <h2>Transparency</h2>
+          <p>
+            We believe in transparency and want you to see firsthand the level
+            of service and attention to detail we provide. From repairing
+            hydraulic components for heavy machinery in the mining sector to
+            ensuring optimal performance in agricultural equipment and
+            automotive vehicles, every project is treated with the same level of
+            care and professionalism.
+          </p>
+          <h3>What And Why</h3>
+          <p>
+            Please take a moment to browse through our gallery and witness the
+            results of our hard work and expertise across these industries. We
+            hope these photos inspire confidence in our abilities and reassure
+            you of the exceptional service you can expect from Specialised
+            Steering.
+          </p>
+        </div>
+      </section>
+
+      <section class="section gallery-section">
+        <div class="container">
+          <% if (error) { %>
+          <div class="gallery-error">
+            <p><strong>Gallery Unavailable</strong></p>
+            <p><%= error %></p>
+          </div>
+          <% } else if (images && images.length > 0) { %>
+          <div id="photo-gallery" class="photo-gallery" data-layout="auto">
+            <% images.forEach((image, index) => { %>
+            <div class="gallery-item" data-index="<%= index %>" data-photo-id="<%= image.id %>">
+              <img
+                src="<%= image.thumbnail || image.url %>"
+                data-src="<%= image.url %>"
+                alt="<%= image.title %>"
+                class="gallery-photo"
+                loading="lazy"
+              />
+            </div>
+            <% }); %>
+          </div>
+          <% } else { %>
+          <div class="gallery-empty">
+            <p>No photos available at this time.</p>
+          </div>
+          <% } %>
+        </div>
+      </section>
+    </main>
+    <%- include('includes/footer') %> <%- include('includes/blockjs') %>
+  </body>
+</html>
+
