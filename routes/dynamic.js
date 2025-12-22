@@ -1,6 +1,7 @@
-require("dotenv").config({ path: "../config.env" });
+require("dotenv").config();
 const express = require("express");
 const requestIp = require("request-ip");
+const rateLimit = require("express-rate-limit");
 
 const upload = require("../utils/multer");
 const { cloudinary } = require("../utils/cloudinary");
@@ -9,9 +10,45 @@ const {
   sendContactFormNotification,
   sendEnquiryFormNotification,
 } = require("../utils/email");
+const { verifyRecaptchaFromRequest } = require("../utils/recaptcha");
+const { detectSpam } = require("../utils/spam-detection");
+const {
+  logRecaptchaFailure,
+  logSpamAttempt,
+  logRateLimit,
+} = require("../utils/security-logger");
 const base = Airtable.base(process.env.BASE);
 
 const router = express.Router();
+
+// Rate limiting for form submissions
+// Allow 5 submissions per 15 minutes per IP
+const formRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Limit each IP to 5 requests per windowMs
+  message: "Too many form submissions from this IP, please try again later.",
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  skip: req => {
+    // Skip rate limiting for localhost in development
+    return req.ip === "127.0.0.1" || req.ip === "::1";
+  },
+  handler: (req, res) => {
+    // Log rate limit hit to Airtable
+    const formType = req.path.includes("enquiry") ? "enquiry" : "contact";
+    logRateLimit(req, formType).catch(err =>
+      console.error("Failed to log rate limit:", err),
+    );
+    // Return HTML error page (same format as other form errors)
+    res.status(429).render("confirm", {
+      message: {
+        error:
+          "Too many form submissions from this IP, please try again later.",
+      },
+      ref: null,
+    });
+  },
+});
 
 // ----HOME
 router.get("/", async (req, res) => {
@@ -172,66 +209,65 @@ router.get("/enquiry", (req, res) => {
   res.render("enquiry", { meta: meta });
 });
 
-router.post("/enquiry", upload.single("image"), async (req, res, next) => {
-  const clientIp = requestIp.getClientIp(req);
-  const image = req.file;
-  const data = req.body;
-  const options = {
-    use_filename: true,
-    unique_filename: false,
-    folder: `Specialised/public/uploads/${data.enquiryName.replace(/\s/g, "")}`,
-    flags: "attachment",
-  };
-  const record = {
-    status: "New",
-    name: data.enquiryName,
-    email: data.enquiryEmail,
-    company: data.company,
-    phone: data.enquiryNumber,
-    message: data.enquiryMessage,
-    brand: data.brand,
-    type: data.type,
-    partNo: data.partNo,
-    partDesc: data.partDesc,
-    serialNo: data.serialNo,
-    street: data.street,
-    town: data.town,
-    postal: data.postal,
-    region: data.province,
-    country: data.country,
-    ip: clientIp,
-    form: "parts",
-  };
-  let reference = "";
-  let imageUrl = null;
-  try {
-    const table = base("webForms");
-    const createdRecord = await table.create(record);
-    reference = createdRecord.id;
+router.post(
+  "/enquiry",
+  formRateLimit,
+  upload.single("image"),
+  async (req, res, next) => {
+    const clientIp = requestIp.getClientIp(req);
+    const image = req.file;
+    const data = req.body;
 
-    if (image) {
-      const result = await cloudinary.uploader.upload(
-        image.path,
-        options,
-        function (error) {
-          console.log(error);
-        },
+    // 1. Verify reCAPTCHA
+    const recaptchaResult = await verifyRecaptchaFromRequest(req);
+    if (!recaptchaResult.success) {
+      console.warn(
+        "🚫 reCAPTCHA verification failed:",
+        recaptchaResult.error || "Invalid token",
       );
-      if (!result) {
-        next();
-        return;
-      }
-      const secure_url = result.secure_url;
-      imageUrl = secure_url;
-      const recordId = createdRecord.id;
-      const updatedRecord = await table.update(recordId, {
-        imageUploads: [{ url: secure_url }],
+      // Log to Airtable
+      logRecaptchaFailure(req, recaptchaResult, "enquiry").catch(err =>
+        console.error("Failed to log reCAPTCHA failure:", err),
+      );
+      return res.status(400).render("confirm", {
+        message: { error: "reCAPTCHA verification failed. Please try again." },
+        ref: null,
       });
-      reference = updatedRecord.id;
     }
 
-    // Send email notification (non-blocking)
-    const emailData = {
+    // 2. Check for spam
+    const spamCheck = detectSpam(data, {
+      honeypot: data.website, // Honeypot field name
+      formLoadTime: parseInt(data.formLoadTime, 10),
+      minTimeSeconds: 3,
+    });
+
+    if (spamCheck.isSpam) {
+      console.warn("🚫 Spam detected:", spamCheck.reason, "IP:", clientIp);
+      // Log spam attempt to Airtable
+      logSpamAttempt(req, spamCheck, "enquiry", data).catch(err =>
+        console.error("Failed to log spam attempt:", err),
+      );
+      // Log spam attempt but don't reveal it's spam to the user
+      return res.status(400).render("confirm", {
+        message: {
+          error:
+            "There was an error processing your submission. Please try again.",
+        },
+        ref: null,
+      });
+    }
+    const options = {
+      use_filename: true,
+      unique_filename: false,
+      folder: `Specialised/public/uploads/${data.enquiryName.replace(
+        /\s/g,
+        "",
+      )}`,
+      flags: "attachment",
+    };
+    const record = {
+      status: "New",
       name: data.enquiryName,
       email: data.enquiryEmail,
       company: data.company,
@@ -248,18 +284,66 @@ router.post("/enquiry", upload.single("image"), async (req, res, next) => {
       region: data.province,
       country: data.country,
       ip: clientIp,
+      form: "parts",
     };
-    sendEnquiryFormNotification(emailData, reference, imageUrl).catch(err => {
-      console.error("Failed to send enquiry form notification email:", err);
-      // Don't fail the request if email fails
-    });
-  } catch (error) {
-    console.error(error);
-    next(error);
-    return;
-  }
-  res.render("confirm", { message: data, ref: reference });
-});
+    let reference = "";
+    let imageUrl = null;
+    try {
+      const table = base("webForms");
+      const createdRecord = await table.create(record);
+      reference = createdRecord.id;
+
+      if (image) {
+        const result = await cloudinary.uploader.upload(
+          image.path,
+          options,
+          function (error) {
+            console.log(error);
+          },
+        );
+        if (!result) {
+          next();
+          return;
+        }
+        const secure_url = result.secure_url;
+        imageUrl = secure_url;
+        const recordId = createdRecord.id;
+        const updatedRecord = await table.update(recordId, {
+          imageUploads: [{ url: secure_url }],
+        });
+        reference = updatedRecord.id;
+      }
+
+      // Send email notification (non-blocking - form submission succeeds even if email fails)
+      const emailData = {
+        name: data.enquiryName,
+        email: data.enquiryEmail,
+        company: data.company,
+        phone: data.enquiryNumber,
+        message: data.enquiryMessage,
+        brand: data.brand,
+        type: data.type,
+        partNo: data.partNo,
+        partDesc: data.partDesc,
+        serialNo: data.serialNo,
+        street: data.street,
+        town: data.town,
+        postal: data.postal,
+        region: data.province,
+        country: data.country,
+        ip: clientIp,
+      };
+      sendEnquiryFormNotification(emailData, reference, imageUrl).catch(err => {
+        console.error("Failed to send enquiry form notification email:", err);
+      });
+    } catch (error) {
+      console.error(error);
+      next(error);
+      return;
+    }
+    res.render("confirm", { message: data, ref: reference });
+  },
+);
 
 // ----CONTACT
 
@@ -273,9 +357,49 @@ router.get("/contact", (req, res) => {
   res.render("contact", { meta: meta });
 });
 
-router.post("/contact", async (req, res, next) => {
+router.post("/contact", formRateLimit, async (req, res, next) => {
   const clientIp = requestIp.getClientIp(req);
   const data = req.body;
+
+  // 1. Verify reCAPTCHA
+  const recaptchaResult = await verifyRecaptchaFromRequest(req);
+  if (!recaptchaResult.success) {
+    console.warn(
+      "🚫 reCAPTCHA verification failed:",
+      recaptchaResult.error || "Invalid token",
+    );
+    // Log to Airtable
+    logRecaptchaFailure(req, recaptchaResult, "contact").catch(err =>
+      console.error("Failed to log reCAPTCHA failure:", err),
+    );
+    return res.status(400).render("confirm", {
+      message: { error: "reCAPTCHA verification failed. Please try again." },
+      ref: null,
+    });
+  }
+
+  // 2. Check for spam
+  const spamCheck = detectSpam(data, {
+    honeypot: data.website, // Honeypot field name
+    formLoadTime: parseInt(data.formLoadTime, 10),
+    minTimeSeconds: 3,
+  });
+
+  if (spamCheck.isSpam) {
+    console.warn("🚫 Spam detected:", spamCheck.reason, "IP:", clientIp);
+    // Log spam attempt to Airtable
+    logSpamAttempt(req, spamCheck, "contact", data).catch(err =>
+      console.error("Failed to log spam attempt:", err),
+    );
+    // Log spam attempt but don't reveal it's spam to the user
+    return res.status(400).render("confirm", {
+      message: {
+        error:
+          "There was an error processing your submission. Please try again.",
+      },
+      ref: null,
+    });
+  }
   const table = base("webForms");
 
   const record = {
@@ -295,7 +419,7 @@ router.post("/contact", async (req, res, next) => {
     if (createdRecord) {
       reference = createdRecord.id;
 
-      // Send email notification (non-blocking)
+      // Send email notification (non-blocking - form submission succeeds even if email fails)
       const emailData = {
         name: data.enquiryName,
         company: data.enquiryCompany,
@@ -307,7 +431,6 @@ router.post("/contact", async (req, res, next) => {
       };
       sendContactFormNotification(emailData, reference).catch(err => {
         console.error("Failed to send contact form notification email:", err);
-        // Don't fail the request if email fails
       });
     }
   } catch (error) {
@@ -320,6 +443,20 @@ router.post("/contact", async (req, res, next) => {
 
 router.get("/confirm", (req, res) => {
   res.render("confirm");
+});
+
+// CSP Violation Reporting Endpoint
+router.post("/__cspreport__", express.json(), async (req, res) => {
+  const { logCspViolation } = require("../utils/security-logger");
+
+  try {
+    const cspReport = req.body["csp-report"] || req.body;
+    await logCspViolation(req, cspReport);
+    res.status(204).send(); // No content response
+  } catch (error) {
+    console.error("Failed to process CSP violation report:", error);
+    res.status(204).send(); // Still return 204 to prevent retries
+  }
 });
 
 module.exports = router;

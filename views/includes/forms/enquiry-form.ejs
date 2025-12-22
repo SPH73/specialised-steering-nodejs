@@ -10,6 +10,18 @@
 >
   <input type="hidden" id="day" name="postDate" value="CurrentDate" />
   <input type="hidden" id="time" name="postTime" value="CurrentTime" />
+  <!-- Honeypot field (hidden from users, bots will fill it) -->
+  <input
+    type="text"
+    name="website"
+    id="website"
+    style="position: absolute; left: -9999px; opacity: 0; pointer-events: none"
+    tabindex="-1"
+    autocomplete="off"
+    aria-hidden="true"
+  />
+  <!-- Time tracking: when form was loaded -->
+  <input type="hidden" name="formLoadTime" id="formLoadTime" value="" />
   <h3>Contact details</h3>
   <div class="w-layout-grid contact-info">
     <div>
@@ -537,6 +549,7 @@
     class="button submit-button w-button g-recaptcha"
     data-sitekey="6LeHBjchAAAAAMqLOiZomWlJYsUevVgZOPoZZ1Iw"
     data-callback="onSubmit"
+    data-size="invisible"
   />
 </form>
 <div id="result"></div>

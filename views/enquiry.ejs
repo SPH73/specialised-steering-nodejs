@@ -14,8 +14,16 @@
       defer
     ></script>
     <script>
+      // Set form load time for spam detection
+      document.addEventListener("DOMContentLoaded", function () {
+        const formLoadTimeInput = document.getElementById("formLoadTime");
+        if (formLoadTimeInput) {
+          formLoadTimeInput.value = Date.now();
+        }
+      });
+
       function onSubmit(token) {
-        document.getElementById('enquiryForm').submit();
+        document.getElementById("enquiryForm").submit();
       }
     </script>
   </head>
@@ -30,9 +38,9 @@
       function gtag() {
         dataLayer.push(arguments);
       }
-      gtag('js', new Date());
+      gtag("js", new Date());
 
-      gtag('config', 'G-V4W8VP4GL8');
+      gtag("config", "G-V4W8VP4GL8");
     </script>
     <!-- G-tag end -->
     <%- include('includes/nav') %>
@@ -63,48 +71,5 @@
       </section>
     </main>
     <%- include('includes/footer') %> <%- include('includes/blockjs') %>
-    <!-- ReCaptcha v3 -->
-    <script
-      async
-      defer
-      src="https://www.google.com/recaptcha/api.js?render=6Lc9VjYhAAAAADrFcrR-iZ56DPQnCFESM5J-Apaq"
-    ></script>
-    <script>
-      function showResult(text) {
-        document.querySelector('#result').innerHTML = text;
-      }
-
-      function handleClick(token) {
-        return function () {
-          let data = {
-            token: token,
-          };
-
-          fetch('/send', {
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-            },
-            method: 'post',
-            body: JSON.stringify(data),
-          })
-            .then(response => response.text())
-            .then(text => showResult(text))
-            .catch(error => showResult(error));
-        };
-      }
-
-      grecaptcha.ready(function () {
-        grecaptcha
-          .execute('6Lc9VjYhAAAAADrFcrR-iZ56DPQnCFESM5J-Apaq', {
-            action: 'enquiry',
-          })
-          .then(function (token) {
-            document
-              .querySelector('#send_button')
-              .addEventListener('click', handleClick(token));
-          });
-      });
-    </script>
   </body>
 </html>

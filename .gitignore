@@ -5,3 +5,7 @@ images
 uploads
 config.env
 .env
+credentials.json
+token.json
+*-todo.md
+*.txt

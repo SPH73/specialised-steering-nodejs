@@ -1,40 +1,57 @@
-const express = require('express');
+const express = require("express");
 
 const router = express.Router();
 
-router.get('/about', (req, res) => {
+router.get("/about", (req, res) => {
   const meta = {
     title:
-      'Hydraulic Repairs to OEM Specification and Component Sourcing Service - Germiston, Gauteng',
+      "Hydraulic Repairs to OEM Specification and Component Sourcing Service - Germiston, Gauteng",
     description:
-      'Specialised Steering CC offer hydraulic repairs services and a service exchange on some hydraulic components from our Germiston OEM repair workshop as well as on-site in underground and open pit mines.',
+      "Specialised Steering CC offer hydraulic repairs services and a service exchange on some hydraulic components from our Germiston OEM repair workshop as well as on-site in underground and open pit mines.",
   };
-  res.render('about', { meta: meta });
+  res.render("about", { meta: meta });
 });
 
-router.get('/sitemap', (req, res) => {
+router.get("/sitemap", (req, res) => {
   const meta = {
-    title: 'specialisedsteering.com Site Map',
+    title: "specialisedsteering.com Site Map",
   };
-  res.render('sitemap', { meta: meta });
+  res.render("sitemap", { meta: meta });
 });
 
-router.get('/disclaimer', (req, res) => {
+router.get("/disclaimer", (req, res) => {
   const meta = {
-    title: 'SPECIALISED STEERING CC',
+    title: "SPECIALISED STEERING CC",
   };
-  res.render('disclaimer', { meta: meta });
+  res.render("disclaimer", { meta: meta });
 });
 
-router.get('/cookie-policy', (req, res) => {
+router.get("/cookie-policy", (req, res) => {
   const meta = {
-    title: 'Cookie Policy',
+    title: "Cookie Policy",
   };
-  res.render('cookie-policy', { meta: meta });
+  res.render("cookie-policy", { meta: meta });
 });
 
-router.post('/__cspreport__', (req, res) => {
-  console.log(req.body);
+router.post("/__cspreport__", (req, res) => {
+  // CSP violations are sent as JSON in the body
+  const report = req.body;
+
+  if (report && report["csp-report"]) {
+    const violation = report["csp-report"];
+    console.log("=== CSP VIOLATION REPORT ===");
+    console.log("Document URI:", violation["document-uri"]);
+    console.log("Violated Directive:", violation["violated-directive"]);
+    console.log("Blocked URI:", violation["blocked-uri"]);
+    console.log("Source File:", violation["source-file"] || "N/A");
+    console.log("Line Number:", violation["line-number"] || "N/A");
+    console.log("===========================");
+  } else {
+    console.log("CSP Report received:", JSON.stringify(report, null, 2));
+  }
+
+  // Always return 204 No Content for CSP reports
+  res.status(204).send();
 });
 
 module.exports = router;
