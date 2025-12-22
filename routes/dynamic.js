@@ -358,87 +358,119 @@ router.get("/contact", (req, res) => {
 });
 
 router.post("/contact", formRateLimit, async (req, res, next) => {
-  const clientIp = requestIp.getClientIp(req);
-  const data = req.body;
-
-  // 1. Verify reCAPTCHA
-  const recaptchaResult = await verifyRecaptchaFromRequest(req);
-  if (!recaptchaResult.success) {
-    console.warn(
-      "🚫 reCAPTCHA verification failed:",
-      recaptchaResult.error || "Invalid token",
-    );
-    // Log to Airtable
-    logRecaptchaFailure(req, recaptchaResult, "contact").catch(err =>
-      console.error("Failed to log reCAPTCHA failure:", err),
-    );
-    return res.status(400).render("confirm", {
-      message: { error: "reCAPTCHA verification failed. Please try again." },
-      ref: null,
-    });
-  }
-
-  // 2. Check for spam
-  const spamCheck = detectSpam(data, {
-    honeypot: data.website, // Honeypot field name
-    formLoadTime: parseInt(data.formLoadTime, 10),
-    minTimeSeconds: 3,
-  });
-
-  if (spamCheck.isSpam) {
-    console.warn("🚫 Spam detected:", spamCheck.reason, "IP:", clientIp);
-    // Log spam attempt to Airtable
-    logSpamAttempt(req, spamCheck, "contact", data).catch(err =>
-      console.error("Failed to log spam attempt:", err),
-    );
-    // Log spam attempt but don't reveal it's spam to the user
-    return res.status(400).render("confirm", {
-      message: {
-        error:
-          "There was an error processing your submission. Please try again.",
-      },
-      ref: null,
-    });
-  }
-  const table = base("webForms");
-
-  const record = {
-    name: data.enquiryName,
-    company: data.enquiryCompany,
-    email: data.enquiryEmail,
-    phone: data.enquiryNumber,
-    country: data.enquiryCountry,
-    message: data.enquiryMessage,
-    ip: clientIp,
-    status: "New",
-    form: "contact",
-  };
-  let reference = "";
   try {
-    const createdRecord = await table.create(record);
-    if (createdRecord) {
-      reference = createdRecord.id;
+    const clientIp = requestIp.getClientIp(req);
+    const data = req.body;
 
-      // Send email notification (non-blocking - form submission succeeds even if email fails)
-      const emailData = {
-        name: data.enquiryName,
-        company: data.enquiryCompany,
-        email: data.enquiryEmail,
-        phone: data.enquiryNumber,
-        country: data.enquiryCountry,
-        message: data.enquiryMessage,
-        ip: clientIp,
-      };
-      sendContactFormNotification(emailData, reference).catch(err => {
-        console.error("Failed to send contact form notification email:", err);
+    console.log("📝 Contact form submission received from IP:", clientIp);
+
+    // 1. Verify reCAPTCHA
+    let recaptchaResult;
+    try {
+      recaptchaResult = await verifyRecaptchaFromRequest(req);
+    } catch (error) {
+      console.error("❌ Error verifying reCAPTCHA:", error);
+      return res.status(500).render("confirm", {
+        message: { error: "Error verifying reCAPTCHA. Please try again." },
+        ref: null,
       });
     }
+
+    if (!recaptchaResult.success) {
+      console.warn(
+        "🚫 reCAPTCHA verification failed:",
+        recaptchaResult.error || "Invalid token",
+      );
+      // Log to Airtable
+      logRecaptchaFailure(req, recaptchaResult, "contact").catch(err =>
+        console.error("Failed to log reCAPTCHA failure:", err),
+      );
+      return res.status(400).render("confirm", {
+        message: { error: "reCAPTCHA verification failed. Please try again." },
+        ref: null,
+      });
+    }
+
+    // 2. Check for spam
+    let spamCheck;
+    try {
+      spamCheck = detectSpam(data, {
+        honeypot: data.website, // Honeypot field name
+        formLoadTime: parseInt(data.formLoadTime, 10),
+        minTimeSeconds: 3,
+      });
+    } catch (error) {
+      console.error("❌ Error in spam detection:", error);
+      // Continue processing if spam detection fails
+      spamCheck = { isSpam: false };
+    }
+
+    if (spamCheck.isSpam) {
+      console.warn("🚫 Spam detected:", spamCheck.reason, "IP:", clientIp);
+      // Log spam attempt to Airtable
+      logSpamAttempt(req, spamCheck, "contact", data).catch(err =>
+        console.error("Failed to log spam attempt:", err),
+      );
+      // Log spam attempt but don't reveal it's spam to the user
+      return res.status(400).render("confirm", {
+        message: {
+          error:
+            "There was an error processing your submission. Please try again.",
+        },
+        ref: null,
+      });
+    }
+
+    const table = base("webForms");
+
+    const record = {
+      name: data.enquiryName,
+      company: data.enquiryCompany,
+      email: data.enquiryEmail,
+      phone: data.enquiryNumber,
+      country: data.enquiryCountry,
+      message: data.enquiryMessage,
+      ip: clientIp,
+      status: "New",
+      form: "contact",
+    };
+    let reference = "";
+    try {
+      const createdRecord = await table.create(record);
+      if (createdRecord) {
+        reference = createdRecord.id;
+        console.log("✅ Contact form record created in Airtable:", reference);
+
+        // Send email notification (non-blocking - form submission succeeds even if email fails)
+        const emailData = {
+          name: data.enquiryName,
+          company: data.enquiryCompany,
+          email: data.enquiryEmail,
+          phone: data.enquiryNumber,
+          country: data.enquiryCountry,
+          message: data.enquiryMessage,
+          ip: clientIp,
+        };
+        sendContactFormNotification(emailData, reference).catch(err => {
+          console.error("Failed to send contact form notification email:", err);
+        });
+      }
+    } catch (error) {
+      console.error("❌ Error creating Airtable record:", error);
+      console.error("Record data:", record);
+      return res.status(500).render("confirm", {
+        message: {
+          error: "Error saving your submission. Please try again later.",
+        },
+        ref: null,
+      });
+    }
+    res.render("confirm", { message: data, ref: reference });
   } catch (error) {
-    console.error(error);
+    console.error("❌ Unexpected error in contact form handler:", error);
+    console.error("Error stack:", error.stack);
     next(error);
-    return;
   }
-  res.render("confirm", { message: data, ref: reference });
 });
 
 router.get("/confirm", (req, res) => {
