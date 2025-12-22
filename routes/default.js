@@ -35,6 +35,7 @@ router.get("/gallery", async (req, res) => {
   let photos = [];
   let error = null;
 
+  // Check if Google Photos is configured
   if (!getAlbumPhotos) {
     error = "Google Photos integration is not configured. Please ensure the google-photos utility is available.";
     console.error(error);
@@ -49,8 +50,18 @@ router.get("/gallery", async (req, res) => {
       }
     } catch (err) {
       console.error("Error fetching gallery photos:", err);
-      console.error("Error details:", err.message, err.stack);
-      error = "Unable to load gallery photos at this time. Please try again later.";
+      console.error("Error details:", err.message);
+      
+      // Provide helpful error messages based on the error type
+      if (err.message && err.message.includes("Token file not found")) {
+        error = "Google Photos authentication required. Please run the setup script to authenticate.";
+      } else if (err.message && err.message.includes("Failed to load Google API credentials")) {
+        error = "Google Photos credentials not found. Please ensure credentials.json exists.";
+      } else if (err.message && err.message.includes("refresh")) {
+        error = "Google Photos authentication expired. Please re-authenticate.";
+      } else {
+        error = "Unable to load gallery photos at this time. Please try again later.";
+      }
     }
   }
 
