@@ -21,20 +21,9 @@
       });
 
       function onSubmit(token) {
-        // Ensure reCAPTCHA token is added to form
+        // reCAPTCHA automatically adds the token to the form, so we don't need to add it manually
+        // Just submit the form - the token is already included by reCAPTCHA
         const form = document.getElementById("contactForm");
-        if (token) {
-          // Create hidden input for reCAPTCHA token if it doesn't exist
-          let recaptchaInput = form.querySelector('input[name="g-recaptcha-response"]');
-          if (!recaptchaInput) {
-            recaptchaInput = document.createElement("input");
-            recaptchaInput.type = "hidden";
-            recaptchaInput.name = "g-recaptcha-response";
-            form.appendChild(recaptchaInput);
-          }
-          recaptchaInput.value = token;
-        }
-        // Submit the form
         form.submit();
       }
     </script>

@@ -86,7 +86,15 @@ const verifyRecaptcha = async (token, secretKey, remoteip = null) => {
  * @returns {Promise<Object>} - Verification result
  */
 const verifyRecaptchaFromRequest = async req => {
-  const token = req.body["g-recaptcha-response"];
+  // Handle token as string or array (take first element if array)
+  let token = req.body["g-recaptcha-response"];
+  if (Array.isArray(token)) {
+    // If token is an array, use the first element
+    token = token[0];
+    console.warn(
+      "⚠️ reCAPTCHA token received as array, using first element",
+    );
+  }
   // Support both naming conventions
   const secretKey =
     process.env.RECAPTCHA_SECRET_KEY || process.env.reCAPTCHA_v2_SECRET_KEY;
