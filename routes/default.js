@@ -1,6 +1,15 @@
 const express = require("express");
 const router = express.Router();
-const { getAlbumPhotos } = require("../utils/google-photos");
+
+// Google Photos integration - handle gracefully if module not available
+let getAlbumPhotos;
+try {
+  const googlePhotos = require("../utils/google-photos");
+  getAlbumPhotos = googlePhotos.getAlbumPhotos;
+} catch (error) {
+  console.warn("⚠️ Google Photos utility not available:", error.message);
+  getAlbumPhotos = null;
+}
 
 router.get("/about", (req, res) => {
   const meta = {
@@ -23,7 +32,10 @@ router.get("/gallery", async (req, res) => {
   let photos = [];
   let error = null;
 
-  if (!albumId) {
+  if (!getAlbumPhotos) {
+    error = "Google Photos integration is not configured. Please ensure the google-photos utility is available.";
+    console.error(error);
+  } else if (!albumId) {
     error = "Gallery album not configured. Please set GOOGLE_PHOTOS_ALBUM_ID in environment variables.";
     console.warn(error);
   } else {
@@ -34,6 +46,7 @@ router.get("/gallery", async (req, res) => {
       }
     } catch (err) {
       console.error("Error fetching gallery photos:", err);
+      console.error("Error details:", err.message, err.stack);
       error = "Unable to load gallery photos at this time. Please try again later.";
     }
   }
