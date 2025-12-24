@@ -4,6 +4,7 @@ const requestIp = require("request-ip");
 const rateLimit = require("express-rate-limit");
 
 const upload = require("../utils/multer");
+const multer = require("multer");
 const { cloudinary } = require("../utils/cloudinary");
 const { Airtable } = require("../utils/airtable");
 const {
@@ -209,10 +210,30 @@ router.get("/enquiry", (req, res) => {
   res.render("enquiry", { meta: meta });
 });
 
+// Multer error handler middleware
+const handleMulterError = (err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    console.error("❌ Multer error:", err.message);
+    return res.status(400).render("confirm", {
+      message: { error: "File upload error. Please try again." },
+      ref: null,
+    });
+  }
+  if (err) {
+    console.error("❌ Upload error:", err.message);
+    return res.status(400).render("confirm", {
+      message: { error: err.message || "File upload error. Please try again." },
+      ref: null,
+    });
+  }
+  next();
+};
+
 router.post(
   "/enquiry",
   formRateLimit,
   upload.single("image"),
+  handleMulterError,
   async (req, res, next) => {
     try {
       const clientIp = requestIp.getClientIp(req);
