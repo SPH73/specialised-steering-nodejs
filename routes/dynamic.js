@@ -207,7 +207,7 @@ router.get("/enquiry", (req, res) => {
     description:
       "We supply a wide range of industries with replacement hydraulic components from leading manufacturers. Fill out an enquiry form for the part you require and we will do our best to get you up and running again as soon as possible.",
   };
-  res.render("enquiry", { 
+  res.render("enquiry", {
     meta: meta,
     recaptchaSiteKey: process.env.reCAPTCHA_v2_SITE_KEY || process.env.RECAPTCHA_SITE_KEY
   });
@@ -463,7 +463,7 @@ router.post(
       res.render("confirm", { message: messageData, ref: refValue });
     } catch (error) {
       console.error("Unexpected error in parts enquiry handler:", error.message);
-      
+
       // Check if it's a multer error
       if (
         error.code === "LIMIT_FILE_SIZE" ||
@@ -500,7 +500,7 @@ router.get("/contact", (req, res) => {
     description:
       "With our combined 40 years of experience, we offer an expert and professional service for all your hydraulic component requirements. Please contact us today to let us know how we can help get you back up and running.",
   };
-  res.render("contact", { 
+  res.render("contact", {
     meta: meta,
     recaptchaSiteKey: process.env.reCAPTCHA_v2_SITE_KEY || process.env.RECAPTCHA_SITE_KEY
   });
@@ -658,6 +658,29 @@ router.post("/contact-debug", (req, res) => {
     hasEnquiryName: !!req.body.enquiryName,
     enquiryName: req.body.enquiryName,
   });
+});
+
+// Email configuration debug endpoint (temporary - remove after fixing email)
+router.get("/email-debug", (req, res) => {
+  const emailConfig = {
+    EMAIL_HOST: process.env.EMAIL_HOST || process.env.SMTP_HOST || "NOT SET",
+    EMAIL_PORT: process.env.EMAIL_PORT || process.env.SMTP_PORT || "NOT SET",
+    EMAIL_SECURE: process.env.EMAIL_SECURE || process.env.SMTP_SECURE || "NOT SET",
+    EMAIL_USER: process.env.EMAIL_USER || process.env.SMTP_USER || "NOT SET",
+    EMAIL_PASSWORD: process.env.EMAIL_PASSWORD ? "SET (hidden)" : (process.env.SMTP_PASS ? "SET (hidden)" : "NOT SET"),
+    NOTIFICATION_EMAIL: process.env.NOTIFICATION_EMAIL || "NOT SET",
+    // Check if all required vars are present
+    hasHost: !!(process.env.EMAIL_HOST || process.env.SMTP_HOST),
+    hasUser: !!(process.env.EMAIL_USER || process.env.SMTP_USER),
+    hasPassword: !!(process.env.EMAIL_PASSWORD || process.env.SMTP_PASS),
+    hasNotificationEmail: !!process.env.NOTIFICATION_EMAIL,
+    configComplete: !!(process.env.EMAIL_HOST || process.env.SMTP_HOST) &&
+                    !!(process.env.EMAIL_USER || process.env.SMTP_USER) &&
+                    !!(process.env.EMAIL_PASSWORD || process.env.SMTP_PASS) &&
+                    !!process.env.NOTIFICATION_EMAIL,
+  };
+
+  res.json(emailConfig);
 });
 
 // CSP Violation Reporting Endpoint
