@@ -48,7 +48,8 @@ app.use(
 );
 app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
 app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: false, limit: "10mb" }));
+// Use extended: true for better compatibility with form submissions
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // Routes
 app.use(dynamicRoutes);

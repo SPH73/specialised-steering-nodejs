@@ -535,7 +535,30 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
 });
 
 router.get("/confirm", (req, res) => {
-  res.render("confirm");
+  // If we get here via GET, there's no form data to show
+  res.render("confirm", {
+    message: {},
+    ref: null,
+  });
+});
+
+// Diagnostic endpoint to test body parsing
+router.post("/contact-debug", (req, res) => {
+  console.log("=== CONTACT DEBUG ENDPOINT ===");
+  console.log("req.body:", JSON.stringify(req.body, null, 2));
+  console.log("req.body type:", typeof req.body);
+  console.log("req.body keys:", Object.keys(req.body || {}));
+  console.log("Content-Type:", req.get("content-type"));
+  console.log("Method:", req.method);
+  res.json({
+    body: req.body,
+    bodyType: typeof req.body,
+    bodyKeys: Object.keys(req.body || {}),
+    contentType: req.get("content-type"),
+    method: req.method,
+    hasEnquiryName: !!req.body.enquiryName,
+    enquiryName: req.body.enquiryName,
+  });
 });
 
 // CSP Violation Reporting Endpoint
