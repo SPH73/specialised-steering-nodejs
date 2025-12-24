@@ -240,23 +240,27 @@ const handleMulterError = (err, req, res, next) => {
   next();
 };
 
-// Error handler for multer errors (must be before the route handler)
-const multerErrorHandler = (err, req, res, next) => {
-  if (err) {
-    console.error("❌ Multer/Upload error caught:", err.message);
-    console.error("❌ Error code:", err.code);
-    return handleMulterError(err, req, res, next);
-  }
-  next();
-};
-
 router.post(
   "/enquiry",
   formRateLimit,
-  upload.single("image"),
-  multerErrorHandler,
+  (req, res, next) => {
+    // Wrap multer middleware to catch errors
+    console.log("📤 Parts enquiry form - multer middleware starting");
+    upload.single("image")(req, res, (err) => {
+      if (err) {
+        console.error("❌ Multer error in upload middleware:", err.message);
+        console.error("❌ Error code:", err.code);
+        console.error("❌ Error name:", err.name);
+        console.error("❌ Error stack:", err.stack);
+        return handleMulterError(err, req, res, next);
+      }
+      console.log("✅ Multer middleware completed successfully");
+      next();
+    });
+  },
   async (req, res, next) => {
     try {
+      console.log("📥 Parts enquiry form - route handler reached");
       const clientIp = requestIp.getClientIp(req);
       const image = req.file;
       const data = req.body || {};
