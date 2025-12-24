@@ -406,19 +406,10 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
       logRecaptchaFailure(req, recaptchaResult, "contact").catch(err =>
         console.error("Failed to log reCAPTCHA failure:", err),
       );
-      // TEMPORARY: Return JSON for debugging
-      return res.status(400).json({
-        error: "reCAPTCHA verification failed",
-        recaptchaResult: recaptchaResult,
-        receivedData: data,
-        bodyKeys: Object.keys(req.body),
-        recaptchaToken: req.body['g-recaptcha-response'] ? 'present' : 'missing',
+      return res.status(400).render("confirm", {
+        message: { error: "reCAPTCHA verification failed. Please try again." },
+        ref: null,
       });
-      // Original response (commented out for debugging):
-      // return res.status(400).render("confirm", {
-      //   message: { error: "reCAPTCHA verification failed. Please try again." },
-      //   ref: null,
-      // });
     }
 
     // 2. Check for spam
@@ -441,30 +432,23 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
       logSpamAttempt(req, spamCheck, "contact", data).catch(err =>
         console.error("Failed to log spam attempt:", err),
       );
-      // TEMPORARY: Return JSON for debugging
-      return res.status(400).json({
-        error: "Spam detected",
-        spamCheck: spamCheck,
-        receivedData: data,
-        bodyKeys: Object.keys(req.body),
+      return res.status(400).render("confirm", {
+        message: {
+          error:
+            "There was an error processing your submission. Please try again.",
+        },
+        ref: null,
       });
-      // Original response (commented out for debugging):
-      // return res.status(400).render("confirm", {
-      //   message: {
-      //     error:
-      //       "There was an error processing your submission. Please try again.",
-      //   },
-      //   ref: null,
-      // });
     }
 
     // Check if base is initialized
     if (!base) {
       console.error("❌ Airtable base not initialized. Check BASE environment variable.");
-      return res.status(500).json({
-        error: "Server configuration error",
-        details: "Airtable base not initialized",
-        receivedData: data,
+      return res.status(500).render("confirm", {
+        message: {
+          error: "Server configuration error. Please contact support.",
+        },
+        ref: null,
       });
     }
 
@@ -507,31 +491,15 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
       console.error("Error message:", error.message);
       console.error("Error stack:", error.stack);
       console.error("Record data:", record);
-      // TEMPORARY: Return JSON for debugging
-      return res.status(500).json({
-        error: "Error creating Airtable record",
-        errorMessage: error.message,
-        errorStack: error.stack,
-        recordData: record,
-        receivedData: data,
+      return res.status(500).render("confirm", {
+        message: {
+          error: "Error saving your submission. Please try again later.",
+        },
+        ref: null,
       });
-      // Original response (commented out for debugging):
-      // return res.status(500).render("confirm", {
-      //   message: {
-      //     error: "Error saving your submission. Please try again later.",
-      //   },
-      //   ref: null,
-      // });
     }
-    // TEMPORARY: Return JSON to see if we get here
-    return res.json({
-      success: true,
-      message: "Form submitted successfully",
-      receivedData: data,
-      reference: reference,
-    });
-    // Original response (commented out for debugging):
-    // res.render("confirm", { message: data, ref: reference });
+
+    res.render("confirm", { message: data, ref: reference });
   } catch (error) {
     console.error("❌ Unexpected error in contact form handler:", error);
     console.error("Error stack:", error.stack);

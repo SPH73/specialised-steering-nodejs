@@ -86,6 +86,17 @@ const verifyRecaptcha = async (token, secretKey, remoteip = null) => {
  * @returns {Promise<Object>} - Verification result
  */
 const verifyRecaptchaFromRequest = async req => {
+  // Skip reCAPTCHA verification in development mode
+  if (process.env.NODE_ENV === "development") {
+    console.log("ℹ️ Skipping reCAPTCHA verification in development mode");
+    return {
+      success: true,
+      hostname: "localhost",
+      challenge_ts: new Date().toISOString(),
+      devMode: true,
+    };
+  }
+
   // Handle token as string or array (take first element if array)
   let token = req.body["g-recaptcha-response"];
   if (Array.isArray(token)) {

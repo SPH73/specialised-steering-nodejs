@@ -36,12 +36,15 @@ const logSecurityEvent = async (eventData, req = null) => {
     reason,
     additionalData = {},
     formType = null,
-    userAgent = null,
-    referer = null,
+    userAgent: providedUserAgent = null,
+    referer: providedReferer = null,
   } = eventData;
 
   // Get client IP
   let clientIp = "unknown";
+  let userAgent = providedUserAgent;
+  let referer = providedReferer;
+
   if (req) {
     clientIp = requestIp.getClientIp(req);
     userAgent = req.get("user-agent") || userAgent;
