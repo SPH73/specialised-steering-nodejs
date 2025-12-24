@@ -1,4 +1,13 @@
-require("dotenv").config();
+// Load .env with explicit path to ensure it's loaded correctly
+const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, ".env") });
+
+// Log environment variable status (without exposing values)
+console.log("🔧 Environment check on startup:");
+console.log("  AT_API_KEY:", process.env.AT_API_KEY ? `SET (length: ${process.env.AT_API_KEY.length})` : "NOT SET");
+console.log("  BASE:", process.env.BASE || "NOT SET");
+console.log("  EMAIL_HOST:", process.env.EMAIL_HOST || process.env.SMTP_HOST || "NOT SET");
+console.log("  .env file location:", path.join(__dirname, ".env"));
 
 const express = require("express");
 const compression = require("compression");
