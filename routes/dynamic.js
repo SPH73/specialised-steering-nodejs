@@ -293,10 +293,9 @@ router.post(
         logRecaptchaFailure(req, recaptchaResult, "enquiry").catch(err =>
           console.error("Failed to log reCAPTCHA failure:", err),
         );
-        // Pass data to template even on error
-        const messageData = data && typeof data === "object" ? data : {};
+        // Do NOT pass form data on reCAPTCHA failure - security requirement
         return res.status(400).render("confirm", {
-          message: { ...messageData, error: "reCAPTCHA verification failed. Please try again." },
+          message: { error: "reCAPTCHA verification failed. Please try again." },
           ref: null,
         });
       }
