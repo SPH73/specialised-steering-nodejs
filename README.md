@@ -10,8 +10,8 @@ A Node.js/Express web application for **Specialised Steering CC**, a hydraulic c
 - 🔍 **Parts Enquiry** - Specialised form for hydraulic component sourcing with image uploads
 - 📸 **Photo Gallery** - Display of completed jobs (Google Photos integration ready)
 - 🖼️ **Image Optimization** - Automatic WebP conversion and quality optimization via Cloudinary
-- 📬 **Email Notifications** - Automatic email alerts for all form submissions with full details
-- 🛡️ **Security** - reCAPTCHA v3, IP blacklist, CSP headers, and file upload validation
+- 📬 **Email Notifications** - Automatic email alerts for all form submissions with full details (✅ Production ready)
+- 🛡️ **Security** - reCAPTCHA v2, rate limiting, honeypot fields, IP blacklist, CSP headers, and file upload validation
 - 🚀 **Performance** - Response compression, static file caching, and optimized image delivery
 
 ## Technology Stack
@@ -22,7 +22,7 @@ A Node.js/Express web application for **Specialised Steering CC**, a hydraulic c
 - **Database**: Airtable
 - **Image Hosting**: Cloudinary
 - **Authentication**: Passport.js with Google OAuth 2.0
-- **Security**: reCAPTCHA v3, Content Security Policy
+- **Security**: reCAPTCHA v2, Content Security Policy, Rate Limiting
 
 ## Prerequisites
 
@@ -30,7 +30,7 @@ A Node.js/Express web application for **Specialised Steering CC**, a hydraulic c
 - npm or yarn
 - Airtable account and API key
 - Cloudinary account
-- Google reCAPTCHA v3 site key and secret
+- Google reCAPTCHA v2 site key and secret
 - (Optional) Google Cloud Platform credentials for Photos API
 
 ## Installation
@@ -66,8 +66,9 @@ CLOUD_NAME=your_cloudinary_cloud_name
 API_KEY=your_cloudinary_api_key
 API_SECRET=your_cloudinary_api_secret
 
-# reCAPTCHA Configuration
-reCAPTCHA_v3_SECRET_KEY=your_recaptcha_secret_key
+# reCAPTCHA Configuration (v2 for forms)
+reCAPTCHA_v2_SECRET_KEY=your_recaptcha_v2_secret_key
+reCAPTCHA_v2_SITE_KEY=your_recaptcha_v2_site_key
 
 # Email Configuration (for form notifications)
 EMAIL_HOST=smtp.gmail.com
@@ -183,8 +184,8 @@ Images are automatically optimized and served via Cloudinary CDN with:
 ### Google Services
 
 - **Google Analytics** - Website traffic analytics (G-V4W8VP4GL8)
-- **reCAPTCHA v3** - Invisible spam protection on forms
-- **Google Photos API** - Gallery integration (optional, currently disabled)
+- **reCAPTCHA v2** - Spam protection on forms
+- **Google Photos API** - Gallery integration (in progress)
 
 ### Email Services
 
@@ -195,9 +196,12 @@ Images are automatically optimized and served via Cloudinary CDN with:
 ## Security Features
 
 - **Content Security Policy** - Report-only mode configured
-- **reCAPTCHA v3** - Spam protection on all forms
+- **reCAPTCHA v2** - Spam protection on all forms
+- **Rate Limiting** - 5 form submissions per 15 minutes per IP
+- **Honeypot Fields** - Hidden form fields to catch bots
+- **Time-to-Submit Validation** - Minimum 3 seconds before form can be submitted
 - **IP Blacklist** - Basic IP filtering capability
-- **File Upload Validation** - Restricted to image files only
+- **File Upload Validation** - Restricted to image files only (10MB max)
 - **Request Size Limits** - 10MB maximum payload
 - **Trust Proxy** - Accurate IP detection behind reverse proxies
 
@@ -213,12 +217,13 @@ This is a private client project. For any issues or enhancement requests, please
 
 ## Future Enhancements
 
-- [ ] Enable Google Photos gallery integration
+- [ ] Complete Google Photos gallery integration
 - [ ] Implement admin dashboard for managing Airtable records
 - [x] Add email notifications for form submissions
+- [x] Add rate limiting for form submissions
 - [ ] Enhance IP blacklist with database storage
-- [ ] Add rate limiting for form submissions
 - [ ] Implement comprehensive logging system
+- [ ] Enforce CSP (currently report-only mode)
 
 ## License
 
