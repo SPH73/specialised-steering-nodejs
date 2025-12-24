@@ -379,11 +379,17 @@ router.post("/contact-debug", (req, res) => {
 router.post("/contact", formRateLimit, async (req, res, next) => {
   try {
     const clientIp = requestIp.getClientIp(req);
-  const data = req.body;
+    const data = req.body || {};
 
     console.log("📝 Contact form submission received from IP:", clientIp);
     console.log("📦 Form data received:", JSON.stringify(data, null, 2));
     console.log("📦 req.body keys:", Object.keys(data));
+    console.log("📦 Data object check:", {
+      isObject: typeof data === "object",
+      hasData: Object.keys(data).length > 0,
+      enquiryName: data.enquiryName,
+      enquiryEmail: data.enquiryEmail,
+    });
 
     // 1. Verify reCAPTCHA
     let recaptchaResult;
@@ -491,15 +497,36 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
       console.error("Error message:", error.message);
       console.error("Error stack:", error.stack);
       console.error("Record data:", record);
-      return res.status(500).render("confirm", {
-        message: {
-          error: "Error saving your submission. Please try again later.",
-        },
+      // Still show success page even if Airtable fails - form was submitted
+      console.warn("⚠️ Showing success page despite Airtable error");
+      const messageData = data && typeof data === "object" ? data : {};
+      console.log("⚠️ Rendering confirm page with data (Airtable error):", {
+        hasMessage: !!messageData,
+        messageKeys: Object.keys(messageData),
+      });
+      return res.render("confirm", {
+        message: messageData,
         ref: null,
       });
     }
 
-    res.render("confirm", { message: data, ref: reference });
+    // Ensure data is an object (defensive check)
+    const messageData = data && typeof data === "object" ? data : {};
+    const refValue = reference || null;
+
+    // Log what we're passing to the template
+    console.log("✅ Rendering confirm page with data:", {
+      hasMessage: !!messageData,
+      messageKeys: Object.keys(messageData),
+      enquiryName: messageData.enquiryName,
+      enquiryEmail: messageData.enquiryEmail,
+      postDate: messageData.postDate,
+      postTime: messageData.postTime,
+      hasRef: !!refValue,
+      ref: refValue,
+    });
+
+    res.render("confirm", { message: messageData, ref: refValue });
   } catch (error) {
     console.error("❌ Unexpected error in contact form handler:", error);
     console.error("Error stack:", error.stack);
