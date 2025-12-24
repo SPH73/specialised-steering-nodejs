@@ -547,7 +547,7 @@
     value="Submit"
     data-wait="Please wait..."
     class="button submit-button w-button g-recaptcha"
-    data-sitekey="6LeHBjchAAAAAMqLOiZomWlJYsUevVgZOPoZZ1Iw"
+    data-sitekey="<%= typeof recaptchaSiteKey !== 'undefined' ? recaptchaSiteKey : '6LeHBjchAAAAAMqLOiZomWlJYsUevVgZOPoZZ1Iw' %>"
     data-callback="onSubmit"
     data-size="invisible"
   />

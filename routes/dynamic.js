@@ -207,7 +207,10 @@ router.get("/enquiry", (req, res) => {
     description:
       "We supply a wide range of industries with replacement hydraulic components from leading manufacturers. Fill out an enquiry form for the part you require and we will do our best to get you up and running again as soon as possible.",
   };
-  res.render("enquiry", { meta: meta });
+  res.render("enquiry", { 
+    meta: meta,
+    recaptchaSiteKey: process.env.reCAPTCHA_v2_SITE_KEY || process.env.RECAPTCHA_SITE_KEY
+  });
 });
 
 // Multer error handler middleware
@@ -563,7 +566,10 @@ router.get("/contact", (req, res) => {
     description:
       "With our combined 40 years of experience, we offer an expert and professional service for all your hydraulic component requirements. Please contact us today to let us know how we can help get you back up and running.",
   };
-  res.render("contact", { meta: meta });
+  res.render("contact", { 
+    meta: meta,
+    recaptchaSiteKey: process.env.reCAPTCHA_v2_SITE_KEY || process.env.RECAPTCHA_SITE_KEY
+  });
 });
 
 // Debug endpoint to check environment variables (what the running app sees)
