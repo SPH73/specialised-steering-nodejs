@@ -531,6 +531,10 @@ router.get("/contact", (req, res) => {
 
 router.post("/contact", formRateLimit, async (req, res, next) => {
   try {
+    console.log("=== CONTACT FORM SUBMISSION START ===");
+    console.log("req.body keys:", Object.keys(req.body || {}));
+    console.log("req.body sample:", JSON.stringify(req.body).substring(0, 200));
+    
     const clientIp = requestIp.getClientIp(req);
     const data = req.body || {};
 
@@ -542,6 +546,12 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
         ref: null,
       });
     }
+    
+    console.log("Form data received:", {
+      hasName: !!data.enquiryName,
+      hasEmail: !!data.enquiryEmail,
+      hasMessage: !!data.enquiryMessage,
+    });
 
     // 1. Verify reCAPTCHA
     let recaptchaResult;
@@ -616,10 +626,18 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
       form: "contact",
     };
     let reference = "";
+    console.log("Attempting to create Airtable record with data:", {
+      name: record.name,
+      email: record.email,
+      hasBase: !!base,
+      hasTable: !!table,
+    });
+    
     try {
       const createdRecord = await table.create(record);
       if (createdRecord) {
         reference = createdRecord.id;
+        console.log("✅ Airtable record created successfully. Reference:", reference);
 
         // Send email notification (non-blocking - form submission succeeds even if email fails)
         const emailData = {
@@ -631,14 +649,25 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
           message: data.enquiryMessage,
           ip: clientIp,
         };
+        console.log("📧 Attempting to send email notification...");
         sendContactFormNotification(emailData, reference).catch(err => {
-          console.error("Failed to send contact form notification email:", err.message);
+          console.error("❌ Failed to send contact form notification email:", err.message);
+          console.error("Email error details:", err);
         });
+      } else {
+        console.warn("⚠️ Airtable record creation returned null/undefined");
       }
     } catch (error) {
-      console.error("Error creating Airtable record:", error.message);
+      console.error("❌ Error creating Airtable record:", error.message);
+      console.error("Airtable error details:", error);
+      console.error("Error stack:", error.stack);
       // Still show success page even if Airtable fails - form was submitted
       const messageData = data && typeof data === "object" ? data : {};
+      console.log("Rendering confirm page with messageData:", {
+        hasData: !!messageData,
+        keys: Object.keys(messageData),
+        sample: JSON.stringify(messageData).substring(0, 200),
+      });
       return res.render("confirm", {
         message: messageData,
         ref: null,
@@ -648,6 +677,13 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
     // Ensure data is an object (defensive check)
     const messageData = data && typeof data === "object" ? data : {};
     const refValue = reference || null;
+    
+    console.log("✅ Rendering success page with:", {
+      hasMessageData: !!messageData,
+      messageDataKeys: Object.keys(messageData),
+      ref: refValue,
+    });
+    console.log("=== CONTACT FORM SUBMISSION END ===");
 
     res.render("confirm", { message: messageData, ref: refValue });
   } catch (error) {
