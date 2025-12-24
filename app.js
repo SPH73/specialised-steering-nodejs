@@ -12,7 +12,6 @@ console.log("  .env file location:", path.join(__dirname, ".env"));
 const express = require("express");
 const compression = require("compression");
 const favicon = require("serve-favicon");
-const path = require("path");
 const cookieParser = require("cookie-parser");
 
 const errorsHandlerMiddleware = require("./middleware/error-handler");

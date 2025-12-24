@@ -216,7 +216,7 @@ const handleMulterError = (err, req, res, next) => {
     console.error("❌ Multer/Upload error:", err.message);
     console.error("❌ Error code:", err.code);
     console.error("❌ Error stack:", err.stack);
-    
+
     // Check if it's a multer error
     if (err.code === "LIMIT_FILE_SIZE") {
       return res.status(400).render("confirm", {
@@ -230,7 +230,7 @@ const handleMulterError = (err, req, res, next) => {
         ref: null,
       });
     }
-    
+
     // Generic upload error
     return res.status(400).render("confirm", {
       message: { error: "File upload error. Please try again." },
@@ -245,18 +245,31 @@ router.post(
   formRateLimit,
   (req, res, next) => {
     // Wrap multer middleware to catch errors
-    console.log("📤 Parts enquiry form - multer middleware starting");
-    upload.single("image")(req, res, (err) => {
-      if (err) {
-        console.error("❌ Multer error in upload middleware:", err.message);
-        console.error("❌ Error code:", err.code);
-        console.error("❌ Error name:", err.name);
-        console.error("❌ Error stack:", err.stack);
-        return handleMulterError(err, req, res, next);
-      }
-      console.log("✅ Multer middleware completed successfully");
-      next();
-    });
+    try {
+      console.log("📤 Parts enquiry form - multer middleware starting");
+      console.log("📤 Request method:", req.method);
+      console.log("📤 Request path:", req.path);
+      console.log("📤 Content-Type:", req.get("content-type"));
+
+      upload.single("image")(req, res, (err) => {
+        if (err) {
+          console.error("❌ Multer error in upload middleware:", err.message);
+          console.error("❌ Error code:", err.code);
+          console.error("❌ Error name:", err.name);
+          console.error("❌ Error stack:", err.stack);
+          return handleMulterError(err, req, res, next);
+        }
+        console.log("✅ Multer middleware completed successfully");
+        next();
+      });
+    } catch (error) {
+      console.error("❌ Error in multer wrapper:", error.message);
+      console.error("❌ Error stack:", error.stack);
+      return res.status(500).render("confirm", {
+        message: { error: "File upload error. Please try again." },
+        ref: null,
+      });
+    }
   },
   async (req, res, next) => {
     try {
@@ -433,7 +446,7 @@ router.post(
       console.error("Error stack:", error.stack);
       console.error("Record data:", record);
       console.error("Image file:", image ? { path: image.path, size: image.size } : "No image");
-      
+
       // Still show success page even if Airtable/Cloudinary fails - form was submitted
       console.warn("⚠️ Showing success page despite error");
       const messageData = data && typeof data === "object" ? data : {};
@@ -470,7 +483,7 @@ router.post(
       console.error("Error name:", error.name);
       console.error("Error code:", error.code);
       console.error("Error stack:", error.stack);
-      
+
       // Check if it's a multer error
       if (error.code === "LIMIT_FILE_SIZE" || error.message?.includes("File too large")) {
         const messageData = (req.body && typeof req.body === "object") ? req.body : {};
@@ -479,7 +492,7 @@ router.post(
           ref: null,
         });
       }
-      
+
       // Try to render error page with any data we have
       const messageData = (req.body && typeof req.body === "object") ? req.body : {};
       return res.status(500).render("confirm", {
@@ -500,6 +513,21 @@ router.get("/contact", (req, res) => {
       "With our combined 40 years of experience, we offer an expert and professional service for all your hydraulic component requirements. Please contact us today to let us know how we can help get you back up and running.",
   };
   res.render("contact", { meta: meta });
+});
+
+// Debug endpoint to check environment variables (what the running app sees)
+router.get("/env-debug", (req, res) => {
+  const envInfo = {
+    AT_API_KEY: process.env.AT_API_KEY ? `SET (length: ${process.env.AT_API_KEY.length}, starts with: ${process.env.AT_API_KEY.substring(0, 10)})` : "NOT SET",
+    BASE: process.env.BASE || "NOT SET",
+    EMAIL_HOST: process.env.EMAIL_HOST || process.env.SMTP_HOST || "NOT SET",
+    EMAIL_USER: process.env.EMAIL_USER || process.env.SMTP_USER || "NOT SET",
+    NOTIFICATION_EMAIL: process.env.NOTIFICATION_EMAIL || "NOT SET",
+    NODE_ENV: process.env.NODE_ENV || "NOT SET",
+    // Check if Airtable is configured
+    airtableConfigured: !!process.env.AT_API_KEY && !!process.env.BASE,
+  };
+  res.json(envInfo);
 });
 
 // Debug endpoint to see what data is being received
