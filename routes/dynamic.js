@@ -609,6 +609,19 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
     const clientIp = requestIp.getClientIp(req);
     const data = req.body || {};
 
+    // Critical check: If req.body is empty, this is a major issue
+    if (!data || Object.keys(data).length === 0) {
+      console.error("❌ CRITICAL: req.body is empty or undefined!");
+      console.error("❌ req.body type:", typeof req.body);
+      console.error("❌ req.body value:", req.body);
+      console.error("❌ Content-Type header:", req.get("content-type"));
+      console.error("❌ Request method:", req.method);
+      return res.status(400).render("confirm", {
+        message: { error: "Form data was not received. Please try again." },
+        ref: null,
+      });
+    }
+
     console.log("📝 Contact form submission received from IP:", clientIp);
     console.log("📦 Form data received:", JSON.stringify(data, null, 2));
     console.log("📦 req.body keys:", Object.keys(data));
@@ -687,8 +700,12 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
         ref: null,
       });
     }
+    if (!process.env.BASE) {
+      throw new Error("BASE environment variable is not set.");
+    }
 
     const table = base("webForms");
+    console.log("✅ Airtable table 'webForms' accessed successfully (contact form)");
 
     const record = {
       name: data.enquiryName,
