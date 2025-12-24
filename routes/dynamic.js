@@ -248,72 +248,35 @@ router.post(
   formRateLimit,
   (req, res, next) => {
     // Wrap multer middleware to catch errors
-    try {
-      console.log("📤 Parts enquiry form - multer middleware starting");
-      console.log("📤 Request method:", req.method);
-      console.log("📤 Request path:", req.path);
-      console.log("📤 Content-Type:", req.get("content-type"));
-
-      upload.single("image")(req, res, err => {
-        if (err) {
-          console.error("❌ Multer error in upload middleware:", err.message);
-          console.error("❌ Error code:", err.code);
-          console.error("❌ Error name:", err.name);
-          console.error("❌ Error stack:", err.stack);
-          return handleMulterError(err, req, res, next);
-        }
-        console.log("✅ Multer middleware completed successfully");
-        next();
-      });
-    } catch (error) {
-      console.error("❌ Error in multer wrapper:", error.message);
-      console.error("❌ Error stack:", error.stack);
-      return res.status(500).render("confirm", {
-        message: { error: "File upload error. Please try again." },
-        ref: null,
-      });
-    }
+    upload.single("image")(req, res, err => {
+      if (err) {
+        console.error("Multer error:", err.message);
+        return handleMulterError(err, req, res, next);
+      }
+      next();
+    });
   },
   async (req, res, next) => {
     try {
-      console.log("📥 Parts enquiry form - route handler reached");
       const clientIp = requestIp.getClientIp(req);
       const image = req.file;
       const data = req.body || {};
 
       // Critical check: If req.body is empty, this is a major issue
       if (!data || Object.keys(data).length === 0) {
-        console.error("❌ CRITICAL: req.body is empty or undefined!");
-        console.error("❌ req.body type:", typeof req.body);
-        console.error("❌ req.body value:", req.body);
-        console.error("❌ Content-Type header:", req.get("content-type"));
-        console.error("❌ Request method:", req.method);
+        console.error("Parts enquiry form: req.body is empty");
         return res.status(400).render("confirm", {
           message: { error: "Form data was not received. Please try again." },
           ref: null,
         });
       }
 
-      console.log(
-        "📝 Parts enquiry form submission received from IP:",
-        clientIp,
-      );
-      console.log("📦 Form data received:", JSON.stringify(data, null, 2));
-      console.log("📦 req.body keys:", Object.keys(data));
-      console.log("📦 Data object check:", {
-        isObject: typeof data === "object",
-        hasData: Object.keys(data).length > 0,
-        enquiryName: data.enquiryName,
-        enquiryEmail: data.enquiryEmail,
-        hasImage: !!image,
-      });
-
       // 1. Verify reCAPTCHA
       let recaptchaResult;
       try {
         recaptchaResult = await verifyRecaptchaFromRequest(req);
       } catch (error) {
-        console.error("❌ Error verifying reCAPTCHA:", error);
+        console.error("Error verifying reCAPTCHA:", error.message);
         return res.status(500).render("confirm", {
           message: { error: "Error verifying reCAPTCHA. Please try again." },
           ref: null,
@@ -321,19 +284,12 @@ router.post(
       }
 
       if (!recaptchaResult.success) {
-        console.warn(
-          "🚫 reCAPTCHA verification failed:",
-          recaptchaResult.error || "Invalid token",
-        );
-        // Log to Airtable
+        console.warn("reCAPTCHA verification failed:", recaptchaResult.error || "Invalid token");
         logRecaptchaFailure(req, recaptchaResult, "enquiry").catch(err =>
           console.error("Failed to log reCAPTCHA failure:", err),
         );
-        // Do NOT pass form data on reCAPTCHA failure - security requirement
         return res.status(400).render("confirm", {
-          message: {
-            error: "reCAPTCHA verification failed. Please try again.",
-          },
+          message: { error: "reCAPTCHA verification failed. Please try again." },
           ref: null,
         });
       }
@@ -342,37 +298,29 @@ router.post(
       let spamCheck;
       try {
         spamCheck = detectSpam(data, {
-          honeypot: data.website, // Honeypot field name
+          honeypot: data.website,
           formLoadTime: parseInt(data.formLoadTime, 10),
           minTimeSeconds: 3,
         });
       } catch (error) {
-        console.error("❌ Error in spam detection:", error);
-        // Continue processing if spam detection fails
+        console.error("Error in spam detection:", error.message);
         spamCheck = { isSpam: false };
       }
 
       if (spamCheck.isSpam) {
-        console.warn("🚫 Spam detected:", spamCheck.reason, "IP:", clientIp);
-        // Log spam attempt to Airtable
+        console.warn("Spam detected:", spamCheck.reason, "IP:", clientIp);
         logSpamAttempt(req, spamCheck, "enquiry", data).catch(err =>
           console.error("Failed to log spam attempt:", err),
         );
-        // Log spam attempt but don't reveal it's spam to the user
         return res.status(400).render("confirm", {
-          message: {
-            error:
-              "There was an error processing your submission. Please try again.",
-          },
+          message: { error: "There was an error processing your submission. Please try again." },
           ref: null,
         });
       }
 
       // Check if base is initialized
       if (!base) {
-        console.error(
-          "❌ Airtable base not initialized. Check BASE environment variable.",
-        );
+        console.error("Airtable base not initialized. Check BASE environment variable.");
         const messageData = data && typeof data === "object" ? data : {};
         return res.status(500).render("confirm", {
           message: messageData,
@@ -413,18 +361,14 @@ router.post(
       try {
         // Validate base before using it
         if (!base) {
-          throw new Error(
-            "Airtable base is not initialized. Check BASE environment variable.",
-          );
+          throw new Error("Airtable base is not initialized. Check BASE environment variable.");
         }
         if (!process.env.BASE) {
           throw new Error("BASE environment variable is not set.");
         }
 
         const table = base("webForms");
-        console.log("✅ Airtable table 'webForms' accessed successfully");
         const createdRecord = await table.create(record);
-        console.log("✅ Airtable record created:", createdRecord.id);
         reference = createdRecord.id;
 
         if (image) {
@@ -441,15 +385,9 @@ router.post(
                 imageUploads: [{ url: secure_url }],
               });
               reference = updatedRecord.id;
-              console.log("✅ Image uploaded to Cloudinary:", secure_url);
-            } else {
-              console.warn("⚠️ Cloudinary upload returned no result");
             }
           } catch (uploadError) {
-            console.error(
-              "❌ Error uploading image to Cloudinary:",
-              uploadError,
-            );
+            console.error("Error uploading image to Cloudinary:", uploadError.message);
             // Continue without image - form submission still succeeds
           }
         }
@@ -524,12 +462,8 @@ router.post(
 
       res.render("confirm", { message: messageData, ref: refValue });
     } catch (error) {
-      console.error("❌ Unexpected error in parts enquiry handler:", error);
-      console.error("Error message:", error.message);
-      console.error("Error name:", error.name);
-      console.error("Error code:", error.code);
-      console.error("Error stack:", error.stack);
-
+      console.error("Unexpected error in parts enquiry handler:", error.message);
+      
       // Check if it's a multer error
       if (
         error.code === "LIMIT_FILE_SIZE" ||
@@ -572,44 +506,6 @@ router.get("/contact", (req, res) => {
   });
 });
 
-// Debug endpoint to check environment variables (what the running app sees)
-router.get("/env-debug", (req, res) => {
-  const envInfo = {
-    AT_API_KEY: process.env.AT_API_KEY
-      ? `SET (length: ${
-          process.env.AT_API_KEY.length
-        }, starts with: ${process.env.AT_API_KEY.substring(0, 10)})`
-      : "NOT SET",
-    BASE: process.env.BASE || "NOT SET",
-    EMAIL_HOST: process.env.EMAIL_HOST || process.env.SMTP_HOST || "NOT SET",
-    EMAIL_USER: process.env.EMAIL_USER || process.env.SMTP_USER || "NOT SET",
-    NOTIFICATION_EMAIL: process.env.NOTIFICATION_EMAIL || "NOT SET",
-    NODE_ENV: process.env.NODE_ENV || "NOT SET",
-    // Check if Airtable is configured
-    airtableConfigured: !!process.env.AT_API_KEY && !!process.env.BASE,
-  };
-  res.json(envInfo);
-});
-
-// Debug endpoint to see what data is being received
-router.post("/contact-debug", (req, res) => {
-  res.json({
-    body: req.body,
-    bodyKeys: Object.keys(req.body),
-    headers: {
-      "content-type": req.headers["content-type"],
-      "content-length": req.headers["content-length"],
-    },
-    recaptchaToken: req.body["g-recaptcha-response"] ? "present" : "missing",
-    hasFormData: {
-      enquiryName: !!req.body.enquiryName,
-      enquiryEmail: !!req.body.enquiryEmail,
-      enquiryNumber: !!req.body.enquiryNumber,
-      enquiryMessage: !!req.body.enquiryMessage,
-    },
-  });
-});
-
 router.post("/contact", formRateLimit, async (req, res, next) => {
   try {
     const clientIp = requestIp.getClientIp(req);
@@ -617,33 +513,19 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
 
     // Critical check: If req.body is empty, this is a major issue
     if (!data || Object.keys(data).length === 0) {
-      console.error("❌ CRITICAL: req.body is empty or undefined!");
-      console.error("❌ req.body type:", typeof req.body);
-      console.error("❌ req.body value:", req.body);
-      console.error("❌ Content-Type header:", req.get("content-type"));
-      console.error("❌ Request method:", req.method);
+      console.error("Contact form: req.body is empty");
       return res.status(400).render("confirm", {
         message: { error: "Form data was not received. Please try again." },
         ref: null,
       });
     }
 
-    console.log("📝 Contact form submission received from IP:", clientIp);
-    console.log("📦 Form data received:", JSON.stringify(data, null, 2));
-    console.log("📦 req.body keys:", Object.keys(data));
-    console.log("📦 Data object check:", {
-      isObject: typeof data === "object",
-      hasData: Object.keys(data).length > 0,
-      enquiryName: data.enquiryName,
-      enquiryEmail: data.enquiryEmail,
-    });
-
     // 1. Verify reCAPTCHA
     let recaptchaResult;
     try {
       recaptchaResult = await verifyRecaptchaFromRequest(req);
     } catch (error) {
-      console.error("❌ Error verifying reCAPTCHA:", error);
+      console.error("Error verifying reCAPTCHA:", error.message);
       return res.status(500).render("confirm", {
         message: { error: "Error verifying reCAPTCHA. Please try again." },
         ref: null,
@@ -651,11 +533,7 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
     }
 
     if (!recaptchaResult.success) {
-      console.warn(
-        "🚫 reCAPTCHA verification failed:",
-        recaptchaResult.error || "Invalid token",
-      );
-      // Log to Airtable
+      console.warn("reCAPTCHA verification failed:", recaptchaResult.error || "Invalid token");
       logRecaptchaFailure(req, recaptchaResult, "contact").catch(err =>
         console.error("Failed to log reCAPTCHA failure:", err),
       );
@@ -669,40 +547,31 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
     let spamCheck;
     try {
       spamCheck = detectSpam(data, {
-        honeypot: data.website, // Honeypot field name
+        honeypot: data.website,
         formLoadTime: parseInt(data.formLoadTime, 10),
         minTimeSeconds: 3,
       });
     } catch (error) {
-      console.error("❌ Error in spam detection:", error);
-      // Continue processing if spam detection fails
+      console.error("Error in spam detection:", error.message);
       spamCheck = { isSpam: false };
     }
 
     if (spamCheck.isSpam) {
-      console.warn("🚫 Spam detected:", spamCheck.reason, "IP:", clientIp);
-      // Log spam attempt to Airtable
+      console.warn("Spam detected:", spamCheck.reason, "IP:", clientIp);
       logSpamAttempt(req, spamCheck, "contact", data).catch(err =>
         console.error("Failed to log spam attempt:", err),
       );
       return res.status(400).render("confirm", {
-        message: {
-          error:
-            "There was an error processing your submission. Please try again.",
-        },
+        message: { error: "There was an error processing your submission. Please try again." },
         ref: null,
       });
     }
 
     // Check if base is initialized
     if (!base) {
-      console.error(
-        "❌ Airtable base not initialized. Check BASE environment variable.",
-      );
+      console.error("Airtable base not initialized. Check BASE environment variable.");
       return res.status(500).render("confirm", {
-        message: {
-          error: "Server configuration error. Please contact support.",
-        },
+        message: { error: "Server configuration error. Please contact support." },
         ref: null,
       });
     }
@@ -711,7 +580,6 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
     }
 
     const table = base("webForms");
-    console.log("✅ Airtable table 'webForms' accessed successfully (contact form)");
 
     const record = {
       name: data.enquiryName,
@@ -729,7 +597,6 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
       const createdRecord = await table.create(record);
       if (createdRecord) {
         reference = createdRecord.id;
-        console.log("✅ Contact form record created in Airtable:", reference);
 
         // Send email notification (non-blocking - form submission succeeds even if email fails)
         const emailData = {
@@ -742,21 +609,13 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
           ip: clientIp,
         };
         sendContactFormNotification(emailData, reference).catch(err => {
-          console.error("Failed to send contact form notification email:", err);
+          console.error("Failed to send contact form notification email:", err.message);
         });
       }
     } catch (error) {
-      console.error("❌ Error creating Airtable record:", error);
-      console.error("Error message:", error.message);
-      console.error("Error stack:", error.stack);
-      console.error("Record data:", record);
+      console.error("Error creating Airtable record:", error.message);
       // Still show success page even if Airtable fails - form was submitted
-      console.warn("⚠️ Showing success page despite Airtable error");
       const messageData = data && typeof data === "object" ? data : {};
-      console.log("⚠️ Rendering confirm page with data (Airtable error):", {
-        hasMessage: !!messageData,
-        messageKeys: Object.keys(messageData),
-      });
       return res.render("confirm", {
         message: messageData,
         ref: null,
@@ -767,22 +626,9 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
     const messageData = data && typeof data === "object" ? data : {};
     const refValue = reference || null;
 
-    // Log what we're passing to the template
-    console.log("✅ Rendering confirm page with data:", {
-      hasMessage: !!messageData,
-      messageKeys: Object.keys(messageData),
-      enquiryName: messageData.enquiryName,
-      enquiryEmail: messageData.enquiryEmail,
-      postDate: messageData.postDate,
-      postTime: messageData.postTime,
-      hasRef: !!refValue,
-      ref: refValue,
-    });
-
     res.render("confirm", { message: messageData, ref: refValue });
   } catch (error) {
-    console.error("❌ Unexpected error in contact form handler:", error);
-    console.error("Error stack:", error.stack);
+    console.error("Unexpected error in contact form handler:", error.message);
     next(error);
   }
 });

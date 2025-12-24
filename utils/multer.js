@@ -7,10 +7,9 @@ const uploadsDir = path.join(__dirname, "../public/uploads");
 try {
   if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
-    console.log("✅ Created uploads directory:", uploadsDir);
   }
 } catch (error) {
-  console.error("❌ Error creating uploads directory:", error);
+  console.error("Error creating uploads directory:", error.message);
   // Continue anyway - multer will handle the error
 }
 
@@ -25,7 +24,7 @@ module.exports = multer({
         }
         cb(null, uploadsDir);
       } catch (error) {
-        console.error("❌ Error with uploads directory:", error);
+        console.error("Error with uploads directory:", error.message);
         cb(error, null);
       }
     },

@@ -7,10 +7,8 @@ if (!process.env.AT_API_KEY) {
 
 // Log configuration for debugging (without exposing full key)
 const apiKey = process.env.AT_API_KEY;
-if (apiKey) {
-    console.log('📊 Airtable config: API key length =', apiKey.length, 'starts with:', apiKey.substring(0, 10));
-} else {
-    console.error('❌ Airtable config: AT_API_KEY not found in environment');
+if (!apiKey) {
+    console.error('Airtable config: AT_API_KEY not found in environment');
 }
 
 Airtable.configure({
