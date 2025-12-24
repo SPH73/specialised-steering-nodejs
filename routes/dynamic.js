@@ -22,29 +22,6 @@ const base = Airtable.base(process.env.BASE);
 
 const router = express.Router();
 
-// Email configuration debug endpoint (temporary - remove after fixing email)
-router.get("/email-debug", (req, res) => {
-  const emailConfig = {
-    EMAIL_HOST: process.env.EMAIL_HOST || process.env.SMTP_HOST || "NOT SET",
-    EMAIL_PORT: process.env.EMAIL_PORT || process.env.SMTP_PORT || "NOT SET",
-    EMAIL_SECURE: process.env.EMAIL_SECURE || process.env.SMTP_SECURE || "NOT SET",
-    EMAIL_USER: process.env.EMAIL_USER || process.env.SMTP_USER || "NOT SET",
-    EMAIL_PASSWORD: process.env.EMAIL_PASSWORD ? "SET (hidden)" : (process.env.SMTP_PASS ? "SET (hidden)" : "NOT SET"),
-    NOTIFICATION_EMAIL: process.env.NOTIFICATION_EMAIL || "NOT SET",
-    // Check if all required vars are present
-    hasHost: !!(process.env.EMAIL_HOST || process.env.SMTP_HOST),
-    hasUser: !!(process.env.EMAIL_USER || process.env.SMTP_USER),
-    hasPassword: !!(process.env.EMAIL_PASSWORD || process.env.SMTP_PASS),
-    hasNotificationEmail: !!process.env.NOTIFICATION_EMAIL,
-    configComplete: !!(process.env.EMAIL_HOST || process.env.SMTP_HOST) &&
-                    !!(process.env.EMAIL_USER || process.env.SMTP_USER) &&
-                    !!(process.env.EMAIL_PASSWORD || process.env.SMTP_PASS) &&
-                    !!process.env.NOTIFICATION_EMAIL,
-  };
-
-  res.json(emailConfig);
-});
-
 // Rate limiting for form submissions
 // Allow 5 submissions per 15 minutes per IP
 const formRateLimit = rateLimit({
@@ -531,10 +508,6 @@ router.get("/contact", (req, res) => {
 
 router.post("/contact", formRateLimit, async (req, res, next) => {
   try {
-    console.log("=== CONTACT FORM SUBMISSION START ===");
-    console.log("req.body keys:", Object.keys(req.body || {}));
-    console.log("req.body sample:", JSON.stringify(req.body).substring(0, 200));
-    
     const clientIp = requestIp.getClientIp(req);
     const data = req.body || {};
 
@@ -546,12 +519,6 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
         ref: null,
       });
     }
-    
-    console.log("Form data received:", {
-      hasName: !!data.enquiryName,
-      hasEmail: !!data.enquiryEmail,
-      hasMessage: !!data.enquiryMessage,
-    });
 
     // 1. Verify reCAPTCHA
     let recaptchaResult;
@@ -626,18 +593,10 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
       form: "contact",
     };
     let reference = "";
-    console.log("Attempting to create Airtable record with data:", {
-      name: record.name,
-      email: record.email,
-      hasBase: !!base,
-      hasTable: !!table,
-    });
-    
     try {
       const createdRecord = await table.create(record);
       if (createdRecord) {
         reference = createdRecord.id;
-        console.log("✅ Airtable record created successfully. Reference:", reference);
 
         // Send email notification (non-blocking - form submission succeeds even if email fails)
         const emailData = {
@@ -649,25 +608,14 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
           message: data.enquiryMessage,
           ip: clientIp,
         };
-        console.log("📧 Attempting to send email notification...");
         sendContactFormNotification(emailData, reference).catch(err => {
-          console.error("❌ Failed to send contact form notification email:", err.message);
-          console.error("Email error details:", err);
+          console.error("Failed to send contact form notification email:", err.message);
         });
-      } else {
-        console.warn("⚠️ Airtable record creation returned null/undefined");
       }
     } catch (error) {
-      console.error("❌ Error creating Airtable record:", error.message);
-      console.error("Airtable error details:", error);
-      console.error("Error stack:", error.stack);
+      console.error("Error creating Airtable record:", error.message);
       // Still show success page even if Airtable fails - form was submitted
       const messageData = data && typeof data === "object" ? data : {};
-      console.log("Rendering confirm page with messageData:", {
-        hasData: !!messageData,
-        keys: Object.keys(messageData),
-        sample: JSON.stringify(messageData).substring(0, 200),
-      });
       return res.render("confirm", {
         message: messageData,
         ref: null,
@@ -677,13 +625,6 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
     // Ensure data is an object (defensive check)
     const messageData = data && typeof data === "object" ? data : {};
     const refValue = reference || null;
-    
-    console.log("✅ Rendering success page with:", {
-      hasMessageData: !!messageData,
-      messageDataKeys: Object.keys(messageData),
-      ref: refValue,
-    });
-    console.log("=== CONTACT FORM SUBMISSION END ===");
 
     res.render("confirm", { message: messageData, ref: refValue });
   } catch (error) {

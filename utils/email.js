@@ -22,15 +22,6 @@ const createTransporter = () => {
       user: !user ? "EMAIL_USER or SMTP_USER" : "OK",
       pass: !pass ? "EMAIL_PASSWORD or SMTP_PASS" : "OK",
     });
-    console.warn("⚠️ All environment variables checked:", {
-      EMAIL_HOST: process.env.EMAIL_HOST ? "SET" : "NOT SET",
-      SMTP_HOST: process.env.SMTP_HOST ? "SET" : "NOT SET",
-      EMAIL_USER: process.env.EMAIL_USER ? "SET" : "NOT SET",
-      SMTP_USER: process.env.SMTP_USER ? "SET" : "NOT SET",
-      EMAIL_PASSWORD: process.env.EMAIL_PASSWORD ? "SET" : "NOT SET",
-      SMTP_PASS: process.env.SMTP_PASS ? "SET" : "NOT SET",
-      NOTIFICATION_EMAIL: process.env.NOTIFICATION_EMAIL ? "SET" : "NOT SET",
-    });
     return null; // Return null if config is incomplete
   }
 
