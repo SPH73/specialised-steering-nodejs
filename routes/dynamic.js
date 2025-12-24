@@ -212,19 +212,40 @@ router.get("/enquiry", (req, res) => {
 
 // Multer error handler middleware
 const handleMulterError = (err, req, res, next) => {
-  if (err instanceof multer.MulterError) {
-    console.error("❌ Multer error:", err.message);
+  if (err) {
+    console.error("❌ Multer/Upload error:", err.message);
+    console.error("❌ Error code:", err.code);
+    console.error("❌ Error stack:", err.stack);
+    
+    // Check if it's a multer error
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return res.status(400).render("confirm", {
+        message: { error: "File is too large. Maximum size is 10MB." },
+        ref: null,
+      });
+    }
+    if (err.message && err.message.includes("Only image file types")) {
+      return res.status(400).render("confirm", {
+        message: { error: "Only image files are allowed." },
+        ref: null,
+      });
+    }
+    
+    // Generic upload error
     return res.status(400).render("confirm", {
       message: { error: "File upload error. Please try again." },
       ref: null,
     });
   }
+  next();
+};
+
+// Error handler for multer errors (must be before the route handler)
+const multerErrorHandler = (err, req, res, next) => {
   if (err) {
-    console.error("❌ Upload error:", err.message);
-    return res.status(400).render("confirm", {
-      message: { error: err.message || "File upload error. Please try again." },
-      ref: null,
-    });
+    console.error("❌ Multer/Upload error caught:", err.message);
+    console.error("❌ Error code:", err.code);
+    return handleMulterError(err, req, res, next);
   }
   next();
 };
@@ -233,7 +254,7 @@ router.post(
   "/enquiry",
   formRateLimit,
   upload.single("image"),
-  handleMulterError,
+  multerErrorHandler,
   async (req, res, next) => {
     try {
       const clientIp = requestIp.getClientIp(req);
@@ -402,8 +423,12 @@ router.post(
     } catch (error) {
       console.error("❌ Error processing parts enquiry:", error);
       console.error("Error message:", error.message);
+      console.error("Error name:", error.name);
+      console.error("Error code:", error.code);
       console.error("Error stack:", error.stack);
       console.error("Record data:", record);
+      console.error("Image file:", image ? { path: image.path, size: image.size } : "No image");
+      
       // Still show success page even if Airtable/Cloudinary fails - form was submitted
       console.warn("⚠️ Showing success page despite error");
       const messageData = data && typeof data === "object" ? data : {};
@@ -436,8 +461,26 @@ router.post(
     res.render("confirm", { message: messageData, ref: refValue });
     } catch (error) {
       console.error("❌ Unexpected error in parts enquiry handler:", error);
+      console.error("Error message:", error.message);
+      console.error("Error name:", error.name);
+      console.error("Error code:", error.code);
       console.error("Error stack:", error.stack);
-      next(error);
+      
+      // Check if it's a multer error
+      if (error.code === "LIMIT_FILE_SIZE" || error.message?.includes("File too large")) {
+        const messageData = (req.body && typeof req.body === "object") ? req.body : {};
+        return res.status(400).render("confirm", {
+          message: { ...messageData, error: "File is too large. Maximum size is 10MB." },
+          ref: null,
+        });
+      }
+      
+      // Try to render error page with any data we have
+      const messageData = (req.body && typeof req.body === "object") ? req.body : {};
+      return res.status(500).render("confirm", {
+        message: messageData,
+        ref: null,
+      });
     }
   },
 );
