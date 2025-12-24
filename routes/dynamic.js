@@ -215,8 +215,8 @@ router.post(
   upload.single("image"),
   async (req, res, next) => {
     const clientIp = requestIp.getClientIp(req);
-    const image = req.file;
-    const data = req.body;
+  const image = req.file;
+  const data = req.body;
 
     // 1. Verify reCAPTCHA
     const recaptchaResult = await verifyRecaptchaFromRequest(req);
@@ -257,62 +257,62 @@ router.post(
         ref: null,
       });
     }
-    const options = {
-      use_filename: true,
-      unique_filename: false,
+  const options = {
+    use_filename: true,
+    unique_filename: false,
       folder: `Specialised/public/uploads/${data.enquiryName.replace(
         /\s/g,
         "",
       )}`,
       flags: "attachment",
-    };
-    const record = {
+  };
+  const record = {
       status: "New",
-      name: data.enquiryName,
-      email: data.enquiryEmail,
-      company: data.company,
-      phone: data.enquiryNumber,
-      message: data.enquiryMessage,
-      brand: data.brand,
-      type: data.type,
-      partNo: data.partNo,
-      partDesc: data.partDesc,
-      serialNo: data.serialNo,
-      street: data.street,
-      town: data.town,
-      postal: data.postal,
-      region: data.province,
-      country: data.country,
-      ip: clientIp,
+    name: data.enquiryName,
+    email: data.enquiryEmail,
+    company: data.company,
+    phone: data.enquiryNumber,
+    message: data.enquiryMessage,
+    brand: data.brand,
+    type: data.type,
+    partNo: data.partNo,
+    partDesc: data.partDesc,
+    serialNo: data.serialNo,
+    street: data.street,
+    town: data.town,
+    postal: data.postal,
+    region: data.province,
+    country: data.country,
+    ip: clientIp,
       form: "parts",
-    };
+  };
     let reference = "";
     let imageUrl = null;
-    try {
+  try {
       const table = base("webForms");
-      const createdRecord = await table.create(record);
-      reference = createdRecord.id;
+    const createdRecord = await table.create(record);
+    reference = createdRecord.id;
 
-      if (image) {
-        const result = await cloudinary.uploader.upload(
-          image.path,
-          options,
-          function (error) {
-            console.log(error);
-          },
-        );
-        if (!result) {
-          next();
-          return;
-        }
-        const secure_url = result.secure_url;
-        imageUrl = secure_url;
-        const recordId = createdRecord.id;
-        const updatedRecord = await table.update(recordId, {
-          imageUploads: [{ url: secure_url }],
-        });
-        reference = updatedRecord.id;
+    if (image) {
+      const result = await cloudinary.uploader.upload(
+        image.path,
+        options,
+        function (error) {
+          console.log(error);
+        },
+      );
+      if (!result) {
+        next();
+        return;
       }
+      const secure_url = result.secure_url;
+        imageUrl = secure_url;
+      const recordId = createdRecord.id;
+      const updatedRecord = await table.update(recordId, {
+        imageUploads: [{ url: secure_url }],
+      });
+      reference = updatedRecord.id;
+    }
 
       // Send email notification (non-blocking - form submission succeeds even if email fails)
       const emailData = {
@@ -336,11 +336,11 @@ router.post(
       sendEnquiryFormNotification(emailData, reference, imageUrl).catch(err => {
         console.error("Failed to send enquiry form notification email:", err);
       });
-    } catch (error) {
-      console.error(error);
-      next(error);
-      return;
-    }
+  } catch (error) {
+    console.error(error);
+    next(error);
+    return;
+  }
     res.render("confirm", { message: data, ref: reference });
   },
 );
@@ -379,7 +379,7 @@ router.post("/contact-debug", (req, res) => {
 router.post("/contact", formRateLimit, async (req, res, next) => {
   try {
     const clientIp = requestIp.getClientIp(req);
-    const data = req.body;
+  const data = req.body;
 
     console.log("📝 Contact form submission received from IP:", clientIp);
     console.log("📦 Form data received:", JSON.stringify(data, null, 2));
@@ -470,22 +470,22 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
 
     const table = base("webForms");
 
-    const record = {
-      name: data.enquiryName,
-      company: data.enquiryCompany,
-      email: data.enquiryEmail,
-      phone: data.enquiryNumber,
-      country: data.enquiryCountry,
-      message: data.enquiryMessage,
-      ip: clientIp,
+  const record = {
+    name: data.enquiryName,
+    company: data.enquiryCompany,
+    email: data.enquiryEmail,
+    phone: data.enquiryNumber,
+    country: data.enquiryCountry,
+    message: data.enquiryMessage,
+    ip: clientIp,
       status: "New",
       form: "contact",
-    };
+  };
     let reference = "";
-    try {
-      const createdRecord = await table.create(record);
-      if (createdRecord) {
-        reference = createdRecord.id;
+  try {
+    const createdRecord = await table.create(record);
+    if (createdRecord) {
+      reference = createdRecord.id;
         console.log("✅ Contact form record created in Airtable:", reference);
 
         // Send email notification (non-blocking - form submission succeeds even if email fails)

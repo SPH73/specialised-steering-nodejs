@@ -1,10 +1,13 @@
-# npm audit report
+Dependencies Package Software Audit Report
 
+The following dependencies have vulnerabilities and require attention where patches and can be resolved without breaking changes and and the remaining packages will require future attention when a patch becomes available.
+
+1.
+FIX NOW
 body-parser  <=1.20.2
 Severity: high
 body-parser vulnerable to denial of service when url encoding is enabled - https://github.com/advisories/GHSA-qwcr-r2fm-qrc7
 Depends on vulnerable versions of qs
-fix available via `npm audit fix`
 node_modules/express/node_modules/body-parser
   express  <=4.21.0 || 5.0.0-alpha.1 - 5.0.0
   Depends on vulnerable versions of body-parser
@@ -15,37 +18,42 @@ node_modules/express/node_modules/body-parser
   Depends on vulnerable versions of serve-static
   node_modules/express
 
+2.
+FIX NOW
 brace-expansion  1.0.0 - 1.1.11 || 2.0.0 - 2.0.1
 brace-expansion Regular Expression Denial of Service vulnerability - https://github.com/advisories/GHSA-v6h2-p8h4-qcjw
 brace-expansion Regular Expression Denial of Service vulnerability - https://github.com/advisories/GHSA-v6h2-p8h4-qcjw
-fix available via `npm audit fix`
 node_modules/brace-expansion
 node_modules/filelist/node_modules/brace-expansion
 
+3.
+FIX LATER
 cloudinary  <=2.6.1
 Severity: high
 Cloudinary Node SDK is vulnerable to Arbitrary Argument Injection through parameters that include an ampersand - https://github.com/advisories/GHSA-g4mf-96x5-5m2c
 Depends on vulnerable versions of proxy-agent
-fix available via `npm audit fix --force`
+Fix not yet available
 Will install cloudinary@2.8.0, which is a breaking change
 node_modules/cloudinary
   multer-storage-cloudinary  >=3.0.0
   Depends on vulnerable versions of cloudinary
   node_modules/multer-storage-cloudinary
 
+4.
+FIX NOW
 cookie  <0.7.0
 cookie accepts cookie name, path, and domain with out of bounds characters - https://github.com/advisories/GHSA-pxg6-pf52-xh8x
-fix available via `npm audit fix`
 node_modules/cookie
 node_modules/cookie-parser/node_modules/cookie
   cookie-parser  1.0.1 - 1.4.6
   Depends on vulnerable versions of cookie
   node_modules/cookie-parser
 
+5.
+TRY FIX NOW
 dicer  *
 Severity: high
 Crash in HeaderParser in dicer - https://github.com/advisories/GHSA-wm7h-9275-46v2
-fix available via `npm audit fix`
 node_modules/dicer
   busboy  <=0.3.1
   Depends on vulnerable versions of dicer
@@ -54,19 +62,21 @@ node_modules/dicer
     Depends on vulnerable versions of busboy
     node_modules/multer
 
+6.
+FIX NOW
 ejs  <3.1.10
 Severity: moderate
 ejs lacks certain pollution protection - https://github.com/advisories/GHSA-ghr5-ch3p-vcr6
-fix available via `npm audit fix`
 node_modules/ejs
 
-
+7.
+FIX LATER
 ip  *
 Severity: high
 NPM IP package incorrectly identifies some private IP addresses as public - https://github.com/advisories/GHSA-78xj-cgh5-2h22
 NPM IP package incorrectly identifies some private IP addresses as public - https://github.com/advisories/GHSA-78xj-cgh5-2h22
 ip SSRF improper categorization in isPublic - https://github.com/advisories/GHSA-2p57-rm9w-gvfp
-fix available via `npm audit fix --force`
+Fix not yet available attempting to patch will affect other dependencies that will cause breaks:
 Will install cloudinary@2.8.0, which is a breaking change
 node_modules/ip
 node_modules/socks/node_modules/ip
@@ -83,61 +93,70 @@ node_modules/socks/node_modules/ip
   Depends on vulnerable versions of ip
   node_modules/socks
 
+8.
+FIX LATER
 is_js  *
 Severity: high
 is_js vulnerable to Regular Expression Denial of Service - https://github.com/advisories/GHSA-pvrw-g6fx-mcx2
-fix available via `npm audit fix --force`
+Fix available with --force flag but will affect other dependencies:
 Will install request-ip@3.3.0, which is a breaking change
 node_modules/is_js
   request-ip  2.0.0 - 3.0.2
   Depends on vulnerable versions of is_js
   node_modules/request-ip
 
+9.
+FIX NOW
 minimatch  <3.0.5
 Severity: high
 minimatch ReDoS vulnerability - https://github.com/advisories/GHSA-f8q6-p94x-37v3
-fix available via `npm audit fix`
 node_modules/minimatch
 
-
+10.
+FIX LATER
 nodemailer  <=7.0.10
 Severity: moderate
 Nodemailer: Email to an unintended domain can occur due to Interpretation Conflict - https://github.com/advisories/GHSA-mm7p-fcc7-pg87
 Nodemailer’s addressparser is vulnerable to DoS caused by recursive calls - https://github.com/advisories/GHSA-rcmh-qjqh-p98v
-fix available via `npm audit fix --force`
+fix available via --force flag but will affect other dependencies:
 Will install nodemailer@7.0.11, which is a breaking change
 node_modules/nodemailer
 
+11.
+FIX NOW
 on-headers  <1.1.0
 on-headers is vulnerable to http response header manipulation - https://github.com/advisories/GHSA-76c9-3jph-rj3q
-fix available via `npm audit fix`
 node_modules/on-headers
   compression  1.0.3 - 1.8.0
   Depends on vulnerable versions of on-headers
   node_modules/compression
 
+12.
+FIX NOW
 path-to-regexp  <=0.1.11
 Severity: high
 path-to-regexp outputs backtracking regular expressions - https://github.com/advisories/GHSA-9wv6-86v2-598j
 path-to-regexp contains a ReDoS - https://github.com/advisories/GHSA-rhx6-c78j-4q9w
-fix available via `npm audit fix`
 node_modules/path-to-regexp
 
+13.
+FIX NOW
 qs  6.7.0 - 6.7.2
 Severity: high
 qs vulnerable to Prototype Pollution - https://github.com/advisories/GHSA-hrpp-h998-j3pp
-fix available via `npm audit fix`
 node_modules/qs
 
+14.
+FIX NOW
 send  <0.19.0
 send vulnerable to template injection that can lead to XSS - https://github.com/advisories/GHSA-m6fv-jmcg-4jfg
-fix available via `npm audit fix`
 node_modules/send
   serve-static  <=1.16.0
   Depends on vulnerable versions of send
   node_modules/serve-static
 
-
+15.
+FIX NOW
 vm2  <=3.9.19
 Severity: critical
 vm2 vulnerable to Sandbox Escape resulting in Remote Code Execution on host - https://github.com/advisories/GHSA-mrgp-mrhc-5jrq
@@ -148,19 +167,16 @@ vm2 vulnerable to Inspect Manipulation - https://github.com/advisories/GHSA-p5gc
 vm2 Sandbox Escape vulnerability - https://github.com/advisories/GHSA-xj72-wvfv-8985
 vm2 Sandbox Escape vulnerability - https://github.com/advisories/GHSA-cchq-frgv-rjh5
 vm2 Sandbox Escape vulnerability - https://github.com/advisories/GHSA-g644-9gfx-q4q4
-fix available via `npm audit fix`
 node_modules/vm2
 
+16.
+FIX NOW
 word-wrap  <1.2.4
 Severity: moderate
 word-wrap vulnerable to Regular Expression Denial of Service - https://github.com/advisories/GHSA-j8xg-fqg3-53r7
-fix available via `npm audit fix`
 node_modules/word-wrap
 
 28 vulnerabilities (7 low, 3 moderate, 17 high, 1 critical)
-
-To address issues that do not require attention, run:
-  npm audit fix
-
-To address all issues (including breaking changes), run:
-  npm audit fix --force
+11 can be fixed NOW
+1 additional to attempt a fix
+The remaining dependencies require a patch and will need to be scheduled later.
