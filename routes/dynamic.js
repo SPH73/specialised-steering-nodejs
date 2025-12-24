@@ -251,7 +251,7 @@ router.post(
       console.log("📤 Request path:", req.path);
       console.log("📤 Content-Type:", req.get("content-type"));
 
-      upload.single("image")(req, res, (err) => {
+      upload.single("image")(req, res, err => {
         if (err) {
           console.error("❌ Multer error in upload middleware:", err.message);
           console.error("❌ Error code:", err.code);
@@ -278,7 +278,23 @@ router.post(
       const image = req.file;
       const data = req.body || {};
 
-      console.log("📝 Parts enquiry form submission received from IP:", clientIp);
+      // Critical check: If req.body is empty, this is a major issue
+      if (!data || Object.keys(data).length === 0) {
+        console.error("❌ CRITICAL: req.body is empty or undefined!");
+        console.error("❌ req.body type:", typeof req.body);
+        console.error("❌ req.body value:", req.body);
+        console.error("❌ Content-Type header:", req.get("content-type"));
+        console.error("❌ Request method:", req.method);
+        return res.status(400).render("confirm", {
+          message: { error: "Form data was not received. Please try again." },
+          ref: null,
+        });
+      }
+
+      console.log(
+        "📝 Parts enquiry form submission received from IP:",
+        clientIp,
+      );
       console.log("📦 Form data received:", JSON.stringify(data, null, 2));
       console.log("📦 req.body keys:", Object.keys(data));
       console.log("📦 Data object check:", {
@@ -312,7 +328,9 @@ router.post(
         );
         // Do NOT pass form data on reCAPTCHA failure - security requirement
         return res.status(400).render("confirm", {
-          message: { error: "reCAPTCHA verification failed. Please try again." },
+          message: {
+            error: "reCAPTCHA verification failed. Please try again.",
+          },
           ref: null,
         });
       }
@@ -349,75 +367,26 @@ router.post(
 
       // Check if base is initialized
       if (!base) {
-        console.error("❌ Airtable base not initialized. Check BASE environment variable.");
+        console.error(
+          "❌ Airtable base not initialized. Check BASE environment variable.",
+        );
         const messageData = data && typeof data === "object" ? data : {};
         return res.status(500).render("confirm", {
           message: messageData,
           ref: null,
         });
       }
-  const options = {
-    use_filename: true,
-    unique_filename: false,
-      folder: `Specialised/public/uploads/${data.enquiryName.replace(
-        /\s/g,
-        "",
-      )}`,
-      flags: "attachment",
-  };
-  const record = {
-      status: "New",
-    name: data.enquiryName,
-    email: data.enquiryEmail,
-    company: data.company,
-    phone: data.enquiryNumber,
-    message: data.enquiryMessage,
-    brand: data.brand,
-    type: data.type,
-    partNo: data.partNo,
-    partDesc: data.partDesc,
-    serialNo: data.serialNo,
-    street: data.street,
-    town: data.town,
-    postal: data.postal,
-    region: data.province,
-    country: data.country,
-    ip: clientIp,
-      form: "parts",
-  };
-    let reference = "";
-    let imageUrl = null;
-  try {
-      const table = base("webForms");
-    const createdRecord = await table.create(record);
-    reference = createdRecord.id;
-
-    if (image) {
-      try {
-        const result = await cloudinary.uploader.upload(
-          image.path,
-          options,
-        );
-        if (result && result.secure_url) {
-          const secure_url = result.secure_url;
-          imageUrl = secure_url;
-          const recordId = createdRecord.id;
-          const updatedRecord = await table.update(recordId, {
-            imageUploads: [{ url: secure_url }],
-          });
-          reference = updatedRecord.id;
-          console.log("✅ Image uploaded to Cloudinary:", secure_url);
-        } else {
-          console.warn("⚠️ Cloudinary upload returned no result");
-        }
-      } catch (uploadError) {
-        console.error("❌ Error uploading image to Cloudinary:", uploadError);
-        // Continue without image - form submission still succeeds
-      }
-    }
-
-      // Send email notification (non-blocking - form submission succeeds even if email fails)
-      const emailData = {
+      const options = {
+        use_filename: true,
+        unique_filename: false,
+        folder: `Specialised/public/uploads/${data.enquiryName.replace(
+          /\s/g,
+          "",
+        )}`,
+        flags: "attachment",
+      };
+      const record = {
+        status: "New",
         name: data.enquiryName,
         email: data.enquiryEmail,
         company: data.company,
@@ -434,49 +403,123 @@ router.post(
         region: data.province,
         country: data.country,
         ip: clientIp,
+        form: "parts",
       };
-      sendEnquiryFormNotification(emailData, reference, imageUrl).catch(err => {
-        console.error("Failed to send enquiry form notification email:", err);
-      });
-    } catch (error) {
-      console.error("❌ Error processing parts enquiry:", error);
-      console.error("Error message:", error.message);
-      console.error("Error name:", error.name);
-      console.error("Error code:", error.code);
-      console.error("Error stack:", error.stack);
-      console.error("Record data:", record);
-      console.error("Image file:", image ? { path: image.path, size: image.size } : "No image");
+      let reference = "";
+      let imageUrl = null;
+      try {
+        // Validate base before using it
+        if (!base) {
+          throw new Error(
+            "Airtable base is not initialized. Check BASE environment variable.",
+          );
+        }
+        if (!process.env.BASE) {
+          throw new Error("BASE environment variable is not set.");
+        }
 
-      // Still show success page even if Airtable/Cloudinary fails - form was submitted
-      console.warn("⚠️ Showing success page despite error");
+        const table = base("webForms");
+        console.log("✅ Airtable table 'webForms' accessed successfully");
+        const createdRecord = await table.create(record);
+        console.log("✅ Airtable record created:", createdRecord.id);
+        reference = createdRecord.id;
+
+        if (image) {
+          try {
+            const result = await cloudinary.uploader.upload(
+              image.path,
+              options,
+            );
+            if (result && result.secure_url) {
+              const secure_url = result.secure_url;
+              imageUrl = secure_url;
+              const recordId = createdRecord.id;
+              const updatedRecord = await table.update(recordId, {
+                imageUploads: [{ url: secure_url }],
+              });
+              reference = updatedRecord.id;
+              console.log("✅ Image uploaded to Cloudinary:", secure_url);
+            } else {
+              console.warn("⚠️ Cloudinary upload returned no result");
+            }
+          } catch (uploadError) {
+            console.error(
+              "❌ Error uploading image to Cloudinary:",
+              uploadError,
+            );
+            // Continue without image - form submission still succeeds
+          }
+        }
+
+        // Send email notification (non-blocking - form submission succeeds even if email fails)
+        const emailData = {
+          name: data.enquiryName,
+          email: data.enquiryEmail,
+          company: data.company,
+          phone: data.enquiryNumber,
+          message: data.enquiryMessage,
+          brand: data.brand,
+          type: data.type,
+          partNo: data.partNo,
+          partDesc: data.partDesc,
+          serialNo: data.serialNo,
+          street: data.street,
+          town: data.town,
+          postal: data.postal,
+          region: data.province,
+          country: data.country,
+          ip: clientIp,
+        };
+        sendEnquiryFormNotification(emailData, reference, imageUrl).catch(
+          err => {
+            console.error(
+              "Failed to send enquiry form notification email:",
+              err,
+            );
+          },
+        );
+      } catch (error) {
+        console.error("❌ Error processing parts enquiry:", error);
+        console.error("Error message:", error.message);
+        console.error("Error name:", error.name);
+        console.error("Error code:", error.code);
+        console.error("Error stack:", error.stack);
+        console.error("Record data:", record);
+        console.error(
+          "Image file:",
+          image ? { path: image.path, size: image.size } : "No image",
+        );
+
+        // Still show success page even if Airtable/Cloudinary fails - form was submitted
+        console.warn("⚠️ Showing success page despite error");
+        const messageData = data && typeof data === "object" ? data : {};
+        console.log("⚠️ Rendering confirm page with data (error occurred):", {
+          hasMessage: !!messageData,
+          messageKeys: Object.keys(messageData),
+        });
+        return res.render("confirm", {
+          message: messageData,
+          ref: null,
+        });
+      }
+
+      // Ensure data is an object (defensive check)
       const messageData = data && typeof data === "object" ? data : {};
-      console.log("⚠️ Rendering confirm page with data (error occurred):", {
+      const refValue = reference || null;
+
+      // Log what we're passing to the template
+      console.log("✅ Rendering confirm page with data:", {
         hasMessage: !!messageData,
         messageKeys: Object.keys(messageData),
+        enquiryName: messageData.enquiryName,
+        enquiryEmail: messageData.enquiryEmail,
+        postDate: messageData.postDate,
+        postTime: messageData.postTime,
+        hasRef: !!refValue,
+        ref: refValue,
       });
-      return res.render("confirm", {
-        message: messageData,
-        ref: null,
-      });
-    }
 
-    // Ensure data is an object (defensive check)
-    const messageData = data && typeof data === "object" ? data : {};
-    const refValue = reference || null;
-
-    // Log what we're passing to the template
-    console.log("✅ Rendering confirm page with data:", {
-      hasMessage: !!messageData,
-      messageKeys: Object.keys(messageData),
-      enquiryName: messageData.enquiryName,
-      enquiryEmail: messageData.enquiryEmail,
-      postDate: messageData.postDate,
-      postTime: messageData.postTime,
-      hasRef: !!refValue,
-      ref: refValue,
-    });
-
-    res.render("confirm", { message: messageData, ref: refValue });
+      res.render("confirm", { message: messageData, ref: refValue });
     } catch (error) {
       console.error("❌ Unexpected error in parts enquiry handler:", error);
       console.error("Error message:", error.message);
@@ -485,16 +528,24 @@ router.post(
       console.error("Error stack:", error.stack);
 
       // Check if it's a multer error
-      if (error.code === "LIMIT_FILE_SIZE" || error.message?.includes("File too large")) {
-        const messageData = (req.body && typeof req.body === "object") ? req.body : {};
+      if (
+        error.code === "LIMIT_FILE_SIZE" ||
+        error.message?.includes("File too large")
+      ) {
+        const messageData =
+          req.body && typeof req.body === "object" ? req.body : {};
         return res.status(400).render("confirm", {
-          message: { ...messageData, error: "File is too large. Maximum size is 10MB." },
+          message: {
+            ...messageData,
+            error: "File is too large. Maximum size is 10MB.",
+          },
           ref: null,
         });
       }
 
       // Try to render error page with any data we have
-      const messageData = (req.body && typeof req.body === "object") ? req.body : {};
+      const messageData =
+        req.body && typeof req.body === "object" ? req.body : {};
       return res.status(500).render("confirm", {
         message: messageData,
         ref: null,
@@ -518,7 +569,11 @@ router.get("/contact", (req, res) => {
 // Debug endpoint to check environment variables (what the running app sees)
 router.get("/env-debug", (req, res) => {
   const envInfo = {
-    AT_API_KEY: process.env.AT_API_KEY ? `SET (length: ${process.env.AT_API_KEY.length}, starts with: ${process.env.AT_API_KEY.substring(0, 10)})` : "NOT SET",
+    AT_API_KEY: process.env.AT_API_KEY
+      ? `SET (length: ${
+          process.env.AT_API_KEY.length
+        }, starts with: ${process.env.AT_API_KEY.substring(0, 10)})`
+      : "NOT SET",
     BASE: process.env.BASE || "NOT SET",
     EMAIL_HOST: process.env.EMAIL_HOST || process.env.SMTP_HOST || "NOT SET",
     EMAIL_USER: process.env.EMAIL_USER || process.env.SMTP_USER || "NOT SET",
@@ -536,10 +591,10 @@ router.post("/contact-debug", (req, res) => {
     body: req.body,
     bodyKeys: Object.keys(req.body),
     headers: {
-      'content-type': req.headers['content-type'],
-      'content-length': req.headers['content-length'],
+      "content-type": req.headers["content-type"],
+      "content-length": req.headers["content-length"],
     },
-    recaptchaToken: req.body['g-recaptcha-response'] ? 'present' : 'missing',
+    recaptchaToken: req.body["g-recaptcha-response"] ? "present" : "missing",
     hasFormData: {
       enquiryName: !!req.body.enquiryName,
       enquiryEmail: !!req.body.enquiryEmail,
@@ -622,7 +677,9 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
 
     // Check if base is initialized
     if (!base) {
-      console.error("❌ Airtable base not initialized. Check BASE environment variable.");
+      console.error(
+        "❌ Airtable base not initialized. Check BASE environment variable.",
+      );
       return res.status(500).render("confirm", {
         message: {
           error: "Server configuration error. Please contact support.",
@@ -633,22 +690,22 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
 
     const table = base("webForms");
 
-  const record = {
-    name: data.enquiryName,
-    company: data.enquiryCompany,
-    email: data.enquiryEmail,
-    phone: data.enquiryNumber,
-    country: data.enquiryCountry,
-    message: data.enquiryMessage,
-    ip: clientIp,
+    const record = {
+      name: data.enquiryName,
+      company: data.enquiryCompany,
+      email: data.enquiryEmail,
+      phone: data.enquiryNumber,
+      country: data.enquiryCountry,
+      message: data.enquiryMessage,
+      ip: clientIp,
       status: "New",
       form: "contact",
-  };
+    };
     let reference = "";
-  try {
-    const createdRecord = await table.create(record);
-    if (createdRecord) {
-      reference = createdRecord.id;
+    try {
+      const createdRecord = await table.create(record);
+      if (createdRecord) {
+        reference = createdRecord.id;
         console.log("✅ Contact form record created in Airtable:", reference);
 
         // Send email notification (non-blocking - form submission succeeds even if email fails)
