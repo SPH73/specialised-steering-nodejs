@@ -80,6 +80,42 @@ router.get("/sitemap", (req, res) => {
   res.render("sitemap", { meta: meta });
 });
 
+router.get("/sitemap.xml", (req, res) => {
+  const baseUrl = "https://www.specialisedsteering.com";
+  const today = new Date().toISOString().split("T")[0];
+  
+  // Static pages - exclude forms (/contact, /enquiry) to prevent spam
+  const staticPages = [
+    { url: "", priority: "1.0", changefreq: "weekly" }, // Homepage
+    { url: "/about", priority: "0.8", changefreq: "monthly" },
+    { url: "/our-work", priority: "0.8", changefreq: "weekly" },
+    { url: "/gallery", priority: "0.7", changefreq: "weekly" },
+    { url: "/privacy-policy", priority: "0.6", changefreq: "yearly" },
+    { url: "/terms-of-sale", priority: "0.6", changefreq: "yearly" },
+    { url: "/cookie-policy", priority: "0.5", changefreq: "yearly" },
+    { url: "/disclaimer", priority: "0.5", changefreq: "yearly" },
+    { url: "/sitemap", priority: "0.3", changefreq: "monthly" },
+  ];
+
+  // Generate XML sitemap
+  let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+  xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+  
+  staticPages.forEach(page => {
+    xml += '  <url>\n';
+    xml += `    <loc>${baseUrl}${page.url}</loc>\n`;
+    xml += `    <lastmod>${today}</lastmod>\n`;
+    xml += `    <changefreq>${page.changefreq}</changefreq>\n`;
+    xml += `    <priority>${page.priority}</priority>\n`;
+    xml += '  </url>\n';
+  });
+  
+  xml += '</urlset>';
+  
+  res.set("Content-Type", "text/xml");
+  res.send(xml);
+});
+
 router.get("/disclaimer", (req, res) => {
   const meta = {
     title: "SPECIALISED STEERING CC",

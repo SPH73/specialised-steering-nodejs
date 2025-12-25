@@ -19,3 +19,11 @@ add-google-oauth-to-staging-htaccess.sh
 update-google-oauth-env.sh
 upload-google-oauth-env.sh
 upload-google-photos-files.sh
+# Google Search Console coverage reports
+*Coverage*.zip
+*Coverage*.csv
+*.csv
+Chart.csv
+Metadata.csv
+"Critical issues.csv"
+"Non-critical issues.csv"
