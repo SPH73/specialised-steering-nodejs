@@ -51,7 +51,7 @@ router.get("/gallery", async (req, res) => {
     } catch (err) {
       console.error("Error fetching gallery photos:", err);
       console.error("Error details:", err.message);
-      
+
       // Provide helpful error messages based on the error type
       if (err.message && err.message.includes("Token file not found")) {
         error = "Google Photos authentication required. Please run the setup script to authenticate.";
@@ -92,6 +92,22 @@ router.get("/cookie-policy", (req, res) => {
     title: "Cookie Policy",
   };
   res.render("cookie-policy", { meta: meta });
+});
+
+router.get("/privacy-policy", (req, res) => {
+  const meta = {
+    title: "Privacy Policy | Specialised Steering CC",
+    description: "Privacy Policy for Specialised Steering CC. Learn how we collect, use, and protect your personal information.",
+  };
+  res.render("privacy-policy", { meta: meta });
+});
+
+router.get("/terms-of-sale", (req, res) => {
+  const meta = {
+    title: "Terms of Sale | Specialised Steering CC",
+    description: "Terms of Sale for Specialised Steering CC. Review our terms and conditions for purchasing goods and services.",
+  };
+  res.render("terms-of-sale", { meta: meta });
 });
 
 router.post("/__cspreport__", (req, res) => {

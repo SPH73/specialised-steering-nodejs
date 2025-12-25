@@ -33,12 +33,14 @@ const initializeOAuth2Client = () => {
   if (oAuth2Client) return oAuth2Client;
 
   const creds = loadCredentials();
-  const { client_secret, client_id, redirect_uris } = creds.web;
+  // Support both "web" (web app) and "installed" (desktop app) credential types
+  const credentials = creds.web || creds.installed;
+  const { client_secret, client_id, redirect_uris } = credentials;
 
   oAuth2Client = new google.auth.OAuth2(
     client_id,
     client_secret,
-    redirect_uris[0]
+    redirect_uris[0],
   );
 
   return oAuth2Client;
@@ -56,7 +58,9 @@ const loadToken = async () => {
     return token;
   } catch (error) {
     if (error.code === "ENOENT") {
-      throw new Error("Token file not found. Please run the OAuth flow to generate token.json");
+      throw new Error(
+        "Token file not found. Please run the OAuth flow to generate token.json",
+      );
     }
     throw error;
   }
@@ -65,7 +69,7 @@ const loadToken = async () => {
 /**
  * Save OAuth2 token to token.json
  */
-const saveToken = async (token) => {
+const saveToken = async token => {
   const tokenPath = path.join(__dirname, "..", "token.json");
   await writeFileAsync(tokenPath, JSON.stringify(token), "utf8");
 };
@@ -92,7 +96,10 @@ const getAuthenticatedClient = async () => {
           await saveToken(newToken);
         } catch (refreshError) {
           // If refresh fails, try with existing token (might still work)
-          console.warn("Token refresh failed, using existing token:", refreshError.message);
+          console.warn(
+            "Token refresh failed, using existing token:",
+            refreshError.message,
+          );
         }
       }
     }
@@ -109,7 +116,7 @@ const getAuthenticatedClient = async () => {
  * @param {string} albumId - The Google Photos album ID
  * @returns {Promise<Array>} Array of photo objects with URLs, dimensions, and metadata
  */
-const getAlbumPhotos = async (albumId) => {
+const getAlbumPhotos = async albumId => {
   try {
     const auth = await getAuthenticatedClient();
     const photos = google.photoslibrary({ version: "v1", auth });
@@ -133,7 +140,7 @@ const getAlbumPhotos = async (albumId) => {
       });
 
       if (response.data.mediaItems) {
-        const formattedPhotos = response.data.mediaItems.map((item) => {
+        const formattedPhotos = response.data.mediaItems.map(item => {
           // Get the best available image URL (prefer high quality, fallback to baseUrl)
           const baseUrl = item.baseUrl;
           const width = item.mediaMetadata?.width || 0;
@@ -195,4 +202,3 @@ module.exports = {
   getAlbums,
   getAuthenticatedClient,
 };
-

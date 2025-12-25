@@ -1,9 +1,9 @@
 /**
  * Google Photos OAuth Setup Script
- * 
+ *
  * Run this script ONCE to authenticate and get a refresh token.
  * After running this, the gallery will work for all visitors.
- * 
+ *
  * Usage: node setup-google-photos-auth.js
  */
 
@@ -37,7 +37,7 @@ function loadCredentials() {
 /**
  * Get new token after prompting for user authorization
  */
-async function getNewToken(oAuth2Client) {
+async function getNewToken(oAuth2Client, redirectUri) {
   const authUrl = oAuth2Client.generateAuthUrl({
     access_type: "offline",
     scope: SCOPES,
@@ -50,7 +50,17 @@ async function getNewToken(oAuth2Client) {
   console.log("\n2. You will be asked to sign in with your Google account");
   console.log("   (Use the account that owns the photos you want to display)");
   console.log("\n3. Grant permission to access Google Photos");
-  console.log("\n4. Copy the authorization code from the browser");
+  if (redirectUri === "urn:ietf:wg:oauth:2.0:oob") {
+    console.log(
+      "\n4. After granting permission, you'll see an authorization code on the page",
+    );
+    console.log("   Copy that code and paste it below");
+  } else {
+    console.log("\n4. After granting permission, you'll be redirected to:");
+    console.log("   " + redirectUri);
+    console.log("\n5. Copy the 'code' parameter from the URL in your browser");
+    console.log("   (It will look like: ?code=4/0A... or &code=4/0A...)");
+  }
   console.log("=".repeat(60));
 
   const rl = readline.createInterface({
@@ -59,7 +69,7 @@ async function getNewToken(oAuth2Client) {
   });
 
   return new Promise((resolve, reject) => {
-    rl.question("\n📋 Paste the authorization code here: ", async (code) => {
+    rl.question("\n📋 Paste the authorization code here: ", async code => {
       rl.close();
 
       try {
@@ -86,20 +96,29 @@ async function getNewToken(oAuth2Client) {
 async function main() {
   console.log("🚀 Google Photos OAuth Setup");
   console.log("=".repeat(60));
-  console.log("This script will help you authenticate to access Google Photos.");
+  console.log(
+    "This script will help you authenticate to access Google Photos.",
+  );
   console.log("You only need to run this ONCE.\n");
 
   // Load credentials
   const credentials = loadCredentials();
-  const { client_secret, client_id, redirect_uris } = credentials.web;
+  // Support both "web" (web app) and "installed" (desktop app) credential types
+  const creds = credentials.web || credentials.installed;
+  const { client_secret, client_id, redirect_uris } = creds;
 
   // Create OAuth2 client
-  // Use out-of-band URI for command-line flow (shows code on page instead of redirecting)
-  const redirectUri = "urn:ietf:wg:oauth:2.0:oob";
+  // For Desktop app credentials, use urn:ietf:wg:oauth:2.0:oob (out-of-band)
+  // For Web app credentials, use localhost redirect URI
+  const isDesktopApp = !!credentials.installed;
+  const redirectUri = isDesktopApp
+    ? "urn:ietf:wg:oauth:2.0:oob"
+    : redirect_uris[0] || "http://localhost:3300/oauth2callback";
+
   const oAuth2Client = new google.auth.OAuth2(
     client_id,
     client_secret,
-    redirectUri
+    redirectUri,
   );
 
   // Check if we already have a token
@@ -110,22 +129,24 @@ async function main() {
 
     if (parsedToken.refresh_token) {
       console.log("✅ token.json already exists with a refresh token.");
-      console.log("   If you need to re-authenticate, delete token.json and run this script again.\n");
-      
+      console.log(
+        "   If you need to re-authenticate, delete token.json and run this script again.\n",
+      );
+
       const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
       });
 
-      rl.question("Do you want to re-authenticate? (y/N): ", (answer) => {
+      rl.question("Do you want to re-authenticate? (y/N): ", answer => {
         rl.close();
         if (answer.toLowerCase() === "y" || answer.toLowerCase() === "yes") {
-          getNewToken(oAuth2Client)
+          getNewToken(oAuth2Client, redirectUri)
             .then(() => {
               console.log("\n✅ Setup complete! The gallery should now work.");
               process.exit(0);
             })
-            .catch((error) => {
+            .catch(error => {
               console.error("\n❌ Setup failed:", error.message);
               process.exit(1);
             });
@@ -142,7 +163,7 @@ async function main() {
 
   // Get new token
   try {
-    await getNewToken(oAuth2Client);
+    await getNewToken(oAuth2Client, redirectUri);
     console.log("\n✅ Setup complete! The gallery should now work.");
     console.log("\n📝 Next steps:");
     console.log("   1. Set GOOGLE_PHOTOS_ALBUM_ID in your .env file");
@@ -155,8 +176,7 @@ async function main() {
 }
 
 // Run the setup
-main().catch((error) => {
+main().catch(error => {
   console.error("❌ Unexpected error:", error);
   process.exit(1);
 });
-

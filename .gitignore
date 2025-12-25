@@ -12,3 +12,10 @@ credentials.json
 *-todo.md
 *.txt
 MD/
+
+# Deployment scripts - server-specific, don't commit
+add-env-vars-to-staging-htaccess.sh
+add-google-oauth-to-staging-htaccess.sh
+update-google-oauth-env.sh
+upload-google-oauth-env.sh
+upload-google-photos-files.sh
