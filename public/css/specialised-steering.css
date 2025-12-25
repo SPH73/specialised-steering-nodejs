@@ -1,27 +1,27 @@
 @font-face {
-  font-family: 'Montserrat';
-  src: url('../fonts/Montserrat-Bold.woff') format('woff');
+  font-family: "Montserrat";
+  src: url("../fonts/Montserrat-Bold.woff") format("woff");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'Montserrat';
-  src: url('../fonts/Montserrat-SemiBold.woff') format('woff');
+  font-family: "Montserrat";
+  src: url("../fonts/Montserrat-SemiBold.woff") format("woff");
   font-weight: 600;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'Montserrat';
-  src: url('../fonts/Montserrat-ExtraBold.woff') format('woff');
+  font-family: "Montserrat";
+  src: url("../fonts/Montserrat-ExtraBold.woff") format("woff");
   font-weight: 800;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'Montserrat';
-  src: url('../fonts/Montserrat-Regular.woff') format('woff');
+  font-family: "Montserrat";
+  src: url("../fonts/Montserrat-Regular.woff") format("woff");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -135,7 +135,8 @@ li {
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
-  padding: 0.5em 3em;
+  padding: 1em 3em;
+  min-height: 6rem;
   -webkit-box-pack: justify;
   -webkit-justify-content: space-between;
   -ms-flex-pack: justify;
@@ -148,11 +149,11 @@ li {
 }
 
 .navbar_logo {
-  width: 9rem;
+  width: 14rem;
 }
 
 .navbar_logo.w--current {
-  width: 9rem;
+  width: 14rem;
 }
 
 .navbar_logo-img {
@@ -250,6 +251,11 @@ img {
   -ms-flex-direction: row;
   flex-direction: row;
 }
+
+#header.section {
+  margin-top: calc(6rem + 2em + 0.25rem);
+  padding-top: 3em;
+}
 .container {
   max-width: 1600px;
   margin-right: auto;
@@ -259,8 +265,8 @@ img {
 }
 
 .section.main {
-  margin-top: 6.1em;
-  padding-top: 2em;
+  margin-top: 8em;
+  padding-top: 3em;
   padding-bottom: 3em;
 }
 
@@ -274,7 +280,7 @@ img {
 
 .parallax-1 {
   background-color: var(--color-primary);
-  background-image: url('https://sswebimages.mo.cloudinary.net/lrg_komatsu-earth-moving-machinery.jpg');
+  background-image: url("https://sswebimages.mo.cloudinary.net/lrg_komatsu-earth-moving-machinery.jpg");
   background-position: 100% 100%;
   background-size: cover;
   background-repeat: no-repeat;
@@ -285,7 +291,7 @@ img {
 }
 .parallax-2 {
   background-color: var(--color-primary);
-  background-image: url('https://sswebimages.mo.cloudinary.net/lrg_bulldozer-cement-boulders.jpg');
+  background-image: url("https://sswebimages.mo.cloudinary.net/lrg_bulldozer-cement-boulders.jpg");
   background-position: 50% 50%;
   background-size: cover;
   background-repeat: no-repeat;
@@ -469,7 +475,7 @@ img {
 }
 
 .w-checkbox::before {
-  content: ' ';
+  content: " ";
   display: table;
   -ms-grid-column-span: 1;
   grid-column-end: 2;
@@ -484,7 +490,7 @@ img {
 }
 
 .w-checkbox::after {
-  content: ' ';
+  content: " ";
   display: table;
   -ms-grid-column-span: 1;
   grid-column-end: 2;
@@ -535,7 +541,7 @@ img {
   border-bottom-color: #4f4f4f;
   border-left-color: #4f4f4f;
   border-right-color: #4f4f4f;
-  background-image: url('https://d3e54v103j8qbb.cloudfront.net/static/custom-checkbox-checkmark.589d534424.svg');
+  background-image: url("https://d3e54v103j8qbb.cloudfront.net/static/custom-checkbox-checkmark.589d534424.svg");
   background-position: 50% 50%;
   background-size: cover;
   background-repeat: no-repeat;
@@ -893,7 +899,7 @@ img {
 
 .footer-copyright-social {
   padding: 1.5em 3em;
-  grid-template-areas: '. Area';
+  grid-template-areas: ". Area";
   -ms-grid-columns: 1fr auto;
   grid-template-columns: 1fr auto;
   -ms-grid-rows: auto;
@@ -934,7 +940,8 @@ img {
 }
 
 .footer-logo {
-  width: 10em;
+  width: 15rem;
+  max-width: 15rem;
   padding-bottom: 1em;
 }
 
@@ -1294,7 +1301,7 @@ img {
     display: -ms-flexbox;
     display: flex;
     background-color: var(--color-primary);
-    background-image: url('https://sswebimages.mo.cloudinary.net/xl_komatsu-earth-moving-machinery.jpg');
+    background-image: url("https://sswebimages.mo.cloudinary.net/xl_komatsu-earth-moving-machinery.jpg");
     background-position: 50% 50%;
     background-size: cover;
     background-repeat: no-repeat;
@@ -1307,7 +1314,7 @@ img {
     display: -ms-flexbox;
     display: flex;
     background-color: var(--color-primary);
-    background-image: url('../images/lrg_bulldozer-cement-boulders.jpg');
+    background-image: url("../images/lrg_bulldozer-cement-boulders.jpg");
     background-position: 50% 50%;
     background-size: cover;
     background-repeat: no-repeat;
@@ -1379,14 +1386,14 @@ img {
   }
 
   .parallax-1 {
-    background-image: url('https://sswebimages.mo.cloudinary.net/med_komatsu-earth-moving-machinery.jpeg');
+    background-image: url("https://sswebimages.mo.cloudinary.net/med_komatsu-earth-moving-machinery.jpeg");
     background-position: 0% 50%;
     background-size: cover;
     background-attachment: scroll;
   }
 
   .parallax-2 {
-    background-image: url('https://sswebimages.mo.cloudinary.net/med_bulldozer-cement-boulders.jpeg');
+    background-image: url("https://sswebimages.mo.cloudinary.net/med_bulldozer-cement-boulders.jpeg");
     background-attachment: scroll;
   }
 
@@ -1816,11 +1823,11 @@ img {
   }
 
   .parallax-1 {
-    background-image: url('https://sswebimages.mo.cloudinary.net/sml_komatsu-earth-moving-machinery.jpeg');
+    background-image: url("https://sswebimages.mo.cloudinary.net/sml_komatsu-earth-moving-machinery.jpeg");
   }
 
   .parallax-2 {
-    background-image: url('https://sswebimages.mo.cloudinary.net/sml_bulldozer-cement-boulders.jpeg');
+    background-image: url("https://sswebimages.mo.cloudinary.net/sml_bulldozer-cement-boulders.jpeg");
     background-position: 50% 50%;
     background-attachment: scroll;
   }
