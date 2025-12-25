@@ -73,13 +73,6 @@ router.get("/gallery", async (req, res) => {
   });
 });
 
-router.get("/sitemap", (req, res) => {
-  const meta = {
-    title: "specialisedsteering.com Site Map",
-  };
-  res.render("sitemap", { meta: meta });
-});
-
 router.get("/sitemap.xml", (req, res) => {
   const baseUrl = "https://www.specialisedsteering.com";
   const today = new Date().toISOString().split("T")[0];
@@ -114,6 +107,13 @@ router.get("/sitemap.xml", (req, res) => {
   
   res.set("Content-Type", "text/xml");
   res.send(xml);
+});
+
+router.get("/sitemap", (req, res) => {
+  const meta = {
+    title: "specialisedsteering.com Site Map",
+  };
+  res.render("sitemap", { meta: meta });
 });
 
 router.get("/disclaimer", (req, res) => {
