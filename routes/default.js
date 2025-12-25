@@ -105,7 +105,7 @@ router.get("/sitemap.xml", (req, res) => {
   
   xml += '</urlset>';
   
-  res.set("Content-Type", "text/xml");
+  res.set("Content-Type", "application/xml; charset=utf-8");
   res.send(xml);
 });
 
