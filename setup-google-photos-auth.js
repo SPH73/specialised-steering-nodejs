@@ -41,6 +41,7 @@ async function getNewToken(oAuth2Client, redirectUri) {
   const authUrl = oAuth2Client.generateAuthUrl({
     access_type: "offline",
     scope: SCOPES,
+    prompt: "consent", // Force consent screen to ensure all scopes are granted
   });
 
   console.log("\n🔐 Authorization required!");
@@ -50,11 +51,25 @@ async function getNewToken(oAuth2Client, redirectUri) {
   console.log("\n2. You will be asked to sign in with your Google account");
   console.log("   (Use the account that owns the photos you want to display)");
   console.log("\n3. Grant permission to access Google Photos");
+
   if (redirectUri === "urn:ietf:wg:oauth:2.0:oob") {
     console.log(
       "\n4. After granting permission, you'll see an authorization code on the page",
     );
     console.log("   Copy that code and paste it below");
+  } else if (redirectUri.startsWith("http://localhost")) {
+    console.log("\n4. After granting permission, you'll be redirected to:");
+    console.log("   " + redirectUri);
+    console.log(
+      "\n5. The page may show an error (this is normal for localhost)",
+    );
+    console.log("   Look at the URL in your browser's address bar");
+    console.log("   Copy the 'code' parameter from the URL");
+    console.log("   (It will look like: ?code=4/0A... or &code=4/0A...)");
+    console.log(
+      "\n   If you see 'This site can't be reached', check the URL bar",
+    );
+    console.log("   for the code parameter before closing the tab");
   } else {
     console.log("\n4. After granting permission, you'll be redirected to:");
     console.log("   " + redirectUri);
@@ -69,8 +84,30 @@ async function getNewToken(oAuth2Client, redirectUri) {
   });
 
   return new Promise((resolve, reject) => {
-    rl.question("\n📋 Paste the authorization code here: ", async code => {
+    rl.question("\n📋 Paste the authorization code here: ", async input => {
       rl.close();
+
+      // Extract just the code value from whatever the user pasted
+      // Handles: full URL, code=..., or just the code
+      let code = input.trim();
+
+      // If it's a URL, extract the code parameter
+      if (code.includes("?")) {
+        const url = new URL(code);
+        code = url.searchParams.get("code") || code;
+      } else if (code.includes("code=")) {
+        // If it's "code=...&scope=...", extract just the code value
+        const match = code.match(/code=([^&]+)/);
+        if (match) {
+          code = match[1];
+        } else {
+          // Try to extract after "code="
+          code = code.split("code=")[1]?.split("&")[0] || code;
+        }
+      }
+
+      // Clean up any remaining URL encoding or whitespace
+      code = decodeURIComponent(code).trim();
 
       try {
         const { tokens } = await oAuth2Client.getToken(code);
@@ -108,12 +145,29 @@ async function main() {
   const { client_secret, client_id, redirect_uris } = creds;
 
   // Create OAuth2 client
-  // For Desktop app credentials, use urn:ietf:wg:oauth:2.0:oob (out-of-band)
-  // For Web app credentials, use localhost redirect URI
+  // Use the redirect URI from credentials.json
+  // For Desktop apps, prefer urn:ietf:wg:oauth:2.0:oob if available, otherwise use what's configured
+  // For Web apps, use the configured redirect URI
   const isDesktopApp = !!credentials.installed;
-  const redirectUri = isDesktopApp
-    ? "urn:ietf:wg:oauth:2.0:oob"
-    : redirect_uris[0] || "http://localhost:3300/oauth2callback";
+  let redirectUri;
+
+  if (isDesktopApp) {
+    // Check if urn:ietf:wg:oauth:2.0:oob is in the redirect_uris
+    if (redirect_uris && redirect_uris.includes("urn:ietf:wg:oauth:2.0:oob")) {
+      redirectUri = "urn:ietf:wg:oauth:2.0:oob";
+    } else {
+      // Use the first configured redirect URI, or default to localhost
+      redirectUri =
+        redirect_uris && redirect_uris[0]
+          ? redirect_uris[0]
+          : "http://localhost";
+    }
+  } else {
+    redirectUri =
+      redirect_uris && redirect_uris[0]
+        ? redirect_uris[0]
+        : "http://localhost:3300/oauth2callback";
+  }
 
   const oAuth2Client = new google.auth.OAuth2(
     client_id,

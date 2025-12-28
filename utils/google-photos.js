@@ -119,7 +119,12 @@ const getAuthenticatedClient = async () => {
 const getAlbumPhotos = async albumId => {
   try {
     const auth = await getAuthenticatedClient();
-    const photos = google.photoslibrary({ version: "v1", auth });
+
+    // Get access token (will refresh if needed)
+    const { token } = await auth.getAccessToken();
+
+    // Use REST API directly since photoslibrary is not available in googleapis
+    const { request } = require("gaxios");
 
     const allPhotos = [];
     let pageToken = null;
@@ -135,11 +140,17 @@ const getAlbumPhotos = async albumId => {
       }
 
       // Use mediaItems.search to get photos from album
-      const response = await photos.mediaItems.search({
-        requestBody: requestBody,
+      const response = await request({
+        url: "https://photoslibrary.googleapis.com/v1/mediaItems:search",
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        data: requestBody,
       });
 
-      if (response.data.mediaItems) {
+      if (response.data && response.data.mediaItems) {
         const formattedPhotos = response.data.mediaItems.map(item => {
           // Get the best available image URL (prefer high quality, fallback to baseUrl)
           const baseUrl = item.baseUrl;
@@ -167,7 +178,7 @@ const getAlbumPhotos = async albumId => {
         allPhotos.push(...formattedPhotos);
       }
 
-      pageToken = response.data.nextPageToken || null;
+      pageToken = (response.data && response.data.nextPageToken) || null;
     } while (pageToken);
 
     return allPhotos;
@@ -184,10 +195,22 @@ const getAlbumPhotos = async albumId => {
 const getAlbums = async () => {
   try {
     const auth = await getAuthenticatedClient();
-    const photos = google.photoslibrary({ version: "v1", auth });
 
-    const response = await photos.albums.list({
-      pageSize: 50,
+    // Get access token (will refresh if needed)
+    const { token } = await auth.getAccessToken();
+
+    // Use REST API directly since photoslibrary is not available in googleapis
+    const { request } = require("gaxios");
+
+    const response = await request({
+      url: "https://photoslibrary.googleapis.com/v1/albums",
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        pageSize: 50,
+      },
     });
 
     return response.data.albums || [];
@@ -197,8 +220,107 @@ const getAlbums = async () => {
   }
 };
 
+/**
+ * Join a shared album using a share token
+ * @param {string} shareToken - The share token from the Google Photos share URL
+ * @returns {Promise<Object>} The joined shared album object
+ */
+const joinSharedAlbum = async shareToken => {
+  try {
+    const auth = await getAuthenticatedClient();
+
+    // Get access token (will refresh if needed)
+    const { token } = await auth.getAccessToken();
+
+    // Use REST API directly since photoslibrary is not available in googleapis
+    const { request } = require("gaxios");
+
+    const response = await request({
+      url: "https://photoslibrary.googleapis.com/v1/sharedAlbums:join",
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      data: {
+        shareToken: shareToken,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error joining shared album:", error);
+    throw error;
+  }
+};
+
+/**
+ * Get album details from a shared album using a share token
+ * @param {string} shareToken - The share token from the Google Photos share URL
+ * @returns {Promise<Object>} The shared album object with albumId
+ */
+const getSharedAlbum = async shareToken => {
+  try {
+    const auth = await getAuthenticatedClient();
+
+    // Get access token (will refresh if needed)
+    const { token } = await auth.getAccessToken();
+
+    // Use REST API directly since photoslibrary is not available in googleapis
+    const { request } = require("gaxios");
+
+    const response = await request({
+      url: "https://photoslibrary.googleapis.com/v1/sharedAlbums:get",
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        shareToken: shareToken,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error getting shared album:", error);
+    throw error;
+  }
+};
+
+/**
+ * Join and resolve a shared album to get the album ID
+ * This is a convenience function that joins the album and then gets its details
+ * @param {string} shareToken - The share token from the Google Photos share URL
+ * @returns {Promise<string>} The album ID
+ */
+const resolveSharedAlbum = async shareToken => {
+  try {
+    // First, join the shared album (one-time operation)
+    console.log("Joining shared album...");
+    await joinSharedAlbum(shareToken);
+
+    // Then, get the album details to retrieve the albumId
+    console.log("Resolving shared album to get album ID...");
+    const album = await getSharedAlbum(shareToken);
+
+    if (!album || !album.album) {
+      throw new Error(
+        "Failed to resolve shared album - no album data returned",
+      );
+    }
+
+    return album.album.id;
+  } catch (error) {
+    console.error("Error resolving shared album:", error);
+    throw error;
+  }
+};
+
 module.exports = {
   getAlbumPhotos,
   getAlbums,
   getAuthenticatedClient,
+  joinSharedAlbum,
+  getSharedAlbum,
+  resolveSharedAlbum,
 };
