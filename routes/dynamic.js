@@ -52,78 +52,15 @@ const formRateLimit = rateLimit({
 });
 
 // ----HOME
-router.get("/", async (req, res) => {
+router.get("/", (req, res) => {
   const meta = {
     title:
       "Hydraulic Repairs and Component Sourcing | Germiston, Gauteng, ZA - Service Worldwide",
     description:
       "We repair and source hydraulic components for a wide range of industries and applications. We also service, test and repair components to OEM specification. View our range and examples of client work.",
   };
-  const table = base("repairsWork");
-  let error = null;
+  // Repairs not currently displayed - pass empty array to avoid Airtable API call
   const repairs = [];
-  let imgURL;
-  const imageGalleryList = [];
-  let img = {};
-
-  try {
-    const featuredRepairs = await table
-      .select({
-        view: "Featured Repairs",
-        filterByFormula: "NOT({featured} = 'false')",
-        fields: [
-          "repairName",
-          "repairDescription",
-          "mainImage",
-          "componentName",
-          "componentDescription",
-          "imagesGallery",
-        ],
-      })
-      .firstPage();
-    if (!featuredRepairs) {
-      throw Error("Unable to fetch repairs");
-    }
-    featuredRepairs.forEach(repair => {
-      let imagesGallery = repair.fields.imagesGallery;
-      imagesGallery.forEach(image => {
-        imgURL = image.url.slice(37);
-        let string = imgURL.indexOf("?");
-        imgURL = imgURL.slice(0, string);
-        imgURL = `https://res.cloudinary.com/ss-uploads/image/upload/q_auto:good,f_webp/remote_media/${imgURL}`;
-        img = {
-          url: imgURL,
-          id: image.id,
-          filename: image.filename,
-          width: image.width,
-          height: image.height,
-          size: image.size,
-          type: image.type,
-        };
-        imageGalleryList.push(img);
-      });
-      let imageURL = repair.fields.mainImage[0].url.slice(37);
-      const ext = imageURL.indexOf("?");
-      imageURL = imageURL.slice(0, ext);
-
-      imageURL = `https://res.cloudinary.com/ss-uploads/image/upload/q_auto:good,f_webp/remote_media/${imageURL}`;
-      repair = {
-        id: repair.id,
-        repairName: repair.fields.repairName,
-        repairDescription: repair.fields.repairDescription,
-        mainImageUrl: imageURL,
-        mainImageName: repair.fields.mainImage[0].filename,
-        componentName: repair.fields.componentName,
-        componentDescription: repair.fields.componentDescription,
-        imagesGalleryList: imageGalleryList,
-      };
-
-      repairs.push(repair);
-    });
-  } catch (err) {
-    error = err.message;
-    console.error(error);
-  }
 
   res.render("index", {
     meta: meta,
@@ -209,7 +146,8 @@ router.get("/enquiry", (req, res) => {
   };
   res.render("enquiry", {
     meta: meta,
-    recaptchaSiteKey: process.env.reCAPTCHA_v2_SITE_KEY || process.env.RECAPTCHA_SITE_KEY
+    recaptchaSiteKey:
+      process.env.reCAPTCHA_v2_SITE_KEY || process.env.RECAPTCHA_SITE_KEY,
   });
 });
 
@@ -284,12 +222,17 @@ router.post(
       }
 
       if (!recaptchaResult.success) {
-        console.warn("reCAPTCHA verification failed:", recaptchaResult.error || "Invalid token");
+        console.warn(
+          "reCAPTCHA verification failed:",
+          recaptchaResult.error || "Invalid token",
+        );
         logRecaptchaFailure(req, recaptchaResult, "enquiry").catch(err =>
           console.error("Failed to log reCAPTCHA failure:", err),
         );
         return res.status(400).render("confirm", {
-          message: { error: "reCAPTCHA verification failed. Please try again." },
+          message: {
+            error: "reCAPTCHA verification failed. Please try again.",
+          },
           ref: null,
         });
       }
@@ -313,14 +256,19 @@ router.post(
           console.error("Failed to log spam attempt:", err),
         );
         return res.status(400).render("confirm", {
-          message: { error: "There was an error processing your submission. Please try again." },
+          message: {
+            error:
+              "There was an error processing your submission. Please try again.",
+          },
           ref: null,
         });
       }
 
       // Check if base is initialized
       if (!base) {
-        console.error("Airtable base not initialized. Check BASE environment variable.");
+        console.error(
+          "Airtable base not initialized. Check BASE environment variable.",
+        );
         const messageData = data && typeof data === "object" ? data : {};
         return res.status(500).render("confirm", {
           message: messageData,
@@ -361,7 +309,9 @@ router.post(
       try {
         // Validate base before using it
         if (!base) {
-          throw new Error("Airtable base is not initialized. Check BASE environment variable.");
+          throw new Error(
+            "Airtable base is not initialized. Check BASE environment variable.",
+          );
         }
         if (!process.env.BASE) {
           throw new Error("BASE environment variable is not set.");
@@ -387,7 +337,10 @@ router.post(
               reference = updatedRecord.id;
             }
           } catch (uploadError) {
-            console.error("Error uploading image to Cloudinary:", uploadError.message);
+            console.error(
+              "Error uploading image to Cloudinary:",
+              uploadError.message,
+            );
             // Continue without image - form submission still succeeds
           }
         }
@@ -462,7 +415,10 @@ router.post(
 
       res.render("confirm", { message: messageData, ref: refValue });
     } catch (error) {
-      console.error("Unexpected error in parts enquiry handler:", error.message);
+      console.error(
+        "Unexpected error in parts enquiry handler:",
+        error.message,
+      );
 
       // Check if it's a multer error
       if (
@@ -502,7 +458,8 @@ router.get("/contact", (req, res) => {
   };
   res.render("contact", {
     meta: meta,
-    recaptchaSiteKey: process.env.reCAPTCHA_v2_SITE_KEY || process.env.RECAPTCHA_SITE_KEY
+    recaptchaSiteKey:
+      process.env.reCAPTCHA_v2_SITE_KEY || process.env.RECAPTCHA_SITE_KEY,
   });
 });
 
@@ -533,7 +490,10 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
     }
 
     if (!recaptchaResult.success) {
-      console.warn("reCAPTCHA verification failed:", recaptchaResult.error || "Invalid token");
+      console.warn(
+        "reCAPTCHA verification failed:",
+        recaptchaResult.error || "Invalid token",
+      );
       logRecaptchaFailure(req, recaptchaResult, "contact").catch(err =>
         console.error("Failed to log reCAPTCHA failure:", err),
       );
@@ -562,16 +522,23 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
         console.error("Failed to log spam attempt:", err),
       );
       return res.status(400).render("confirm", {
-        message: { error: "There was an error processing your submission. Please try again." },
+        message: {
+          error:
+            "There was an error processing your submission. Please try again.",
+        },
         ref: null,
       });
     }
 
     // Check if base is initialized
     if (!base) {
-      console.error("Airtable base not initialized. Check BASE environment variable.");
+      console.error(
+        "Airtable base not initialized. Check BASE environment variable.",
+      );
       return res.status(500).render("confirm", {
-        message: { error: "Server configuration error. Please contact support." },
+        message: {
+          error: "Server configuration error. Please contact support.",
+        },
         ref: null,
       });
     }
@@ -609,7 +576,10 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
           ip: clientIp,
         };
         sendContactFormNotification(emailData, reference).catch(err => {
-          console.error("Failed to send contact form notification email:", err.message);
+          console.error(
+            "Failed to send contact form notification email:",
+            err.message,
+          );
         });
       }
     } catch (error) {

@@ -1,8 +1,14 @@
 /**
  * Google Photos OAuth Setup Script
  *
- * Run this script ONCE to authenticate and get a refresh token.
- * After running this, the gallery will work for all visitors.
+ * This script is used to authenticate with Google Photos API and generate token.json.
+ * It is typically run:
+ * - Once during initial setup
+ * - When token.json expires and needs to be regenerated
+ * - When re-consent is required (e.g., after changing OAuth scopes or credentials)
+ *
+ * After running this, the generated token.json will be used by the application
+ * to access Google Photos. The gallery will work for all visitors once configured.
  *
  * Usage: node setup-google-photos-auth.js
  */
