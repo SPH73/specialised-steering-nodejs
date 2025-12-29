@@ -12,6 +12,7 @@ const { google } = require("googleapis");
 const readline = require("readline");
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 const { promisify } = require("util");
 
 const readFileAsync = promisify(fs.readFile);
@@ -41,10 +42,14 @@ function loadCredentials() {
  * Get new token after prompting for user authorization
  */
 async function getNewToken(oAuth2Client, redirectUri) {
+  // Generate random state for CSRF protection
+  const state = crypto.randomBytes(32).toString("hex");
+
   const authUrl = oAuth2Client.generateAuthUrl({
     access_type: "offline",
     scope: SCOPES,
     prompt: "consent", // Force consent screen to ensure all scopes are granted
+    state: state, // CSRF protection
   });
 
   console.log("\n🔐 Authorization required!");
@@ -54,6 +59,10 @@ async function getNewToken(oAuth2Client, redirectUri) {
   console.log("\n2. You will be asked to sign in with your Google account");
   console.log("   (Use the account that owns the photos you want to display)");
   console.log("\n3. Grant permission to access Google Photos");
+  console.log(
+    "\n⚠️  Security: State parameter is included for CSRF protection",
+  );
+  console.log("   State value: " + state.substring(0, 16) + "...");
 
   if (redirectUri === "urn:ietf:wg:oauth:2.0:oob") {
     console.log(
@@ -87,46 +96,81 @@ async function getNewToken(oAuth2Client, redirectUri) {
   });
 
   return new Promise((resolve, reject) => {
-    rl.question("\n📋 Paste the authorization code here: ", async input => {
-      rl.close();
+    rl.question(
+      "\n📋 Paste the authorization code or full callback URL here: ",
+      async input => {
+        rl.close();
 
-      // Extract just the code value from whatever the user pasted
-      // Handles: full URL, code=..., or just the code
-      let code = input.trim();
+        // Extract code and state from whatever the user pasted
+        // Handles: full URL, code=..., or just the code
+        let code = input.trim();
+        let receivedState = null;
 
-      // If it's a URL, extract the code parameter
-      if (code.includes("?")) {
-        const url = new URL(code);
-        code = url.searchParams.get("code") || code;
-      } else if (code.includes("code=")) {
-        // If it's "code=...&scope=...", extract just the code value
-        const match = code.match(/code=([^&]+)/);
-        if (match) {
-          code = match[1];
-        } else {
-          // Try to extract after "code="
-          code = code.split("code=")[1]?.split("&")[0] || code;
+        // If it's a URL, extract both code and state parameters
+        if (code.includes("?")) {
+          try {
+            const url = new URL(code);
+            code = url.searchParams.get("code") || code;
+            receivedState = url.searchParams.get("state");
+          } catch (e) {
+            // If URL parsing fails, try manual extraction
+          }
         }
-      }
 
-      // Clean up any remaining URL encoding or whitespace
-      code = decodeURIComponent(code).trim();
+        // If we didn't get state from URL, try extracting from string
+        if (!receivedState && code.includes("state=")) {
+          const stateMatch = code.match(/state=([^&]+)/);
+          if (stateMatch) {
+            receivedState = decodeURIComponent(stateMatch[1]);
+          }
+        }
 
-      try {
-        const { tokens } = await oAuth2Client.getToken(code);
-        oAuth2Client.setCredentials(tokens);
+        // If we still have code= in the string, extract it
+        if (code.includes("code=")) {
+          const match = code.match(/code=([^&]+)/);
+          if (match) {
+            code = match[1];
+          } else {
+            code = code.split("code=")[1]?.split("&")[0] || code;
+          }
+        }
 
-        // Save token to token.json
-        const tokenPath = path.join(__dirname, "token.json");
-        await writeFileAsync(tokenPath, JSON.stringify(tokens, null, 2));
-        console.log("\n✅ Token stored to token.json");
+        // Clean up any remaining URL encoding or whitespace
+        code = decodeURIComponent(code).trim();
 
-        return resolve(tokens);
-      } catch (error) {
-        console.error("❌ Error retrieving access token:", error);
-        return reject(error);
-      }
-    });
+        // Verify state parameter for CSRF protection
+        if (receivedState) {
+          if (receivedState !== state) {
+            console.error("\n❌ Security Error: State parameter mismatch!");
+            console.error(
+              "   This could indicate a CSRF attack. Please try again.",
+            );
+            return reject(new Error("State parameter verification failed"));
+          }
+          console.log("✅ State parameter verified (CSRF protection)");
+        } else {
+          console.warn("⚠️  Warning: No state parameter found in callback.");
+          console.warn(
+            "   This is okay for manual setup, but state should be included in production.",
+          );
+        }
+
+        try {
+          const { tokens } = await oAuth2Client.getToken(code);
+          oAuth2Client.setCredentials(tokens);
+
+          // Save token to token.json
+          const tokenPath = path.join(__dirname, "token.json");
+          await writeFileAsync(tokenPath, JSON.stringify(tokens, null, 2));
+          console.log("\n✅ Token stored to token.json");
+
+          return resolve(tokens);
+        } catch (error) {
+          console.error("❌ Error retrieving access token:", error);
+          return reject(error);
+        }
+      },
+    );
   });
 }
 
