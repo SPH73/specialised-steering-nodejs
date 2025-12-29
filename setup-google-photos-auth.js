@@ -17,7 +17,10 @@ const { promisify } = require("util");
 const readFileAsync = promisify(fs.readFile);
 const writeFileAsync = promisify(fs.writeFile);
 
-const SCOPES = ["https://www.googleapis.com/auth/photoslibrary.readonly"];
+const SCOPES = [
+  "https://www.googleapis.com/auth/photoslibrary.readonly",
+  "https://www.googleapis.com/auth/photoslibrary.sharing",
+];
 
 /**
  * Load credentials from credentials.json

@@ -13,7 +13,11 @@ credentials.json
 *.txt
 MD/
 
-# Deployment scripts - server-specific, don't commit
+# Server configuration files with sensitive data - never commit
+.htaccess
+
+# Deployment scripts - server-specific, don't commit (contain sensitive data)
+check-google-photos-server.sh
 add-env-vars-to-staging-htaccess.sh
 add-google-oauth-to-staging-htaccess.sh
 update-google-oauth-env.sh

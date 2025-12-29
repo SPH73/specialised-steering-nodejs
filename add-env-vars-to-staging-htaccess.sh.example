@@ -1,0 +1,111 @@
+#!/bin/bash
+# This is a template file. The actual file with real credentials is:
+# add-env-vars-to-staging-htaccess.sh (ignored in .gitignore)
+# Copy this file to add-env-vars-to-staging-htaccess.sh and replace placeholders with actual values.
+
+# Script to add environment variables to staging .htaccess
+# Run this on the staging server: ./add-env-vars-to-staging-htaccess.sh
+
+set -e  # Exit on error
+
+echo "🔧 Adding environment variables to staging .htaccess"
+echo "=" | head -c 60; echo ""
+
+# Navigate to staging directory - REPLACE WITH YOUR ACTUAL PATH
+cd ~/YOUR_STAGING_DIRECTORY
+
+# Check if .htaccess exists
+if [ ! -f .htaccess ]; then
+    echo "❌ Error: .htaccess file not found in staging directory"
+    exit 1
+fi
+
+# Backup .htaccess
+BACKUP_FILE=".htaccess.backup.$(date +%Y%m%d_%H%M%S)"
+cp .htaccess "$BACKUP_FILE"
+echo "✅ .htaccess backed up to $BACKUP_FILE"
+
+# Check if environment variables already exist
+if grep -q "SetEnv AT_API_KEY" .htaccess; then
+    echo "⚠️  Warning: Environment variables already exist in .htaccess"
+    read -p "Do you want to add them anyway? (y/N): " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "❌ Aborted. No changes made."
+        exit 0
+    fi
+fi
+
+echo ""
+echo "📝 This script will append environment variables to .htaccess"
+echo "   You'll need to update placeholder values with actual values from cPanel."
+echo ""
+read -p "Continue? (y/N): " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo "❌ Aborted."
+    exit 0
+fi
+
+# Check if <IfModule Litespeed> block exists
+if ! grep -q "<IfModule Litespeed>" .htaccess; then
+    echo "📝 Adding <IfModule Litespeed> block..."
+    echo "" >> .htaccess
+    echo "<IfModule Litespeed>" >> .htaccess
+    echo "  # Environment variables" >> .htaccess
+else
+    echo "📝 Adding environment variables to existing <IfModule Litespeed> block..."
+    # Insert before closing tag
+    sed -i.tmp '/<\/IfModule>/i\
+  # Environment variables (added automatically)
+' .htaccess
+fi
+
+# Append environment variables - REPLACE ALL PLACEHOLDERS WITH ACTUAL VALUES
+cat >> .htaccess << 'ENV_VARS'
+
+  # Airtable Configuration
+  SetEnv AT_ENDPOINT https://api.airtable.com
+  SetEnv AT_API_KEY YOUR_AIRTABLE_API_KEY
+  SetEnv BASE YOUR_AIRTABLE_BASE_ID
+
+  # Cloudinary Configuration
+  SetEnv CLOUD_NAME YOUR_CLOUDINARY_CLOUD_NAME
+  SetEnv API_KEY YOUR_CLOUDINARY_API_KEY
+  SetEnv API_SECRET YOUR_CLOUDINARY_API_SECRET
+  SetEnv CLOUDINARY_URL cloudinary://YOUR_CLOUDINARY_URL
+
+  # reCAPTCHA v2 Configuration
+  SetEnv reCAPTCHA_v2_SECRET_KEY YOUR_RECAPTCHA_V2_SECRET_KEY
+  SetEnv reCAPTCHA_v2_SITE_KEY YOUR_RECAPTCHA_V2_SITE_KEY
+
+  # Email Configuration
+  SetEnv EMAIL_HOST YOUR_SMTP_HOST
+  SetEnv EMAIL_PORT YOUR_SMTP_PORT
+  SetEnv EMAIL_SECURE YOUR_SMTP_SECURE
+  SetEnv EMAIL_USER YOUR_EMAIL_USER
+  SetEnv EMAIL_PASSWORD YOUR_EMAIL_PASSWORD
+  SetEnv NOTIFICATION_EMAIL YOUR_NOTIFICATION_EMAIL
+
+  # Google OAuth Configuration
+  SetEnv CLIENT_ID YOUR_GOOGLE_OAUTH_CLIENT_ID
+  SetEnv CLIENT_SECRET YOUR_GOOGLE_OAUTH_CLIENT_SECRET
+  SetEnv REDIRECT_URIS "http://localhost:3300/oauth2callback,https://YOUR_STAGING_DOMAIN/oauth2callback,https://YOUR_PRODUCTION_DOMAIN/oauth2callback"
+ENV_VARS
+
+# Clean up temp file
+rm -f .htaccess.tmp
+
+echo ""
+echo "✅ Environment variables template added to .htaccess"
+echo ""
+echo "📝 Next steps:"
+echo "   1. Get actual values from cPanel → Node.js App → Environment Variables"
+echo "   2. Edit .htaccess: nano .htaccess"
+echo "   3. Replace placeholder values (search for 'YOUR_*') with actual values"
+echo "   4. Or use sed commands to update (see MD/ADD_ENV_VARS_TO_STAGING.md)"
+echo "   5. Restart Passenger: touch tmp/restart.txt"
+echo ""
+echo "💡 Tip: Use 'grep SetEnv .htaccess' to see all environment variables"
+echo ""
+

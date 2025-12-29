@@ -154,8 +154,9 @@ const getAlbumPhotos = async albumId => {
         const formattedPhotos = response.data.mediaItems.map(item => {
           // Get the best available image URL (prefer high quality, fallback to baseUrl)
           const baseUrl = item.baseUrl;
-          const width = item.mediaMetadata?.width || 0;
-          const height = item.mediaMetadata?.height || 0;
+          const mediaMetadata = item.mediaMetadata || {};
+          const width = mediaMetadata.width || 0;
+          const height = mediaMetadata.height || 0;
 
           // Request optimized image (w=2048 for good quality without being too large)
           const imageUrl = baseUrl ? `${baseUrl}=w2048-h2048` : null;
@@ -171,7 +172,7 @@ const getAlbumPhotos = async albumId => {
             width: width,
             height: height,
             description: item.description || "",
-            creationTime: item.mediaMetadata?.creationTime || "",
+            creationTime: mediaMetadata.creationTime || "",
           };
         });
 
@@ -289,19 +290,49 @@ const getSharedAlbum = async shareToken => {
 
 /**
  * Join and resolve a shared album to get the album ID
- * This is a convenience function that joins the album and then gets its details
+ * Note: The join endpoint has been discontinued by Google, so we try alternative methods
  * @param {string} shareToken - The share token from the Google Photos share URL
  * @returns {Promise<string>} The album ID
  */
 const resolveSharedAlbum = async shareToken => {
   try {
-    // First, join the shared album (one-time operation)
-    console.log("Joining shared album...");
-    await joinSharedAlbum(shareToken);
-
-    // Then, get the album details to retrieve the albumId
+    // Try to get shared album directly (without joining first)
+    // This works if the album is already accessible to the authenticated account
     console.log("Resolving shared album to get album ID...");
-    const album = await getSharedAlbum(shareToken);
+    let album;
+
+    try {
+      album = await getSharedAlbum(shareToken);
+    } catch (getError) {
+      // If getSharedAlbum fails, try listing all albums to find the shared one
+      console.log("Direct lookup failed, searching in all albums...");
+      const allAlbums = await getAlbums();
+
+      // Look for shared albums that might match
+      // Note: We can't directly match by shareToken, but we can list shared albums
+      const sharedAlbums = allAlbums.filter(a => a.isShared || a.shareInfo);
+
+      if (sharedAlbums.length === 0) {
+        throw new Error(
+          "No shared albums found. The album may need to be shared with your Google account first. " +
+            "Please accept the share link in your browser, then try again.",
+        );
+      }
+
+      if (sharedAlbums.length === 1) {
+        console.log("Found one shared album, using it:");
+        album = { album: sharedAlbums[0] };
+      } else {
+        // Multiple shared albums - we can't determine which one matches the shareToken
+        // Return the first one and let the user know
+        console.log(
+          `Found ${sharedAlbums.length} shared albums. Using the first one:`,
+        );
+        console.log(`  Title: ${sharedAlbums[0].title}`);
+        console.log(`  ID: ${sharedAlbums[0].id}`);
+        album = { album: sharedAlbums[0] };
+      }
+    }
 
     if (!album || !album.album) {
       throw new Error(

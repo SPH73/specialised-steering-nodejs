@@ -30,7 +30,7 @@ app.set("view engine", "ejs");
 app.use((req, res, next) => {
   res.setHeader(
     "Report-To",
-    `{"group":"csp-endpoint","max_age":10886400,"endpoints":[{"url":"https://specialisedsteering.com/__cspreport__"}],"include_subdomains":true}`,
+    `{"group":"csp-endpoint","max_age":10886400,"endpoints":[{"url":"https://www.specialisedsteering.com/__cspreport__"}],"include_subdomains":true}`,
   );
   res.setHeader(
     "Content-Security-Policy-Report-Only",
@@ -59,6 +59,28 @@ app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
 app.use(express.json({ limit: "10mb" }));
 // Use extended: true for better compatibility with form submissions
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+
+// Block WordPress/Elementor query parameters - return 410 Gone to signal permanent removal
+// 410 Gone tells search engines the resource is permanently removed and should be de-indexed
+app.use((req, res, next) => {
+  // WordPress/Elementor query parameters that indicate WordPress artifacts
+  const wordpressParams = [
+    'elementor_library',      // Elementor template library
+    'elementor-preview',      // Elementor preview mode
+    'preview_id',             // WordPress preview with ID
+    'wpml_lang',              // WPML multilingual plugin
+    'preview',                // WordPress preview mode (when combined with other WP params)
+    'post_type',              // WordPress post type
+    'page_id'                 // WordPress page ID
+  ];
+
+  const hasWordPressParam = wordpressParams.some(param => req.query[param]);
+
+  if (hasWordPressParam) {
+    return res.status(410).render("410");
+  }
+  next();
+});
 
 // Routes
 app.use(dynamicRoutes);

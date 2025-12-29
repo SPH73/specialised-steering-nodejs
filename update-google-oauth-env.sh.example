@@ -1,0 +1,91 @@
+#!/bin/bash
+# This is a template file. The actual file with real credentials is:
+# update-google-oauth-env.sh (ignored in .gitignore)
+# Copy this file to update-google-oauth-env.sh and replace placeholders with actual values.
+
+# Script to update Google OAuth environment variables in production .htaccess
+# Run this on the production server: ./update-google-oauth-env.sh
+
+set -e  # Exit on error
+
+echo "🔐 Updating Google OAuth environment variables in .htaccess"
+echo "=" | head -c 60; echo ""
+
+# New values from credentials.json - REPLACE WITH YOUR ACTUAL VALUES
+NEW_CLIENT_ID="YOUR_GOOGLE_OAUTH_CLIENT_ID"
+NEW_CLIENT_SECRET="YOUR_GOOGLE_OAUTH_CLIENT_SECRET"
+NEW_REDIRECT_URIS="http://localhost:3300/oauth2callback,https://YOUR_STAGING_DOMAIN/oauth2callback,https://YOUR_PRODUCTION_DOMAIN/oauth2callback"
+
+# Check if .htaccess exists
+if [ ! -f .htaccess ]; then
+    echo "❌ Error: .htaccess file not found in current directory"
+    exit 1
+fi
+
+# Backup .htaccess
+cp .htaccess .htaccess.backup.$(date +%Y%m%d_%H%M%S)
+echo "✅ .htaccess backed up"
+
+# Update or add CLIENT_ID
+if grep -q "SetEnv CLIENT_ID" .htaccess; then
+    sed -i.tmp "s|SetEnv CLIENT_ID.*|SetEnv CLIENT_ID ${NEW_CLIENT_ID}|g" .htaccess
+    echo "✅ Updated CLIENT_ID"
+else
+    echo "📝 Adding CLIENT_ID to .htaccess..."
+    # Check if <IfModule Litespeed> block exists
+    if grep -q "<IfModule Litespeed>" .htaccess; then
+        # Add before closing tag
+        sed -i.tmp '/<\/IfModule>/i\
+SetEnv CLIENT_ID '"${NEW_CLIENT_ID}"'
+' .htaccess
+        echo "✅ Added CLIENT_ID"
+    else
+        echo "⚠️  Warning: <IfModule Litespeed> block not found"
+        echo "   You may need to add it manually"
+    fi
+fi
+
+# Update or add CLIENT_SECRET
+if grep -q "SetEnv CLIENT_SECRET" .htaccess; then
+    sed -i.tmp "s|SetEnv CLIENT_SECRET.*|SetEnv CLIENT_SECRET ${NEW_CLIENT_SECRET}|g" .htaccess
+    echo "✅ Updated CLIENT_SECRET"
+else
+    echo "📝 Adding CLIENT_SECRET to .htaccess..."
+    if grep -q "<IfModule Litespeed>" .htaccess; then
+        sed -i.tmp '/<\/IfModule>/i\
+SetEnv CLIENT_SECRET '"${NEW_CLIENT_SECRET}"'
+' .htaccess
+        echo "✅ Added CLIENT_SECRET"
+    else
+        echo "⚠️  Warning: <IfModule Litespeed> block not found"
+    fi
+fi
+
+# Update or add REDIRECT_URIS
+if grep -q "SetEnv REDIRECT_URIS" .htaccess; then
+    sed -i.tmp "s|SetEnv REDIRECT_URIS.*|SetEnv REDIRECT_URIS ${NEW_REDIRECT_URIS}|g" .htaccess
+    echo "✅ Updated REDIRECT_URIS"
+else
+    echo "📝 Adding REDIRECT_URIS to .htaccess..."
+    if grep -q "<IfModule Litespeed>" .htaccess; then
+        sed -i.tmp '/<\/IfModule>/i\
+SetEnv REDIRECT_URIS '"${NEW_REDIRECT_URIS}"'
+' .htaccess
+        echo "✅ Added REDIRECT_URIS"
+    else
+        echo "⚠️  Warning: <IfModule Litespeed> block not found"
+    fi
+fi
+
+# Clean up temp file
+rm -f .htaccess.tmp
+
+echo ""
+echo "✅ Environment variables updated in .htaccess"
+echo ""
+echo "📝 Next steps:"
+echo "   1. Review the changes: diff .htaccess.backup.* .htaccess"
+echo "   2. Restart Passenger: touch tmp/restart.txt"
+echo "   3. Test the application"
+echo ""
+
