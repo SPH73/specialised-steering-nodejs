@@ -4,7 +4,6 @@
   const API_BASE = window.ADMIN_API_BASE || '/admin/google/photos';
   const GOOGLE_CLIENT_ID = window.GOOGLE_CLIENT_ID;
   
-  let pickerApiLoaded = false;
   let currentSessionId = null;
 
   /**
@@ -45,34 +44,7 @@
   }
 
   /**
-   * Initialize Google Picker API
-   */
-  function initializePicker() {
-    return new Promise((resolve, reject) => {
-      if (pickerApiLoaded) {
-        resolve();
-        return;
-      }
-
-      if (!GOOGLE_CLIENT_ID) {
-        reject(new Error('GOOGLE_CLIENT_ID not configured'));
-        return;
-      }
-
-      gapi.load('picker', {
-        callback: () => {
-          pickerApiLoaded = true;
-          resolve();
-        },
-        onerror: () => {
-          reject(new Error('Failed to load Google Picker API'));
-        }
-      });
-    });
-  }
-
-  /**
-   * Create picker session via backend API
+   * Create picker session via backend API and get picker URI
    */
   async function createSession() {
     try {
@@ -97,26 +69,48 @@
   }
 
   /**
-   * Open Google Photos Picker UI
+   * Get session status (includes pickerUri)
    */
-  function openPicker(sessionId) {
-    return new Promise((resolve, reject) => {
-      const picker = new google.picker.PhotoPickerBuilder()
-        .setDeveloperKey(GOOGLE_CLIENT_ID)
-        .setSessionId(sessionId)
-        .setOAuthToken('') // Not needed for Photo Picker
-        .setCallback((data) => {
-          if (data[google.picker.Response.ACTION] === google.picker.Action.PICKED) {
-            resolve(sessionId);
-          } else if (data[google.picker.Response.ACTION] === google.picker.Action.CANCEL) {
-            reject(new Error('Picker cancelled'));
-          } else {
-            reject(new Error('Picker error'));
-          }
-        })
-        .build();
+  async function getSessionStatus(sessionId) {
+    try {
+      const response = await fetch(`${API_BASE}/sessions/${sessionId}/status`);
       
-      picker.setVisible(true);
+      if (!response.ok) {
+        throw new Error('Failed to get session status');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error getting session status:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Open Google Photos Picker UI by redirecting to pickerUri
+   */
+  function openPicker(pickerUri) {
+    // Open picker in a new window/tab
+    const pickerWindow = window.open(pickerUri, 'Google Photos Picker', 'width=800,height=600');
+    
+    if (!pickerWindow) {
+      throw new Error('Popup blocked. Please allow popups for this site.');
+    }
+    
+    // Return a promise that resolves when the window is closed
+    // (we'll poll for status instead of waiting for window close)
+    return new Promise((resolve, reject) => {
+      // Check if window was closed manually
+      const checkClosed = setInterval(() => {
+        if (pickerWindow.closed) {
+          clearInterval(checkClosed);
+          // User may have closed without selecting, but we'll poll to see if items were selected
+          resolve();
+        }
+      }, 500);
+      
+      // Note: We don't reject on close because the user might have selected items
+      // before closing. We'll poll the status instead.
     });
   }
 
