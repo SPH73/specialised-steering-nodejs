@@ -12,6 +12,18 @@ const {
 } = require('../utils/gallery-db');
 
 /**
+ * GET /admin/gallery
+ * Render admin gallery management UI
+ */
+router.get('/gallery', (req, res) => {
+  res.render('admin-gallery', {
+    // Pass environment variables needed by view
+    // Note: In production, be careful about exposing env vars
+    // For now, we'll pass GOOGLE_CLIENT_ID which is needed client-side
+  });
+});
+
+/**
  * POST /admin/google/photos/sessions
  * Create a picker session
  * Returns: { sessionId: string }

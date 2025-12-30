@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('includes/meta') %> 
+    <%- include('includes/head') %>
+    <title>Admin - Gallery Management</title>
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="../js/admin-gallery.js" defer></script>
+  </head>
+  <body>
+    <%- include('includes/nav') %>
+    <main>
+      <section class="section">
+        <div class="container">
+          <h1>Gallery Management</h1>
+          
+          <div class="admin-gallery-controls">
+            <div class="form-group">
+              <label>
+                <input type="checkbox" id="replaceMode" />
+                Replace all existing gallery items (uncheck to append)
+              </label>
+            </div>
+            
+            <button id="updateGalleryBtn" class="button">
+              Update Gallery from Google Photos
+            </button>
+          </div>
+          
+          <div id="galleryStatus" class="gallery-status" style="display: none;">
+            <p id="statusMessage"></p>
+            <div id="statusProgress" style="display: none;">
+              <p>Processing...</p>
+            </div>
+          </div>
+          
+          <div class="gallery-info">
+            <p>Current gallery items: <span id="itemCount">-</span></p>
+          </div>
+        </div>
+      </section>
+    </main>
+    <%- include('includes/footer') %> 
+    <%- include('includes/blockjs') %>
+    
+    <script>
+      // Pass Google Client ID to client-side script
+      window.GOOGLE_CLIENT_ID = '<%= process.env.GOOGLE_CLIENT_ID || "" %>';
+      window.ADMIN_API_BASE = '/admin/google/photos';
+    </script>
+  </body>
+</html>
+
