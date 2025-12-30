@@ -12,6 +12,19 @@ const {
 } = require('../utils/gallery-db');
 
 /**
+ * GET /admin/gallery
+ * Render admin gallery management UI
+ */
+router.get('/gallery', (req, res) => {
+  res.render('admin-gallery', {
+    meta: {
+      title: 'Admin - Gallery Management',
+      description: 'Manage gallery items from Google Photos'
+    }
+  });
+});
+
+/**
  * POST /admin/google/photos/sessions
  * Create a picker session
  * Returns: { sessionId: string }
@@ -51,7 +64,10 @@ router.get('/google/photos/sessions/:sessionId/status', async (req, res) => {
 router.post('/google/photos/sessions/:sessionId/ingest', async (req, res) => {
   try {
     const { sessionId } = req.params;
-    const replaceMode = process.env.GALLERY_REPLACE_MODE === 'true';
+    // Get replaceMode from request body, fall back to env var, default to false
+    const replaceMode = req.body.replaceMode !== undefined 
+      ? req.body.replaceMode 
+      : (process.env.GALLERY_REPLACE_MODE === 'true');
 
     // Ensure database table exists
     await initGalleryTable();
