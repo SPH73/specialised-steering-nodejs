@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
+// Import gallery database utilities
+const { getAllGalleryItems } = require("../utils/gallery-db");
+
 router.get("/about", (req, res) => {
   const meta = {
     title:
@@ -11,18 +14,47 @@ router.get("/about", (req, res) => {
   res.render("about", { meta: meta });
 });
 
-router.get("/gallery", (req, res) => {
+router.get("/gallery", async (req, res) => {
   const meta = {
     title: "Completed Jobs Photo Gallery | Specialised Steering",
     description:
       "Explore our hydraulic component completed repairs gallery showcasing our expertise in servicing the mining, agricultural, and automotive industries. View completed projects and see the quality of our work firsthand. Trust Specialised Steering for reliable hydraulic repairs tailored to your industry needs.",
   };
 
+  let photos = [];
+  let error = null;
+
+  try {
+    // Query database for gallery items
+    const dbItems = await getAllGalleryItems();
+
+    // Transform database records to match template expectations
+    photos = dbItems.map((item) => {
+      return {
+        id: item.id,
+        url: item.cloudinary_url,
+        thumbnailUrl: item.thumbnail_url || item.cloudinary_url, // Fallback to main URL if thumbnail missing
+        width: item.width || null,
+        height: item.height || null,
+        filename: item.filename || null,
+        description: item.filename || null, // Use filename as description for alt text
+      };
+    });
+
+    if (photos.length === 0) {
+      error = "No photos available at this time.";
+    }
+  } catch (err) {
+    console.error("Error fetching gallery photos:", err);
+    console.error("Error details:", err.message);
+    error = "Unable to load gallery photos at this time. Please try again later.";
+  }
+
   res.render("gallery", {
     meta: meta,
-    photos: [],
-    error: "Gallery is currently being updated. Please check back soon.",
-    hasPhotos: false,
+    photos: photos,
+    error: error,
+    hasPhotos: photos.length > 0,
   });
 });
 
