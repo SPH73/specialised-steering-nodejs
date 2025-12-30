@@ -11,7 +11,10 @@ token.json
 credentials.json
 *-todo.md
 *.txt
+
+# Resources
 MD/
+AGENT/
 
 # Server configuration files with sensitive data - never commit
 .htaccess
@@ -23,6 +26,10 @@ add-google-oauth-to-staging-htaccess.sh
 update-google-oauth-env.sh
 upload-google-oauth-env.sh
 upload-google-photos-files.sh
+
+# SQLite database files (but not data directory)
+data/*.db
+
 # Google Search Console coverage reports
 *Coverage*.zip
 *Coverage*.csv

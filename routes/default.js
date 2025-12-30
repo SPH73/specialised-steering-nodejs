@@ -1,19 +1,6 @@
 const express = require("express");
 const router = express.Router();
 
-// Google Photos integration - handle gracefully if module not available
-let getAlbumPhotos = null;
-try {
-  // Check if googleapis is available first
-  require("googleapis");
-  const googlePhotos = require("../utils/google-photos");
-  getAlbumPhotos = googlePhotos.getAlbumPhotos;
-} catch (error) {
-  console.warn("⚠️ Google Photos utility not available:", error.message);
-  console.warn("⚠️ Gallery will show error message. Install 'googleapis' package and configure credentials.json to enable.");
-  getAlbumPhotos = null;
-}
-
 router.get("/about", (req, res) => {
   const meta = {
     title:
@@ -24,52 +11,18 @@ router.get("/about", (req, res) => {
   res.render("about", { meta: meta });
 });
 
-router.get("/gallery", async (req, res) => {
+router.get("/gallery", (req, res) => {
   const meta = {
     title: "Completed Jobs Photo Gallery | Specialised Steering",
     description:
       "Explore our hydraulic component completed repairs gallery showcasing our expertise in servicing the mining, agricultural, and automotive industries. View completed projects and see the quality of our work firsthand. Trust Specialised Steering for reliable hydraulic repairs tailored to your industry needs.",
   };
 
-  const albumId = process.env.GOOGLE_PHOTOS_ALBUM_ID;
-  let photos = [];
-  let error = null;
-
-  // Check if Google Photos is configured
-  if (!getAlbumPhotos) {
-    error = "Google Photos integration is not configured. Please ensure the google-photos utility is available.";
-    console.error(error);
-  } else if (!albumId) {
-    error = "Gallery album not configured. Please set GOOGLE_PHOTOS_ALBUM_ID in environment variables.";
-    console.warn(error);
-  } else {
-    try {
-      photos = await getAlbumPhotos(albumId);
-      if (photos.length === 0) {
-        error = "No photos found in the specified album.";
-      }
-    } catch (err) {
-      console.error("Error fetching gallery photos:", err);
-      console.error("Error details:", err.message);
-
-      // Provide helpful error messages based on the error type
-      if (err.message && err.message.includes("Token file not found")) {
-        error = "Google Photos authentication required. Please run the setup script to authenticate.";
-      } else if (err.message && err.message.includes("Failed to load Google API credentials")) {
-        error = "Google Photos credentials not found. Please ensure credentials.json exists.";
-      } else if (err.message && err.message.includes("refresh")) {
-        error = "Google Photos authentication expired. Please re-authenticate.";
-      } else {
-        error = "Unable to load gallery photos at this time. Please try again later.";
-      }
-    }
-  }
-
   res.render("gallery", {
     meta: meta,
-    photos: photos,
-    error: error,
-    hasPhotos: photos.length > 0,
+    photos: [],
+    error: "Gallery is currently being updated. Please check back soon.",
+    hasPhotos: false,
   });
 });
 
