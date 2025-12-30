@@ -25,6 +25,61 @@ router.get('/gallery', (req, res) => {
 });
 
 /**
+ * GET /admin/logout
+ * Logout admin user (clears Basic Auth credentials)
+ */
+router.get('/logout', (req, res) => {
+  // Clear Basic Auth by returning 401 with logout realm
+  res.setHeader('WWW-Authenticate', 'Basic realm="Admin Area"');
+  res.status(401).send(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Logged Out</title>
+        <meta http-equiv="refresh" content="2;url=/">
+        <style>
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #f5f5f5;
+          }
+          .logout-container {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          }
+          h1 {
+            color: #333;
+            margin-bottom: 1rem;
+          }
+          p {
+            color: #666;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="logout-container">
+          <h1>Logged out successfully</h1>
+          <p>You will be redirected to the home page...</p>
+        </div>
+        <script>
+          // Clear any cached credentials and redirect
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 2000);
+        </script>
+      </body>
+    </html>
+  `);
+});
+
+/**
  * POST /admin/google/photos/sessions
  * Create a picker session
  * Returns: { sessionId: string }
