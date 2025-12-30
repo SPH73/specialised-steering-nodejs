@@ -82,6 +82,11 @@ app.use((req, res, next) => {
   next();
 });
 
+// Admin routes (protected with basic auth)
+const basicAuth = require('./middleware/basic-auth');
+const adminRoutes = require('./routes/admin');
+app.use('/admin', basicAuth, adminRoutes);
+
 // Routes
 app.use(dynamicRoutes);
 app.use(defaultRoutes);
