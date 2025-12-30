@@ -26,7 +26,7 @@ A Node.js/Express web application for **Specialised Steering (Pty) Ltd**, a hydr
 
 ## Prerequisites
 
-- Node.js (v12 or higher)
+- **Node.js v20.19.0** (required - see [Node.js Version Management](#nodejs-version-management))
 - npm or yarn
 - Airtable account and API key
 - Cloudinary account
@@ -86,10 +86,156 @@ NOTIFICATION_EMAIL=admin@ssteering.co.za
 If you want to enable the Google Photos gallery integration:
 
 - Create a project in Google Cloud Platform
-- Enable the Google Photos Library API
+- Enable the Google Photos Picker API
 - Download OAuth 2.0 credentials as `credentials.json`
 - Place the file in the root directory
-- Run the OAuth flow using `googleapi.js`
+- Run the OAuth setup: `node setup-google-picker-auth.js`
+
+## Node.js Version Management
+
+This project requires **Node.js v20.19.0** for compatibility with native dependencies (specifically `better-sqlite3`).
+
+### Local Development Setup
+
+The project includes a `prestart` script that automatically validates the Node.js version before starting the server.
+
+**For nvm users (recommended):**
+
+1. Install Node.js v20.19.0:
+   ```bash
+   nvm install 20.19.0
+   nvm use 20.19.0
+   ```
+
+2. The `.nvmrc` file will automatically use the correct version when you `cd` into the project (if auto-switch is enabled)
+
+3. Verify version:
+   ```bash
+   node --version
+   # Should output: v20.19.0
+   ```
+
+4. Start the server:
+   ```bash
+   npm start
+   ```
+
+If you see an error about Node.js version mismatch:
+```
+❌ Error: Node.js v20.19.0 required, but found vX.X.X
+   Run: nvm use 20
+```
+
+Run `nvm use 20` or `nvm use 20.19.0` to switch to the correct version.
+
+**For other version managers:**
+- **fnm**: `fnm use` (reads `.nvmrc`)
+- **asdf**: `asdf install nodejs 20.19.0 && asdf local nodejs 20.19.0`
+- **n**: `n 20.19.0`
+
+### Upgrading Node.js Version (Local Development)
+
+If you need to upgrade Node.js for local development:
+
+1. **Update version files:**
+   - Update `.nvmrc` with the new version (e.g., `21.0.0`)
+   - Update `.node-version` with the major version (e.g., `21`)
+   - Update `package.json` `prestart` script to check for the new version
+
+2. **Install the new version:**
+   ```bash
+   nvm install 21.0.0
+   nvm use 21.0.0
+   ```
+
+3. **Rebuild native dependencies:**
+   ```bash
+   npm rebuild better-sqlite3
+   # Or reinstall all dependencies:
+   rm -rf node_modules package-lock.json
+   npm install
+   ```
+
+4. **Test the application:**
+   ```bash
+   npm start
+   node scripts/test-admin-routes.js
+   ```
+
+5. **Commit the changes:**
+   ```bash
+   git add .nvmrc .node-version package.json package-lock.json
+   git commit -m "chore: upgrade Node.js to v21.0.0"
+   ```
+
+### Upgrading Node.js Version (Production/Staging Servers)
+
+**⚠️ Important:** Always test upgrades in staging before production.
+
+1. **Backup the current setup:**
+   - Document current Node.js version: `node --version`
+   - Backup database files and configuration
+
+2. **On the server, install the new Node.js version:**
+   
+   **For servers using nvm:**
+   ```bash
+   ssh user@server
+   cd /path/to/application
+   nvm install 21.0.0
+   nvm use 21.0.0
+   ```
+
+   **For servers using system Node.js (via package manager):**
+   - Update system Node.js using your server's package manager
+   - Or install nvm on the server for better version management
+
+3. **Rebuild native dependencies:**
+   ```bash
+   cd /path/to/application
+   npm rebuild better-sqlite3
+   # Or if you want a clean rebuild:
+   rm -rf node_modules
+   npm ci  # Uses package-lock.json for reproducible builds
+   ```
+
+4. **Verify the installation:**
+   ```bash
+   node --version  # Should match the new version
+   node -e "require('better-sqlite3'); console.log('✅ better-sqlite3 loads correctly');"
+   ```
+
+5. **Restart the application:**
+   - For Passenger: `touch tmp/restart.txt`
+   - For PM2: `pm2 restart app`
+   - For systemd: `systemctl restart your-service`
+   - Or restart your process manager
+
+6. **Monitor for errors:**
+   - Check application logs
+   - Verify database operations work correctly
+   - Test critical functionality
+
+7. **Rollback plan (if needed):**
+   ```bash
+   # Switch back to previous version
+   nvm use 20.19.0
+   npm rebuild better-sqlite3
+   # Restart application
+   ```
+
+### Why Version Management Matters
+
+The `better-sqlite3` package compiles native bindings that are **specific to the Node.js version**. If you run the server with a different Node.js version than the one used to compile the module, you'll get errors like:
+
+```
+Error: The module was compiled against a different Node.js version
+NODE_MODULE_VERSION 115. This version of Node.js requires NODE_MODULE_VERSION 141
+```
+
+This is why the `prestart` script validates the version before starting the server.
+
+For more details, see [NODE_VERSION.md](./NODE_VERSION.md).
 
 ## Usage
 
@@ -103,14 +249,18 @@ npm start
 
 The application will be available at `http://localhost:3300` (or your configured PORT).
 
+**Note:** The server will automatically check that you're using Node.js v20.19.0 before starting. If you get a version error, see [Node.js Version Management](#nodejs-version-management) below.
+
 ### Production
 
 For production deployment, ensure:
 
-1. All environment variables are properly configured
-2. Static assets are served with proper caching headers
-3. Trust proxy is enabled if behind a reverse proxy
-4. SSL/TLS is configured at the web server level
+1. **Node.js v20.19.0 is installed** on the server (see [Node.js Version Management](#nodejs-version-management))
+2. All environment variables are properly configured
+3. Static assets are served with proper caching headers
+4. Trust proxy is enabled if behind a reverse proxy
+5. SSL/TLS is configured at the web server level
+6. Native dependencies are rebuilt after Node.js installation: `npm rebuild` or `npm install`
 
 ## Project Structure
 
