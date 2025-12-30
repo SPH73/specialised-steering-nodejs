@@ -43,22 +43,78 @@ function updateEnvCredentials(username, password) {
   let envContent = readEnvFile();
   
   // Remove existing ADMIN_USERNAME and ADMIN_PASSWORD lines
-  envContent = envContent
-    .split('\n')
-    .filter(line => !line.trim().startsWith('ADMIN_USERNAME=') && !line.trim().startsWith('ADMIN_PASSWORD='))
-    .join('\n');
+  const lines = envContent.split('\n');
+  const filteredLines = lines.filter(line => 
+    !line.trim().startsWith('ADMIN_USERNAME=') && 
+    !line.trim().startsWith('ADMIN_PASSWORD=')
+  );
   
-  // Trim trailing newlines and add credentials
-  envContent = envContent.trim();
-  if (envContent && !envContent.endsWith('\n')) {
-    envContent += '\n';
+  // Find if Admin section exists
+  let adminSectionIndex = -1;
+  let insertIndex = -1;
+  
+  for (let i = 0; i < filteredLines.length; i++) {
+    const line = filteredLines[i].trim();
+    // Check for Admin section comment (various formats)
+    if (line.match(/^#\s*Admin/i) || line.match(/^#\s*Admin\s+Configuration/i) || line.match(/^#\s*Admin\s+Authentication/i)) {
+      adminSectionIndex = i;
+      insertIndex = i + 1;
+      // Find the end of the Admin section (next section comment or end of file)
+      for (let j = i + 1; j < filteredLines.length; j++) {
+        if (filteredLines[j].trim().startsWith('#') && 
+            !filteredLines[j].trim().match(/^#\s*Admin/i)) {
+          insertIndex = j;
+          break;
+        }
+      }
+      if (insertIndex === i + 1) {
+        // No other section found, insert at end of Admin section
+        insertIndex = filteredLines.length;
+      }
+      break;
+    }
   }
   
-  // Add new credentials
-  envContent += `ADMIN_USERNAME=${username}\n`;
-  envContent += `ADMIN_PASSWORD=${password}\n`;
+  // If no Admin section exists, find a good place to add it (after reCAPTCHA or at end)
+  if (adminSectionIndex === -1) {
+    let recaptchaIndex = -1;
+    for (let i = filteredLines.length - 1; i >= 0; i--) {
+      if (filteredLines[i].trim().match(/^#\s*.*[Rr][Ee][Cc][Aa][Pp][Tt][Cc][Hh][Aa]/)) {
+        recaptchaIndex = i;
+        break;
+      }
+    }
+    
+    // Find end of reCAPTCHA section
+    if (recaptchaIndex !== -1) {
+      for (let i = recaptchaIndex + 1; i < filteredLines.length; i++) {
+        if (filteredLines[i].trim().startsWith('#') && 
+            !filteredLines[i].trim().match(/^#\s*.*[Rr][Ee][Cc][Aa][Pp][Tt][Cc][Hh][Aa]/)) {
+          insertIndex = i;
+          break;
+        }
+      }
+      if (insertIndex === -1) {
+        insertIndex = filteredLines.length;
+      }
+    } else {
+      insertIndex = filteredLines.length;
+    }
+    
+    // Add Admin section header
+    filteredLines.splice(insertIndex, 0, '', '# Admin Authentication', '# Gallery management admin routes');
+    insertIndex += 3;
+  }
   
-  writeEnvFile(envContent);
+  // Insert credentials at the appropriate location
+  const newLines = [
+    ...filteredLines.slice(0, insertIndex),
+    `ADMIN_USERNAME=${username}`,
+    `ADMIN_PASSWORD=${password}`,
+    ...filteredLines.slice(insertIndex)
+  ];
+  
+  writeEnvFile(newLines.join('\n'));
 }
 
 function generateRandomPassword() {
