@@ -203,21 +203,24 @@
       // Disable button during operation
       if (updateBtn) updateBtn.disabled = true;
 
-      updateStatus('Initializing...', 'info');
-
-      // Initialize Picker API
-      await initializePicker();
-
       updateStatus('Creating session...', 'info');
 
       // Create session
       const sessionId = await createSession();
       currentSessionId = sessionId;
 
+      // Get session status to retrieve pickerUri
+      updateStatus('Getting picker URL...', 'info');
+      const sessionStatus = await getSessionStatus(sessionId);
+      
+      if (!sessionStatus.pickerUri) {
+        throw new Error('Picker URI not available in session');
+      }
+
       updateStatus('Opening photo picker...', 'info');
 
-      // Open picker
-      await openPicker(sessionId);
+      // Open picker (redirects to pickerUri)
+      await openPicker(sessionStatus.pickerUri);
 
       updateStatus('Waiting for photo selection...', 'info');
 
