@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
+// Import gallery database utilities
+const { getAllGalleryItems } = require("../utils/gallery-db");
+
 router.get("/about", (req, res) => {
   const meta = {
     title:
