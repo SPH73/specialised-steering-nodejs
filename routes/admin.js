@@ -56,6 +56,18 @@ router.post('/google/photos/sessions/:sessionId/ingest', async (req, res) => {
     // Ensure database table exists
     await initGalleryTable();
 
+    // Check session status first - if no media items selected, return early
+    const sessionStatus = await getSessionStatus(sessionId);
+    if (!sessionStatus.mediaItemsSet) {
+      return res.json({
+        success: true,
+        ingested: 0,
+        skipped: 0,
+        errors: [],
+        message: 'No media items selected in this session'
+      });
+    }
+
     // If replace mode, delete all existing items
     if (replaceMode) {
       const deletedCount = await deleteAllGalleryItems();
