@@ -1,67 +1,218 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <%- include('includes/meta') %> 
-    <%- include('includes/head') %>
+    <%- include('includes/meta') %> <%- include('includes/head') %>
     <title>Admin - Gallery Management</title>
     <script src="../js/admin-gallery.js" defer></script>
   </head>
   <body>
-    <%- include('includes/nav-admin') %>
+    <%- include('includes/nav', { isAdmin: true }) %>
     <main>
       <section class="section">
         <div class="container">
-          <h1>Gallery Management</h1>
-          
+          <h1 style="margin-top: 0; margin-bottom: 2rem">Gallery Management</h1>
+
           <div class="admin-gallery-controls">
-            <div class="form-group">
-              <label>
-                <input type="checkbox" id="replaceMode" />
-                Replace all existing gallery items (uncheck to append)
-              </label>
+            <div class="form-group" style="margin-bottom: 1.5rem">
+              <p style="font-size: 1rem; margin-bottom: 1rem; font-weight: 500">
+                Your default setting is to add more photos. Use the switch to
+                change to Replace ALL.
+              </p>
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 1rem;
+                  flex-wrap: wrap;
+                "
+              >
+                <span style="font-size: 1rem; color: #666">Append</span>
+                <label
+                  style="
+                    position: relative;
+                    display: inline-block;
+                    width: 60px;
+                    height: 34px;
+                    cursor: pointer;
+                  "
+                >
+                  <input
+                    type="checkbox"
+                    id="replaceMode"
+                    style="opacity: 0; width: 0; height: 0"
+                  />
+                  <span
+                    style="
+                      position: absolute;
+                      cursor: pointer;
+                      top: 0;
+                      left: 0;
+                      right: 0;
+                      bottom: 0;
+                      background-color: #ccc;
+                      transition: 0.4s;
+                      border-radius: 34px;
+                    "
+                  >
+                    <span
+                      style="
+                        position: absolute;
+                        content: '';
+                        height: 26px;
+                        width: 26px;
+                        left: 4px;
+                        bottom: 4px;
+                        background-color: white;
+                        transition: 0.4s;
+                        border-radius: 50%;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                      "
+                    ></span>
+                  </span>
+                </label>
+                <span style="font-size: 1rem; color: #666">Replace All</span>
+              </div>
             </div>
-            
+
             <button id="updateGalleryBtn" class="button">
               Update Gallery from Google Photos
             </button>
           </div>
-          
-          <div class="picker-instructions" style="margin-top: 2rem; padding: 1rem; background: #f5f5f5; border-radius: 4px;">
-            <h3 style="margin-top: 0;">How to use the Google Photos Picker:</h3>
-            <ol style="margin-bottom: 0;">
-              <li><strong>Use the search bar:</strong> Type the name of your album in the search bar at the top</li>
-              <li><strong>Select photos:</strong> Once the album appears, click on photos to select them (up to 2000)</li>
-              <li><strong>Click "Done":</strong> When finished selecting, click the "Done" button in the top right</li>
+
+          <div
+            class="picker-instructions"
+            style="
+              margin-top: 2rem;
+              padding: 1.5rem;
+              background: #f5f5f5;
+              border-radius: 4px;
+              font-size: 1rem;
+              line-height: 1.6;
+            "
+          >
+            <h3 style="margin-top: 0; font-size: 1.25rem; margin-bottom: 1rem">
+              How to use the Google Photos Picker:
+            </h3>
+            <ol style="margin-bottom: 0; padding-left: 1.5rem; font-size: 1rem">
+              <li style="margin-bottom: 0.75rem">
+                <strong>Use the search bar:</strong> Type the name of your album
+                in the search bar at the top
+              </li>
+              <li style="margin-bottom: 0.75rem">
+                <strong>Select photos:</strong> Once the album appears, click on
+                photos to select them (up to 2000)
+              </li>
+              <li style="margin-bottom: 0.75rem">
+                <strong>Click "Done":</strong> When finished selecting, click
+                the "Done" button in the top right
+              </li>
             </ol>
-            <p style="margin-top: 1rem; margin-bottom: 0; font-size: 0.9em; color: #666;">
-              <strong>Note:</strong> The Picker doesn't show an album list by default. You must search for the album name to find your photos. You can also drag and drop photos directly to upload new ones to Google Photos.
+            <p
+              style="
+                margin-top: 1rem;
+                margin-bottom: 0;
+                font-size: 1rem;
+                color: #666;
+              "
+            >
+              <strong>Note:</strong> The Picker doesn't show an album list by
+              default. You must search for the album name to find your photos.
+              You can also drag and drop photos directly to upload new ones to
+              Google Photos.
             </p>
-            <p style="margin-top: 0.75rem; margin-bottom: 0; font-size: 0.9em; color: #d9534f;">
-              <strong>⏱️ Time limit:</strong> The Google Photos Picker API has a timeout of approximately 30 seconds. You must select photos and click "Done" within this time limit. If you don't complete the selection within this time, the process will timeout (this is a Google API limitation, not an application limitation) and you'll need to start over.
+            <p
+              style="
+                margin-top: 1rem;
+                margin-bottom: 0;
+                font-size: 1rem;
+                color: #d9534f;
+              "
+            >
+              <strong>⏱️ Time limit:</strong> The Google Photos Picker API has a
+              timeout of approximately 30 seconds. You must select photos and
+              click "Done" within this time limit. If you don't complete the
+              selection within this time, the process will timeout (this is a
+              Google API limitation, not an application limitation) and you'll
+              need to start over.
             </p>
           </div>
-          
-          <div id="galleryStatus" class="gallery-status" style="display: none;">
+
+          <div id="galleryStatus" class="gallery-status" style="display: none">
             <p id="statusMessage"></p>
-            <div id="statusProgress" style="display: none;">
+            <div id="statusProgress" style="display: none">
               <p>Processing...</p>
             </div>
           </div>
-          
+
           <div class="gallery-info">
             <p>Current gallery items: <span id="itemCount">-</span></p>
           </div>
         </div>
       </section>
     </main>
-    <%- include('includes/footer') %> 
-    <%- include('includes/blockjs') %>
-    
+    <%- include('includes/footer') %> <%- include('includes/blockjs') %>
+
     <script>
       // Pass Google Client ID to client-side script
       window.GOOGLE_CLIENT_ID = '<%= process.env.GOOGLE_CLIENT_ID || "" %>';
-      window.ADMIN_API_BASE = '/admin/google/photos';
+      window.ADMIN_API_BASE = "/admin/google/photos";
+
+      // Toggle switch styling and persistence
+      document.addEventListener("DOMContentLoaded", function () {
+        const replaceModeCheckbox = document.getElementById("replaceMode");
+        const toggleSpan = replaceModeCheckbox?.nextElementSibling;
+        const toggleSlider = toggleSpan?.querySelector("span");
+        const STORAGE_KEY = "gallery_replace_mode";
+
+        // Load saved setting from localStorage
+        function loadSavedSetting() {
+          if (replaceModeCheckbox && typeof Storage !== "undefined") {
+            const savedSetting = localStorage.getItem(STORAGE_KEY);
+            if (savedSetting === "true") {
+              replaceModeCheckbox.checked = true;
+            } else {
+              replaceModeCheckbox.checked = false;
+            }
+          }
+        }
+
+        // Save setting to localStorage
+        function saveSetting() {
+          if (replaceModeCheckbox && typeof Storage !== "undefined") {
+            localStorage.setItem(
+              STORAGE_KEY,
+              replaceModeCheckbox.checked.toString(),
+            );
+          }
+        }
+
+        // Update toggle visual style
+        function updateToggleStyle() {
+          if (replaceModeCheckbox && toggleSpan && toggleSlider) {
+            if (replaceModeCheckbox.checked) {
+              toggleSpan.style.backgroundColor = "#f9b101";
+              toggleSlider.style.transform = "translateX(26px)";
+            } else {
+              toggleSpan.style.backgroundColor = "#ccc";
+              toggleSlider.style.transform = "translateX(0)";
+            }
+          }
+        }
+
+        if (replaceModeCheckbox) {
+          // Load saved setting first
+          loadSavedSetting();
+
+          // Update visual state
+          updateToggleStyle();
+
+          // Save setting when changed
+          replaceModeCheckbox.addEventListener("change", function () {
+            saveSetting();
+            updateToggleStyle();
+          });
+        }
+      });
     </script>
   </body>
 </html>
-

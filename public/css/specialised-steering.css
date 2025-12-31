@@ -223,6 +223,19 @@ li {
   display: none;
 }
 
+/* Main content spacing - ensure h1 is not obscured by fixed navbar */
+/* Use simpler fixed values - home page uses calc(6rem + 2em + 0.25rem) which is roughly 7-8rem */
+main {
+  padding-top: 5.5rem; /* Simple fixed value, slightly less than home page to avoid excess spacing */
+}
+
+/* Increase spacing on mobile due to larger logo - but keep it reasonable */
+@media screen and (max-width: 991px) {
+  main {
+    padding-top: 4rem;
+  }
+}
+
 /* Image */
 
 img {
@@ -265,7 +278,7 @@ img {
 }
 
 .section.main {
-  margin-top: 8em;
+  margin-top: 0; /* Spacing now handled by main { padding-top } */
   padding-top: 3em;
   padding-bottom: 3em;
 }

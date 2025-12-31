@@ -253,9 +253,84 @@ Received: ${new Date().toLocaleString("en-ZA", {
   }
 };
 
+/**
+ * Send password reset email
+ * @param {string} email - Recipient email address
+ * @param {string} resetToken - Password reset token
+ * @param {string} resetUrl - Full URL for password reset
+ * @returns {Promise} - Nodemailer result
+ */
+const sendPasswordResetEmail = async (email, resetToken, resetUrl) => {
+  console.log("📧 Attempting to send password reset email...");
+  const transporter = createTransporter();
+  if (!transporter) {
+    console.warn(
+      "⚠️ Email transporter not available. Skipping password reset email.",
+    );
+    return { success: false, error: "Email not configured" };
+  }
+  console.log("✅ Email transporter created successfully");
+
+  const mailOptions = {
+    from: `"${process.env.SITE_NAME || "Specialised Steering"}" <${
+      process.env.EMAIL_USER || process.env.SMTP_FROM || process.env.SMTP_USER
+    }>`,
+    to: email,
+    subject: "Admin Password Reset Request",
+    html: `
+      <h2>Admin Password Reset Request</h2>
+      <p>You have requested to reset the admin password for the Specialised Steering gallery management system.</p>
+      <p>Click the link below to reset your password:</p>
+      <p><a href="${resetUrl}" style="display: inline-block; padding: 10px 20px; background-color: #f9b101; color: #404040; text-decoration: none; border-radius: 4px; font-weight: bold;">Reset Password</a></p>
+      <p>Or copy and paste this link into your browser:</p>
+      <p><code>${resetUrl}</code></p>
+      <p><strong>This link will expire in 1 hour.</strong></p>
+      <p>If you did not request this password reset, please ignore this email.</p>
+      <hr>
+      <p><em>This is an automated email from the Specialised Steering admin system.</em></p>
+      <p><em>Sent: ${new Date().toLocaleString("en-ZA", {
+        timeZone: "Africa/Johannesburg",
+      })}</em></p>
+    `,
+    text: `
+Admin Password Reset Request
+
+You have requested to reset the admin password for the Specialised Steering gallery management system.
+
+Click the link below to reset your password:
+${resetUrl}
+
+This link will expire in 1 hour.
+
+If you did not request this password reset, please ignore this email.
+
+---
+This is an automated email from the Specialised Steering admin system.
+Sent: ${new Date().toLocaleString("en-ZA", {
+      timeZone: "Africa/Johannesburg",
+    })}
+    `,
+  };
+
+  try {
+    console.log("📤 Sending password reset email to:", email);
+    const info = await transporter.sendMail(mailOptions);
+    console.log(
+      "✅ Password reset email sent successfully! Message ID:",
+      info.messageId,
+    );
+    return info;
+  } catch (error) {
+    console.error("❌ Error sending password reset email:", error.message);
+    console.error("Full error:", error);
+    throw error;
+  }
+};
+
 module.exports = {
   sendContactNotification,
   sendEnquiryNotification,
   sendContactFormNotification: sendContactNotification,
   sendEnquiryFormNotification: sendEnquiryNotification,
+  sendPasswordResetEmail,
 };

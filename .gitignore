@@ -27,6 +27,11 @@ update-google-oauth-env.sh
 upload-google-oauth-env.sh
 upload-google-photos-files.sh
 
+# Google Photos Picker deployment scripts - server-specific, don't commit (contain sensitive data)
+extract-credentials.sh
+upload-google-picker-files.sh
+upload-google-picker-oauth-env.sh
+
 # SQLite database files (but not data directory)
 data/*.db
 

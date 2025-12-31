@@ -5,6 +5,7 @@
 
 const { Airtable } = require("./airtable");
 const requestIp = require("request-ip");
+const { trackAirtableCall } = require("./airtable-monitor");
 require("dotenv").config();
 
 let base = null;
@@ -65,6 +66,10 @@ const logSecurityEvent = async (eventData, req = null) => {
 
   try {
     const table = base("securityLogs");
+    trackAirtableCall("security-logger", "create", {
+      eventType: type,
+      formType: formType || "unknown",
+    });
     const createdRecord = await table.create(record);
     console.log(`✅ Security event logged to Airtable: ${type} - ${reason}`);
     return createdRecord;

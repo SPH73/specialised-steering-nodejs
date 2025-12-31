@@ -8,7 +8,7 @@ A Node.js/Express web application for **Specialised Steering (Pty) Ltd**, a hydr
 - 🔧 **Our Work Gallery** - Showcase of service exchange and OEM repair services
 - 📧 **Contact Form** - Customer inquiry form with spam protection
 - 🔍 **Parts Enquiry** - Specialised form for hydraulic component sourcing with image uploads
-- 📸 **Photo Gallery** - Display of completed jobs (Google Photos integration ready)
+- 📸 **Photo Gallery** - Display of completed jobs powered by Google Photos Picker API and Cloudinary
 - 🖼️ **Image Optimization** - Automatic WebP conversion and quality optimization via Cloudinary
 - 📬 **Email Notifications** - Automatic email alerts for all form submissions with full details (✅ Production ready)
 - 🛡️ **Security** - reCAPTCHA v2, rate limiting, honeypot fields, IP blacklist, CSP headers, and file upload validation
@@ -31,7 +31,7 @@ A Node.js/Express web application for **Specialised Steering (Pty) Ltd**, a hydr
 - Airtable account and API key
 - Cloudinary account
 - Google reCAPTCHA v2 site key and secret
-- (Optional) Google Cloud Platform credentials for Photos API
+- (Optional) Google Cloud Platform credentials for Photos Picker API (for gallery feature)
 
 ## Installation
 
@@ -81,15 +81,40 @@ NOTIFICATION_EMAIL=admin@ssteering.co.za
 
 **Note**: See `EMAIL_SETUP.md` for detailed email configuration instructions.
 
-4.**(Optional) Google Photos API Setup**
+**Additional environment variables for Google Photos Picker API and admin gallery:**
+
+```env
+# Google Photos Picker API OAuth Configuration
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_REDIRECT_URI=https://www.specialisedsteering.com/oauth2callback
+
+# Admin Authentication (for gallery management)
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=your_secure_password
+
+# Gallery Configuration
+GALLERY_REPLACE_MODE=false  # Set to true to replace all items, false to append
+CLOUDINARY_FOLDER=gallery/google-photos  # Optional: Cloudinary folder for gallery images
+```
+
+Alternatively, you can copy `.env.example` to `.env` and fill in your values.
+
+4.**Google Photos Picker API Setup (Optional)**
 
 If you want to enable the Google Photos gallery integration:
 
-- Create a project in Google Cloud Platform
-- Enable the Google Photos Picker API
-- Download OAuth 2.0 credentials as `credentials.json`
-- Place the file in the root directory
-- Run the OAuth setup: `node setup-google-picker-auth.js`
+1. Create a project in Google Cloud Platform
+2. Enable the **Google Photos Picker API** (not the Library API)
+3. Create OAuth 2.0 credentials (Desktop app type)
+4. Download credentials as `credentials.json` and place in root directory
+5. Run the OAuth setup: `node setup-google-picker-auth.js`
+6. Configure environment variables (see Environment Variables section)
+7. Access admin UI at `/admin/gallery` (protected by basic auth)
+
+**Note:** The Photos Picker API uses a different OAuth scope than the deprecated Library API:
+
+- Scope: `https://www.googleapis.com/auth/photospicker.mediaitems.readonly`
 
 ## Node.js Version Management
 
@@ -102,6 +127,7 @@ The project includes a `prestart` script that automatically validates the Node.j
 **For nvm users (recommended):**
 
 1. Install Node.js v20.19.0:
+
    ```bash
    nvm install 20.19.0
    nvm use 20.19.0
@@ -110,18 +136,21 @@ The project includes a `prestart` script that automatically validates the Node.j
 2. The `.nvmrc` file will automatically use the correct version when you `cd` into the project (if auto-switch is enabled)
 
 3. Verify version:
+
    ```bash
    node --version
    # Should output: v20.19.0
    ```
 
 4. Start the server:
+
    ```bash
    npm start
    ```
 
 If you see an error about Node.js version mismatch:
-```
+
+```bash
 ❌ Error: Node.js v20.19.0 required, but found vX.X.X
    Run: nvm use 20
 ```
@@ -129,6 +158,7 @@ If you see an error about Node.js version mismatch:
 Run `nvm use 20` or `nvm use 20.19.0` to switch to the correct version.
 
 **For other version managers:**
+
 - **fnm**: `fnm use` (reads `.nvmrc`)
 - **asdf**: `asdf install nodejs 20.19.0 && asdf local nodejs 20.19.0`
 - **n**: `n 20.19.0`
@@ -138,17 +168,20 @@ Run `nvm use 20` or `nvm use 20.19.0` to switch to the correct version.
 If you need to upgrade Node.js for local development:
 
 1. **Update version files:**
+
    - Update `.nvmrc` with the new version (e.g., `21.0.0`)
    - Update `.node-version` with the major version (e.g., `21`)
    - Update `package.json` `prestart` script to check for the new version
 
 2. **Install the new version:**
+
    ```bash
    nvm install 21.0.0
    nvm use 21.0.0
    ```
 
 3. **Rebuild native dependencies:**
+
    ```bash
    npm rebuild better-sqlite3
    # Or reinstall all dependencies:
@@ -157,12 +190,14 @@ If you need to upgrade Node.js for local development:
    ```
 
 4. **Test the application:**
+
    ```bash
    npm start
    node scripts/test-admin-routes.js
    ```
 
 5. **Commit the changes:**
+
    ```bash
    git add .nvmrc .node-version package.json package-lock.json
    git commit -m "chore: upgrade Node.js to v21.0.0"
@@ -173,12 +208,14 @@ If you need to upgrade Node.js for local development:
 **⚠️ Important:** Always test upgrades in staging before production.
 
 1. **Backup the current setup:**
+
    - Document current Node.js version: `node --version`
    - Backup database files and configuration
 
 2. **On the server, install the new Node.js version:**
-   
+
    **For servers using nvm:**
+
    ```bash
    ssh user@server
    cd /path/to/application
@@ -187,10 +224,12 @@ If you need to upgrade Node.js for local development:
    ```
 
    **For servers using system Node.js (via package manager):**
+
    - Update system Node.js using your server's package manager
    - Or install nvm on the server for better version management
 
 3. **Rebuild native dependencies:**
+
    ```bash
    cd /path/to/application
    npm rebuild better-sqlite3
@@ -200,23 +239,27 @@ If you need to upgrade Node.js for local development:
    ```
 
 4. **Verify the installation:**
+
    ```bash
    node --version  # Should match the new version
    node -e "require('better-sqlite3'); console.log('✅ better-sqlite3 loads correctly');"
    ```
 
 5. **Restart the application:**
+
    - For Passenger: `touch tmp/restart.txt`
    - For PM2: `pm2 restart app`
    - For systemd: `systemctl restart your-service`
    - Or restart your process manager
 
 6. **Monitor for errors:**
+
    - Check application logs
    - Verify database operations work correctly
    - Test critical functionality
 
 7. **Rollback plan (if needed):**
+
    ```bash
    # Switch back to previous version
    nvm use 20.19.0
@@ -228,7 +271,7 @@ If you need to upgrade Node.js for local development:
 
 The `better-sqlite3` package compiles native bindings that are **specific to the Node.js version**. If you run the server with a different Node.js version than the one used to compile the module, you'll get errors like:
 
-```
+```bash
 Error: The module was compiled against a different Node.js version
 NODE_MODULE_VERSION 115. This version of Node.js requires NODE_MODULE_VERSION 141
 ```
@@ -335,13 +378,37 @@ Images are automatically optimized and served via Cloudinary CDN with:
 
 - **Google Analytics** - Website traffic analytics (G-V4W8VP4GL8)
 - **reCAPTCHA v2** - Spam protection on forms
-- **Google Photos API** - Gallery integration (in progress)
+- **Google Photos Picker API** - Photo selection for gallery (replaces deprecated Library API)
+- **Google OAuth 2.0** - Authentication for Google Photos Picker API
 
 ### Email Services
 
 - **Nodemailer** - Email notification system for form submissions
 - **Supports multiple providers** - Gmail, Microsoft 365, SendGrid, or any SMTP server
 - **See EMAIL_SETUP.md** for configuration instructions
+
+## Admin Gallery Management
+
+The gallery is managed through an admin interface:
+
+1. **Access Admin UI:** Navigate to `/admin/gallery` (requires basic auth)
+2. **Update Gallery:**
+   - Click "Update Gallery from Google Photos"
+   - Select photos in the Google Photos Picker (search for album name)
+   - Choose replace mode (replace all) or append mode (add to existing)
+   - Photos are automatically uploaded to Cloudinary and stored in SQLite database
+
+**Note:** The Google Photos Picker API has a 30-second timeout. You must complete photo selection within this time limit (this is a Google API limitation, not an application limitation).
+
+### Setting Admin Credentials
+
+Use the provided script to set admin credentials:
+
+```bash
+node scripts/set-admin-credentials.js
+```
+
+Or set `ADMIN_USERNAME` and `ADMIN_PASSWORD` environment variables manually.
 
 ## Security Features
 
@@ -367,7 +434,7 @@ This is a private client project. For any issues or enhancement requests, please
 
 ## Future Enhancements
 
-- [ ] Complete Google Photos gallery integration
+- [x] Complete Google Photos gallery integration
 - [ ] Implement admin dashboard for managing Airtable records
 - [x] Add email notifications for form submissions
 - [x] Add rate limiting for form submissions

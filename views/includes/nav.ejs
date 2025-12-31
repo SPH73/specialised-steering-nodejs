@@ -1,15 +1,23 @@
-<nav data-w-id="15c6fe86-0da0-6554-a202-c50b959f2b40" class="navbar">
+<% // isAdmin is passed from parent template or defaults to false const
+adminMode = typeof isAdmin !== 'undefined' && isAdmin === true; // Use absolute
+paths for consistency (admin uses /, public can use / too) const basePath = '/';
+// For admin, show: home, gallery, logout // For public, show: home, about,
+enquiry, gallery, contact %>
+<nav
+  data-w-id="15c6fe86-0da0-6554-a202-c50b959f2b40"
+  class="navbar <%= adminMode ? 'admin-navbar' : '' %>"
+>
   <a
     id="home"
-    href="../"
+    href="<%= basePath %>"
     aria-current="page"
     class="navbar_logo w-inline-block w--current"
     ><img
-      src="../images/specialised_steering_extended_logo.png"
+      src="<%= basePath %>images/specialised_steering_extended_logo.png"
       srcset="
-        ../images/specialised_steering_extended_logo@0.75x.png 0.75x,
-        ../images/specialised_steering_extended_logo.png       1x,
-        ../images/specialised_steering_extended_logo@3x.png    3x
+        <%= basePath %>images/specialised_steering_extended_logo@0.75x.png 0.75x,
+        <%= basePath %>images/specialised_steering_extended_logo.png       1x,
+        <%= basePath %>images/specialised_steering_extended_logo@3x.png    3x
       "
       width="224"
       height="90"
@@ -23,8 +31,9 @@
   <a
     href="#"
     class="navbar_menu-icon w-inline-block"
-    role="navigation"
+    role="button"
     aria-label="menu"
+    id="nav-menu-toggle"
   >
     <div
       role="presentation"
@@ -32,7 +41,7 @@
       class="icon-animation"
       data-w-id="15c6fe86-0da0-6554-a202-c50b959f2b44"
       data-animation-type="lottie"
-      data-src="../documents/menu-icon-animation.json"
+      data-src="<%= basePath %>documents/menu-icon-animation.json"
       data-loop="0"
       data-direction="1"
       data-autoplay="0"
@@ -41,21 +50,171 @@
       data-duration="0"
     ></div>
   </a>
-  <div class="navbar_menu">
-    <a href="../" class="navbar_menu-link w-inline-block">
+  <div
+    class="navbar_menu <%= adminMode ? 'admin-nav-menu' : '' %>"
+    id="nav-menu"
+  >
+    <% if (adminMode) { %>
+    <!-- Admin navigation: home, gallery, logout -->
+    <a
+      href="<%= basePath %>"
+      class="navbar_menu-link admin-home w-inline-block w--current"
+    >
       <div>home</div>
     </a>
-    <a href="../about" class="navbar_menu-link w-inline-block">
-      <div>about</div>
-    </a>
-    <a href="../enquiry" class="navbar_menu-link w-inline-block">
-      <div>components enquiry</div>
-    </a>
-    <a href="../gallery" class="navbar_menu-link w-inline-block">
+    <a
+      href="<%= basePath %>gallery"
+      class="navbar_menu-link admin-gallery w-inline-block"
+    >
       <div class="text-block">gallery</div>
     </a>
-    <a href="../contact" class="navbar_menu-link contact w-inline-block">
+    <a
+      href="<%= basePath %>admin/logout"
+      class="navbar_menu-link admin-logout w-inline-block"
+    >
+      <div>logout</div>
+    </a>
+    <% } else { %>
+    <!-- Public navigation: home, about, enquiry, gallery, contact -->
+    <a href="<%= basePath %>" class="navbar_menu-link w-inline-block">
+      <div>home</div>
+    </a>
+    <a href="<%= basePath %>about" class="navbar_menu-link w-inline-block">
+      <div>about</div>
+    </a>
+    <a href="<%= basePath %>enquiry" class="navbar_menu-link w-inline-block">
+      <div>components enquiry</div>
+    </a>
+    <a href="<%= basePath %>gallery" class="navbar_menu-link w-inline-block">
+      <div class="text-block">gallery</div>
+    </a>
+    <a
+      href="<%= basePath %>contact"
+      class="navbar_menu-link contact w-inline-block"
+    >
       <div class="text-block">contact</div>
     </a>
+    <% } %>
   </div>
 </nav>
+
+<script>
+  // Mobile menu toggle for navigation
+  (function () {
+    const menuToggle = document.getElementById("nav-menu-toggle");
+    const menu = document.getElementById("nav-menu");
+
+    if (menuToggle && menu) {
+      menuToggle.addEventListener("click", function (e) {
+        e.preventDefault();
+        const isOpen = menu.style.height && menu.style.height !== "0vh";
+
+        if (isOpen) {
+          // Close menu
+          menu.style.height = "0vh";
+          menu.style.zIndex = "-10";
+          menu.style.overflow = "hidden";
+        } else {
+          // Open menu
+          menu.style.height = "100vh";
+          menu.style.zIndex = "20";
+          menu.style.overflow = "visible";
+        }
+      });
+
+      // Close menu when clicking on a link
+      const menuLinks = menu.querySelectorAll(".navbar_menu-link");
+      menuLinks.forEach(function (link) {
+        link.addEventListener("click", function () {
+          menu.style.height = "0vh";
+          menu.style.zIndex = "-10";
+          menu.style.overflow = "hidden";
+        });
+      });
+    }
+  })();
+</script>
+
+<style>
+  /* Admin Navigation - Reversed styling from public nav */
+
+  /* Desktop: accent bg, dark text (except logout) */
+  .admin-nav-menu.navbar_menu .navbar_menu-link {
+    background-color: var(--color-secondary);
+    color: var(--color-button);
+  }
+
+  .admin-nav-menu.navbar_menu .navbar_menu-link:hover {
+    background-color: var(--color-button);
+    color: var(--color-secondary);
+  }
+
+  .admin-nav-menu.navbar_menu .navbar_menu-link.w--current {
+    background-color: var(--color-secondary);
+    color: var(--color-button);
+    font-weight: 800;
+  }
+
+  .admin-nav-menu.navbar_menu .navbar_menu-link.w--current:hover {
+    background-color: var(--color-button);
+    color: var(--color-secondary);
+  }
+
+  /* Logout: dark bg, accent text (reversed) */
+  .admin-nav-menu.navbar_menu .navbar_menu-link.admin-logout {
+    background-color: var(--color-button);
+    color: var(--color-secondary);
+  }
+
+  .admin-nav-menu.navbar_menu .navbar_menu-link.admin-logout:hover {
+    background-color: var(--color-secondary);
+    color: var(--color-button);
+  }
+
+  /* Mobile styles (max-width: 991px) */
+  @media (max-width: 991px) {
+    .admin-nav-menu.navbar_menu .navbar_menu-link {
+      width: 100vw;
+      margin-right: 0;
+      margin-bottom: 0;
+      padding: 1.2rem 1.5rem;
+      border-bottom: 0.3em solid var(--color-secondary);
+      border-radius: 0;
+      background-color: transparent;
+      box-shadow: none;
+      font-weight: 600;
+    }
+
+    .admin-nav-menu.navbar_menu .navbar_menu-link:hover {
+      background-color: transparent;
+      transform: none;
+    }
+
+    /* HOME: accent text */
+    .admin-nav-menu.navbar_menu .navbar_menu-link.admin-home,
+    .admin-nav-menu.navbar_menu .navbar_menu-link.admin-home:hover {
+      background-color: transparent;
+      color: var(--color-secondary);
+    }
+
+    /* GALLERY: dark text */
+    .admin-nav-menu.navbar_menu .navbar_menu-link.admin-gallery,
+    .admin-nav-menu.navbar_menu .navbar_menu-link.admin-gallery:hover {
+      background-color: transparent;
+      color: var(--color-button);
+    }
+
+    /* LOGOUT: dark bg, accent text, no border */
+    .admin-nav-menu.navbar_menu .navbar_menu-link.admin-logout {
+      margin-top: 1rem;
+      border-bottom-style: none;
+      background-color: var(--color-button);
+      color: var(--color-secondary);
+    }
+
+    .admin-nav-menu.navbar_menu .navbar_menu-link.admin-logout:hover {
+      background-color: var(--color-secondary);
+      color: var(--color-button);
+    }
+  }
+</style>

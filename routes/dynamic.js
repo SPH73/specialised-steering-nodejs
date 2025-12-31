@@ -18,6 +18,7 @@ const {
   logSpamAttempt,
   logRateLimit,
 } = require("../utils/security-logger");
+const { trackAirtableCall } = require("../utils/airtable-monitor");
 const base = Airtable.base(process.env.BASE);
 
 const router = express.Router();
@@ -95,6 +96,7 @@ router.get("/our-work/:id", async (req, res) => {
   let repair = {};
 
   try {
+    trackAirtableCall("our-work-detail", "find", { repairId });
     const repairDetail = await table.find(repairId);
     if (!repairDetail) {
       throw Error("Unable to find this repair");
@@ -318,6 +320,7 @@ router.post(
         }
 
         const table = base("webForms");
+        trackAirtableCall("enquiry-form", "create", { formType: "parts" });
         const createdRecord = await table.create(record);
         reference = createdRecord.id;
 
@@ -331,6 +334,10 @@ router.post(
               const secure_url = result.secure_url;
               imageUrl = secure_url;
               const recordId = createdRecord.id;
+              trackAirtableCall("enquiry-form", "update", {
+                recordId,
+                reason: "image-upload",
+              });
               const updatedRecord = await table.update(recordId, {
                 imageUploads: [{ url: secure_url }],
               });
@@ -561,6 +568,7 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
     };
     let reference = "";
     try {
+      trackAirtableCall("contact-form", "create", { formType: "contact" });
       const createdRecord = await table.create(record);
       if (createdRecord) {
         reference = createdRecord.id;

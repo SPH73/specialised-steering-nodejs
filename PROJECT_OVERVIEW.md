@@ -18,7 +18,8 @@ Specialised Steering Web Application is a Node.js/Express-based web application 
 - **Airtable** (^0.11.1) - Database/CRM integration for storing repair work and form submissions
 - **Cloudinary** (^1.27.1) - Image hosting and optimization service
 - **Multer** (^1.4.3) - File upload handling middleware
-- **Google APIs** (^134.0.0) - Google OAuth and Photos API integration
+- **Google APIs** (^134.0.0) - Google OAuth and Photos Picker API integration
+- **better-sqlite3** (^11.0.0) - SQLite database for gallery items storage
 - **Passport** (^0.7.0) - Authentication middleware (Google OAuth)
 - **reCAPTCHA v3** - Form spam protection
 - **Compression** (^1.7.4) - Response compression middleware
@@ -107,9 +108,11 @@ specialised/
 
 ### 5. Gallery Page (`/gallery`)
 
-- Photo gallery for completed jobs (currently static, Google Photos integration commented out)
-- Prepared for Google Photos Library API integration
-- OAuth2 authentication setup in place
+- Photo gallery for completed jobs
+- Powered by Google Photos Picker API for photo selection
+- Images stored in Cloudinary and metadata in SQLite database
+- Admin interface at `/admin/gallery` for managing gallery items
+- Supports replace mode (replace all items) or append mode (add to existing)
 
 ### 6. Additional Pages
 
@@ -132,6 +135,18 @@ The application uses Airtable as a backend database with two main tables:
 2. **`webForms`** - Stores form submissions
    - Fields: `name`, `email`, `company`, `phone`, `message`, `status`, `form` (contact/enquiry), `ip`, `imageUploads`
    - Additional fields for enquiry form: `brand`, `type`, `partNo`, `partDesc`, `serialNo`, `street`, `town`, `postal`, `region`, `country`
+
+### SQLite Integration (Gallery)
+
+The application uses SQLite (via `better-sqlite3`) for storing gallery item metadata:
+
+- **Database file**: `data/gallery.db`
+- **Table**: `gallery_items`
+  - Stores: Cloudinary URLs, thumbnails, metadata (filename, dimensions, etc.)
+  - Prevents duplicates via `source_media_item_id` unique constraint
+  - Ordered by `uploaded_at` DESC for display
+
+Gallery images are stored in Cloudinary, with metadata in SQLite for fast queries.
 
 ### Cloudinary Integration
 
@@ -156,8 +171,8 @@ The application uses Airtable as a backend database with two main tables:
 
 - **Google Analytics** (G-V4W8VP4GL8) - Website analytics
 - **Google reCAPTCHA v3** - Form spam protection
-- **Google Photos Library API** - Prepared for gallery integration (currently disabled)
-- **Google OAuth 2.0** - Authentication for Google APIs
+- **Google Photos Picker API** - Photo selection for gallery (replaces deprecated Library API)
+- **Google OAuth 2.0** - Authentication for Google Photos Picker API
 
 ### Cookie Consent
 
@@ -194,17 +209,11 @@ Required environment variables (configured via `.env` file):
 
 ## Development Notes
 
-1. **Google Photos Integration**: The gallery route has Google Photos API integration code that is currently commented out. To enable:
+1. **Error Handler Middleware**: Currently disabled in `app.js` (lines 59-60). Basic error handling is implemented inline.
 
-   - Complete OAuth2 flow using `googleapi.js`
-   - Store refresh token in credentials
-   - Uncomment the gallery route code in `routes/default.js`
+2. **File Uploads**: Temporary files are stored in `./public/uploads` before being uploaded to Cloudinary.
 
-2. **Error Handler Middleware**: Currently disabled in `app.js` (lines 59-60). Basic error handling is implemented inline.
-
-3. **File Uploads**: Temporary files are stored in `./public/uploads` before being uploaded to Cloudinary.
-
-4. **Image Processing**: Airtable images are proxied through Cloudinary with URL manipulation to optimize delivery.
+3. **Image Processing**: Airtable images are proxied through Cloudinary with URL manipulation to optimize delivery.
 
 ## Running the Application
 
@@ -226,7 +235,7 @@ npm start
 
 ## Future Enhancements (Potential)
 
-1. Enable Google Photos gallery integration
+1. ~~Enable Google Photos gallery integration~~ ✅ COMPLETED
 2. Implement proper error handler middleware
 3. Add admin dashboard for managing Airtable records
 4. Implement user authentication for admin features

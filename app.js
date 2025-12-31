@@ -5,9 +5,17 @@ require("dotenv").config({ path: path.join(__dirname, ".env") });
 // Log environment variable status on startup (without exposing values)
 if (process.env.NODE_ENV !== "production") {
   console.log("Environment check:");
-  console.log("  AT_API_KEY:", process.env.AT_API_KEY ? `SET (length: ${process.env.AT_API_KEY.length})` : "NOT SET");
+  console.log(
+    "  AT_API_KEY:",
+    process.env.AT_API_KEY
+      ? `SET (length: ${process.env.AT_API_KEY.length})`
+      : "NOT SET",
+  );
   console.log("  BASE:", process.env.BASE || "NOT SET");
-  console.log("  EMAIL_HOST:", process.env.EMAIL_HOST || process.env.SMTP_HOST || "NOT SET");
+  console.log(
+    "  EMAIL_HOST:",
+    process.env.EMAIL_HOST || process.env.SMTP_HOST || "NOT SET",
+  );
 }
 
 const express = require("express");
@@ -65,13 +73,13 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use((req, res, next) => {
   // WordPress/Elementor query parameters that indicate WordPress artifacts
   const wordpressParams = [
-    'elementor_library',      // Elementor template library
-    'elementor-preview',      // Elementor preview mode
-    'preview_id',             // WordPress preview with ID
-    'wpml_lang',              // WPML multilingual plugin
-    'preview',                // WordPress preview mode (when combined with other WP params)
-    'post_type',              // WordPress post type
-    'page_id'                 // WordPress page ID
+    "elementor_library", // Elementor template library
+    "elementor-preview", // Elementor preview mode
+    "preview_id", // WordPress preview with ID
+    "wpml_lang", // WPML multilingual plugin
+    "preview", // WordPress preview mode (when combined with other WP params)
+    "post_type", // WordPress post type
+    "page_id", // WordPress page ID
   ];
 
   const hasWordPressParam = wordpressParams.some(param => req.query[param]);
@@ -82,10 +90,14 @@ app.use((req, res, next) => {
   next();
 });
 
+// Password reset routes (public, no auth required)
+const passwordResetRoutes = require("./routes/password-reset");
+app.use("/admin", passwordResetRoutes);
+
 // Admin routes (protected with basic auth)
-const basicAuth = require('./middleware/basic-auth');
-const adminRoutes = require('./routes/admin');
-app.use('/admin', basicAuth, adminRoutes);
+const basicAuth = require("./middleware/basic-auth");
+const adminRoutes = require("./routes/admin");
+app.use("/admin", basicAuth, adminRoutes);
 
 // Routes
 app.use(dynamicRoutes);

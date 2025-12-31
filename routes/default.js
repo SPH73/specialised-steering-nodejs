@@ -41,13 +41,13 @@ router.get("/gallery", async (req, res) => {
       };
     });
 
-    if (photos.length === 0) {
+      if (photos.length === 0) {
       error = "No photos available at this time.";
-    }
-  } catch (err) {
-    console.error("Error fetching gallery photos:", err);
-    console.error("Error details:", err.message);
-    error = "Unable to load gallery photos at this time. Please try again later.";
+      }
+    } catch (err) {
+      console.error("Error fetching gallery photos:", err);
+      console.error("Error details:", err.message);
+        error = "Unable to load gallery photos at this time. Please try again later.";
   }
 
   res.render("gallery", {
@@ -61,7 +61,7 @@ router.get("/gallery", async (req, res) => {
 router.get("/sitemap.xml", (req, res) => {
   const baseUrl = "https://www.specialisedsteering.com";
   const today = new Date().toISOString().split("T")[0];
-  
+
   // Static pages - exclude forms (/contact, /enquiry) to prevent spam
   const staticPages = [
     { url: "", priority: "1.0", changefreq: "weekly" }, // Homepage
@@ -78,7 +78,7 @@ router.get("/sitemap.xml", (req, res) => {
   // Generate XML sitemap
   let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
   xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
-  
+
   staticPages.forEach(page => {
     xml += '  <url>\n';
     xml += `    <loc>${baseUrl}${page.url}</loc>\n`;
@@ -87,9 +87,9 @@ router.get("/sitemap.xml", (req, res) => {
     xml += `    <priority>${page.priority}</priority>\n`;
     xml += '  </url>\n';
   });
-  
+
   xml += '</urlset>';
-  
+
   res.set("Content-Type", "application/xml; charset=utf-8");
   res.send(xml);
 });
