@@ -1,6 +1,6 @@
 # Node.js Version Management
 
-This project requires **Node.js v20.19.0** for compatibility with native dependencies (specifically `better-sqlite3`).
+This project requires **Node.js v20.19.0** (the server is configured for this version).
 
 ## Version Files
 
@@ -64,12 +64,7 @@ If you see an error like:
 
 ## Why This Matters
 
-The `better-sqlite3` package compiles native bindings that are **specific to the Node.js version**. If you run the server with a different Node.js version than the one used to compile the module, you'll get errors like:
-
-```
-Error: The module was compiled against a different Node.js version
-NODE_MODULE_VERSION 115. This version of Node.js requires NODE_MODULE_VERSION 141
-```
+The server is configured for Node.js v20.19.0. Using a consistent version ensures compatibility between development and production environments.
 
 ## npm start Safety Check
 
@@ -80,23 +75,15 @@ The `prestart` script in `package.json` automatically checks the Node.js version
 For production servers, ensure:
 1. The server environment uses Node.js v20.19.0
 2. Dependencies are installed with: `npm ci` or `npm install`
-3. Native modules are rebuilt if Node.js version changes: `npm rebuild`
 
 ## Troubleshooting
 
-### "Module was compiled against a different Node.js version"
+### Server starts but crashes on operations
 
-**Solution:** Rebuild native modules for the current Node.js version:
-```bash
-npm rebuild better-sqlite3
-```
-
-### Server starts but crashes on database operations
-
-**Solution:** Check Node.js version matches:
+**Solution:** Check Node.js version matches and reinstall dependencies:
 ```bash
 node --version  # Should be v20.19.0
-npm rebuild better-sqlite3
+npm install
 ```
 
 ### Multiple Node.js versions installed

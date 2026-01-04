@@ -19,7 +19,7 @@ Specialised Steering Web Application is a Node.js/Express-based web application 
 - **Cloudinary** (^1.27.1) - Image hosting and optimization service
 - **Multer** (^1.4.3) - File upload handling middleware
 - **Google APIs** (^134.0.0) - Google OAuth and Photos Picker API integration
-- **better-sqlite3** (^11.0.0) - SQLite database for gallery items storage
+- **JSON file storage** - File-based storage for gallery items metadata (no dependencies)
 - **Passport** (^0.7.0) - Authentication middleware (Google OAuth)
 - **reCAPTCHA v3** - Form spam protection
 - **Compression** (^1.7.4) - Response compression middleware
@@ -110,7 +110,7 @@ specialised/
 
 - Photo gallery for completed jobs
 - Powered by Google Photos Picker API for photo selection
-- Images stored in Cloudinary and metadata in SQLite database
+- Images stored in Cloudinary and metadata in JSON file (data/gallery.json)
 - Admin interface at `/admin/gallery` for managing gallery items
 - Supports replace mode (replace all items) or append mode (add to existing)
 
@@ -136,17 +136,17 @@ The application uses Airtable as a backend database with two main tables:
    - Fields: `name`, `email`, `company`, `phone`, `message`, `status`, `form` (contact/enquiry), `ip`, `imageUploads`
    - Additional fields for enquiry form: `brand`, `type`, `partNo`, `partDesc`, `serialNo`, `street`, `town`, `postal`, `region`, `country`
 
-### SQLite Integration (Gallery)
+### JSON File Storage (Gallery)
 
-The application uses SQLite (via `better-sqlite3`) for storing gallery item metadata:
+The application uses JSON file storage for gallery item metadata:
 
-- **Database file**: `data/gallery.db`
-- **Table**: `gallery_items`
+- **Storage file**: `data/gallery.json`
+- **Data structure**: Array of gallery items
   - Stores: Cloudinary URLs, thumbnails, metadata (filename, dimensions, etc.)
-  - Prevents duplicates via `source_media_item_id` unique constraint
+  - Prevents duplicates via `source_media_item_id` check
   - Ordered by `uploaded_at` DESC for display
 
-Gallery images are stored in Cloudinary, with metadata in SQLite for fast queries.
+Gallery images are stored in Cloudinary, with metadata in JSON file. This approach requires no native dependencies and works on all hosting environments.
 
 ### Cloudinary Integration
 

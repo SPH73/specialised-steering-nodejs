@@ -118,7 +118,7 @@ If you want to enable the Google Photos gallery integration:
 
 ## Node.js Version Management
 
-This project requires **Node.js v20.19.0** for compatibility with native dependencies (specifically `better-sqlite3`).
+This project requires **Node.js v20.19.0** (the server is configured for this version).
 
 ### Local Development Setup
 
@@ -183,7 +183,7 @@ If you need to upgrade Node.js for local development:
 3. **Rebuild native dependencies:**
 
    ```bash
-   npm rebuild better-sqlite3
+   npm install
    # Or reinstall all dependencies:
    rm -rf node_modules package-lock.json
    npm install
@@ -228,11 +228,10 @@ If you need to upgrade Node.js for local development:
    - Update system Node.js using your server's package manager
    - Or install nvm on the server for better version management
 
-3. **Rebuild native dependencies:**
+3. **Reinstall dependencies (if needed):**
 
    ```bash
    cd /path/to/application
-   npm rebuild better-sqlite3
    # Or if you want a clean rebuild:
    rm -rf node_modules
    npm ci  # Uses package-lock.json for reproducible builds
@@ -242,7 +241,6 @@ If you need to upgrade Node.js for local development:
 
    ```bash
    node --version  # Should match the new version
-   node -e "require('better-sqlite3'); console.log('✅ better-sqlite3 loads correctly');"
    ```
 
 5. **Restart the application:**
@@ -263,20 +261,13 @@ If you need to upgrade Node.js for local development:
    ```bash
    # Switch back to previous version
    nvm use 20.19.0
-   npm rebuild better-sqlite3
+   npm install
    # Restart application
    ```
 
 ### Why Version Management Matters
 
-The `better-sqlite3` package compiles native bindings that are **specific to the Node.js version**. If you run the server with a different Node.js version than the one used to compile the module, you'll get errors like:
-
-```bash
-Error: The module was compiled against a different Node.js version
-NODE_MODULE_VERSION 115. This version of Node.js requires NODE_MODULE_VERSION 141
-```
-
-This is why the `prestart` script validates the version before starting the server.
+The server is configured for Node.js v20.19.0. The `prestart` script validates the version before starting to ensure consistency between development and production environments.
 
 For more details, see [NODE_VERSION.md](./NODE_VERSION.md).
 
@@ -303,7 +294,7 @@ For production deployment, ensure:
 3. Static assets are served with proper caching headers
 4. Trust proxy is enabled if behind a reverse proxy
 5. SSL/TLS is configured at the web server level
-6. Native dependencies are rebuilt after Node.js installation: `npm rebuild` or `npm install`
+6. Dependencies are installed: `npm install` or `npm ci`
 
 ## Project Structure
 
@@ -396,7 +387,7 @@ The gallery is managed through an admin interface:
    - Click "Update Gallery from Google Photos"
    - Select photos in the Google Photos Picker (search for album name)
    - Choose replace mode (replace all) or append mode (add to existing)
-   - Photos are automatically uploaded to Cloudinary and stored in SQLite database
+   - Photos are automatically uploaded to Cloudinary and stored in JSON file (data/gallery.json)
 
 **Note:** The Google Photos Picker API has a 30-second timeout. You must complete photo selection within this time limit (this is a Google API limitation, not an application limitation).
 

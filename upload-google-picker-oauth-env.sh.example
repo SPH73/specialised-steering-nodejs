@@ -17,8 +17,27 @@ if [ ! -f credentials.json ]; then
     exit 1
 fi
 
-GOOGLE_CLIENT_ID=$(python3 -c "import json; print(json.load(open('credentials.json'))['installed']['client_id'])")
-GOOGLE_CLIENT_SECRET=$(python3 -c "import json; print(json.load(open('credentials.json'))['installed']['client_secret'])")
+# Try both 'web' and 'installed' formats (Google OAuth can use either)
+GOOGLE_CLIENT_ID=$(python3 -c "
+import json, sys
+data = json.load(open('credentials.json'))
+if 'web' in data:
+    print(data['web']['client_id'])
+elif 'installed' in data:
+    print(data['installed']['client_id'])
+else:
+    sys.exit(1)
+")
+GOOGLE_CLIENT_SECRET=$(python3 -c "
+import json, sys
+data = json.load(open('credentials.json'))
+if 'web' in data:
+    print(data['web']['client_secret'])
+elif 'installed' in data:
+    print(data['installed']['client_secret'])
+else:
+    sys.exit(1)
+")
 GOOGLE_REDIRECT_URI="https://www.specialisedsteering.com/oauth2callback"
 
 echo "📋 Values to upload:"

@@ -33,7 +33,7 @@ fi
 
 # Install/update dependencies
 echo "📦 Installing dependencies..."
-npm install --production
+npm install --omit=dev
 
 # Restart application (adjust based on your setup)
 echo "🔄 Restarting application..."

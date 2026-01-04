@@ -32,8 +32,9 @@ extract-credentials.sh
 upload-google-picker-files.sh
 upload-google-picker-oauth-env.sh
 
-# SQLite database files (but not data directory)
+# Database/storage files (but not data directory)
 data/*.db
+data/gallery.json
 
 # Google Search Console coverage reports
 *Coverage*.zip

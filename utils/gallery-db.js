@@ -1,36 +1,15 @@
-const { getDatabase } = require('./database');
+const { readGalleryData, writeGalleryData, getNextId } = require('./database');
 
 /**
- * Initialize gallery_items table
- * Creates table and indexes if they don't exist (idempotent)
+ * Initialize gallery storage (JSON file)
+ * Creates data directory and initializes empty array if file doesn't exist
  * @returns {Promise<void>}
  */
 const initGalleryTable = async () => {
   return new Promise((resolve, reject) => {
     try {
-      const db = getDatabase();
-      
-      // Create table
-      db.exec(`
-        CREATE TABLE IF NOT EXISTS gallery_items (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          source_media_item_id TEXT UNIQUE NOT NULL,
-          cloudinary_url TEXT NOT NULL,
-          thumbnail_url TEXT,
-          filename TEXT,
-          width INTEGER,
-          height INTEGER,
-          mime_type TEXT,
-          uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        );
-
-        CREATE INDEX IF NOT EXISTS idx_source_media_item_id 
-          ON gallery_items(source_media_item_id);
-        
-        CREATE INDEX IF NOT EXISTS idx_uploaded_at 
-          ON gallery_items(uploaded_at DESC);
-      `);
-      
+      const data = readGalleryData();
+      // File will be created on first write, just ensure data dir exists
       resolve();
     } catch (error) {
       reject(error);
@@ -53,40 +32,35 @@ const initGalleryTable = async () => {
 const insertGalleryItem = async (item) => {
   return new Promise((resolve, reject) => {
     try {
-      const db = getDatabase();
-      const stmt = db.prepare(`
-        INSERT INTO gallery_items (
-          source_media_item_id,
-          cloudinary_url,
-          thumbnail_url,
-          filename,
-          width,
-          height,
-          mime_type
-        ) VALUES (?, ?, ?, ?, ?, ?, ?)
-      `);
-      
-      const result = stmt.run(
-        item.source_media_item_id,
-        item.cloudinary_url,
-        item.thumbnail_url || null,
-        item.filename || null,
-        item.width || null,
-        item.height || null,
-        item.mime_type || null
-      );
-      
-      resolve({
-        id: result.lastInsertRowid,
-        ...item
-      });
-    } catch (error) {
-      // Handle unique constraint violation (duplicate source_media_item_id)
-      if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+      const items = readGalleryData();
+
+      // Check for duplicate source_media_item_id
+      const existing = items.find(i => i.source_media_item_id === item.source_media_item_id);
+      if (existing) {
         reject(new Error(`Gallery item with source_media_item_id ${item.source_media_item_id} already exists`));
-      } else {
-        reject(error);
+        return;
       }
+
+      // Generate ID
+      const id = getNextId(items);
+      const newItem = {
+        id,
+        source_media_item_id: item.source_media_item_id,
+        cloudinary_url: item.cloudinary_url,
+        thumbnail_url: item.thumbnail_url || null,
+        filename: item.filename || null,
+        width: item.width || null,
+        height: item.height || null,
+        mime_type: item.mime_type || null,
+        uploaded_at: new Date().toISOString(),
+      };
+
+      items.push(newItem);
+      writeGalleryData(items);
+
+      resolve(newItem);
+    } catch (error) {
+      reject(error);
     }
   });
 };
@@ -98,14 +72,16 @@ const insertGalleryItem = async (item) => {
 const getAllGalleryItems = async () => {
   return new Promise((resolve, reject) => {
     try {
-      const db = getDatabase();
-      const stmt = db.prepare(`
-        SELECT * FROM gallery_items 
-        ORDER BY uploaded_at DESC
-      `);
-      
-      const items = stmt.all();
-      resolve(items);
+      const items = readGalleryData();
+
+      // Sort by uploaded_at DESC
+      const sorted = items.sort((a, b) => {
+        const dateA = new Date(a.uploaded_at || 0);
+        const dateB = new Date(b.uploaded_at || 0);
+        return dateB - dateA;
+      });
+
+      resolve(sorted);
     } catch (error) {
       reject(error);
     }
@@ -120,13 +96,8 @@ const getAllGalleryItems = async () => {
 const getGalleryItemBySourceId = async (sourceId) => {
   return new Promise((resolve, reject) => {
     try {
-      const db = getDatabase();
-      const stmt = db.prepare(`
-        SELECT * FROM gallery_items 
-        WHERE source_media_item_id = ?
-      `);
-      
-      const item = stmt.get(sourceId);
+      const items = readGalleryData();
+      const item = items.find(i => i.source_media_item_id === sourceId);
       resolve(item || null);
     } catch (error) {
       reject(error);
@@ -141,10 +112,10 @@ const getGalleryItemBySourceId = async (sourceId) => {
 const deleteAllGalleryItems = async () => {
   return new Promise((resolve, reject) => {
     try {
-      const db = getDatabase();
-      const stmt = db.prepare('DELETE FROM gallery_items');
-      const result = stmt.run();
-      resolve(result.changes);
+      const items = readGalleryData();
+      const count = items.length;
+      writeGalleryData([]);
+      resolve(count);
     } catch (error) {
       reject(error);
     }
@@ -159,10 +130,16 @@ const deleteAllGalleryItems = async () => {
 const deleteGalleryItem = async (id) => {
   return new Promise((resolve, reject) => {
     try {
-      const db = getDatabase();
-      const stmt = db.prepare('DELETE FROM gallery_items WHERE id = ?');
-      const result = stmt.run(id);
-      resolve(result.changes > 0);
+      const items = readGalleryData();
+      const initialLength = items.length;
+      const filtered = items.filter(i => i.id !== id);
+
+      if (filtered.length < initialLength) {
+        writeGalleryData(filtered);
+        resolve(true);
+      } else {
+        resolve(false);
+      }
     } catch (error) {
       reject(error);
     }
@@ -176,10 +153,8 @@ const deleteGalleryItem = async (id) => {
 const getGalleryItemCount = async () => {
   return new Promise((resolve, reject) => {
     try {
-      const db = getDatabase();
-      const stmt = db.prepare('SELECT COUNT(*) as count FROM gallery_items');
-      const result = stmt.get();
-      resolve(result.count);
+      const items = readGalleryData();
+      resolve(items.length);
     } catch (error) {
       reject(error);
     }
@@ -195,4 +170,3 @@ module.exports = {
   deleteGalleryItem,
   getGalleryItemCount,
 };
-
