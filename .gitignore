@@ -35,6 +35,7 @@ upload-google-picker-oauth-env.sh
 # Database/storage files (but not data directory)
 data/*.db
 data/gallery.json
+data/password-reset-tokens.json
 
 # Google Search Console coverage reports
 *Coverage*.zip

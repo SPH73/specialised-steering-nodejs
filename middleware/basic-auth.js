@@ -9,9 +9,10 @@ const basicAuth = (req, res, next) => {
   // If credentials not configured, reject
   if (!username || !password) {
     console.warn("⚠️ Admin credentials not configured. Admin routes disabled.");
+    res.setHeader("WWW-Authenticate", 'Basic realm="Admin Area"');
     return res
       .status(401)
-      .json({ error: "Admin authentication not configured" });
+      .send("Admin authentication not configured");
   }
 
   // Get Authorization header

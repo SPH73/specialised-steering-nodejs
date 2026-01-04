@@ -110,6 +110,9 @@ app.use((req, res, next) => {
   res.status(404).render("404");
 });
 app.use((error, req, res, next) => {
+  console.error("❌ 500 Error:", error.message);
+  console.error("❌ Error stack:", error.stack);
+  console.error("❌ Request URL:", req.url);
   res.status(500).render("500");
 });
 

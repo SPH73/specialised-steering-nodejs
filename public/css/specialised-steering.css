@@ -278,7 +278,6 @@ img {
 }
 
 .section.main {
-  margin-top: 0; /* Spacing now handled by main { padding-top } */
   padding-top: 3em;
   padding-bottom: 3em;
 }

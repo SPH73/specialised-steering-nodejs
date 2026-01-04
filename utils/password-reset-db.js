@@ -1,37 +1,76 @@
-const { getDatabase } = require("./database");
+// Note: Using separate JSON file storage for password reset tokens
 const crypto = require("crypto");
+const fs = require("fs");
+const path = require("path");
 
 /**
- * Initialize password_reset_tokens table
- * Creates table if it doesn't exist (idempotent)
+ * Password reset tokens storage using JSON file
+ * Uses separate file from gallery data
+ */
+
+const DATA_DIR = path.join(__dirname, "..", "data");
+const PASSWORD_RESET_FILE = path.join(DATA_DIR, "password-reset-tokens.json");
+
+/**
+ * Ensure data directory exists
+ */
+const ensureDataDir = () => {
+  if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  }
+};
+
+/**
+ * Read password reset tokens from JSON file
+ * @returns {Array} Array of token objects
+ */
+const readTokens = () => {
+  ensureDataDir();
+
+  if (!fs.existsSync(PASSWORD_RESET_FILE)) {
+    return [];
+  }
+
+  try {
+    const data = fs.readFileSync(PASSWORD_RESET_FILE, "utf8");
+    return JSON.parse(data);
+  } catch (error) {
+    console.error("Error reading password reset tokens:", error);
+    return [];
+  }
+};
+
+/**
+ * Write password reset tokens to JSON file (atomic write)
+ * @param {Array} tokens - Array of token objects
+ */
+const writeTokens = (tokens) => {
+  ensureDataDir();
+
+  // Write to temp file first, then rename (atomic operation)
+  const tempFile = PASSWORD_RESET_FILE + ".tmp";
+  try {
+    fs.writeFileSync(tempFile, JSON.stringify(tokens, null, 2), "utf8");
+    fs.renameSync(tempFile, PASSWORD_RESET_FILE);
+  } catch (error) {
+    // Clean up temp file on error
+    if (fs.existsSync(tempFile)) {
+      fs.unlinkSync(tempFile);
+    }
+    throw error;
+  }
+};
+
+/**
+ * Initialize password_reset_tokens storage (JSON file)
+ * Creates data directory if it doesn't exist
  * @returns {Promise<void>}
  */
 const initPasswordResetTable = async () => {
   return new Promise((resolve, reject) => {
     try {
-      const db = getDatabase();
-
-      // Create table
-      db.exec(`
-        CREATE TABLE IF NOT EXISTS password_reset_tokens (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          token TEXT UNIQUE NOT NULL,
-          email TEXT NOT NULL,
-          expires_at DATETIME NOT NULL,
-          used INTEGER DEFAULT 0,
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        );
-
-        CREATE INDEX IF NOT EXISTS idx_token
-          ON password_reset_tokens(token);
-
-        CREATE INDEX IF NOT EXISTS idx_email
-          ON password_reset_tokens(email);
-
-        CREATE INDEX IF NOT EXISTS idx_expires_at
-          ON password_reset_tokens(expires_at);
-      `);
-
+      ensureDataDir();
+      // File will be created on first write, just ensure data dir exists
       resolve();
     } catch (error) {
       reject(error);
@@ -56,24 +95,25 @@ const generateResetToken = () => {
 const createResetToken = async (email, expirationHours = 1) => {
   return new Promise((resolve, reject) => {
     try {
-      // Ensure table exists
-      initPasswordResetTable()
-        .then(() => {
-          const db = getDatabase();
-          const token = generateResetToken();
-          const expiresAt = new Date();
-          expiresAt.setHours(expiresAt.getHours() + expirationHours);
+      ensureDataDir();
+      const tokens = readTokens();
+      const token = generateResetToken();
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + expirationHours);
 
-          const stmt = db.prepare(`
-          INSERT INTO password_reset_tokens (token, email, expires_at)
-          VALUES (?, ?, ?)
-        `);
+      const newToken = {
+        id: tokens.length > 0 ? Math.max(...tokens.map((t) => t.id || 0)) + 1 : 1,
+        token: token,
+        email: email,
+        expires_at: expiresAt.toISOString(),
+        used: 0,
+        created_at: new Date().toISOString(),
+      };
 
-          stmt.run(token, email, expiresAt.toISOString());
+      tokens.push(newToken);
+      writeTokens(tokens);
 
-          resolve(token);
-        })
-        .catch(reject);
+      resolve(token);
     } catch (error) {
       reject(error);
     }
@@ -85,18 +125,20 @@ const createResetToken = async (email, expirationHours = 1) => {
  * @param {string} token - Reset token to validate
  * @returns {Promise<Object|null>} Token data if valid, null otherwise
  */
-const getResetToken = async token => {
+const getResetToken = async (token) => {
   return new Promise((resolve, reject) => {
     try {
-      const db = getDatabase();
-      const stmt = db.prepare(`
-        SELECT * FROM password_reset_tokens
-        WHERE token = ? AND used = 0 AND expires_at > datetime('now')
-        LIMIT 1
-      `);
+      const tokens = readTokens();
+      const now = new Date().toISOString();
 
-      const result = stmt.get(token);
-      resolve(result || null);
+      const validToken = tokens.find(
+        (t) =>
+          t.token === token &&
+          t.used === 0 &&
+          new Date(t.expires_at) > new Date(now)
+      );
+
+      resolve(validToken || null);
     } catch (error) {
       reject(error);
     }
@@ -108,17 +150,17 @@ const getResetToken = async token => {
  * @param {string} token - Token to mark as used
  * @returns {Promise<void>}
  */
-const markTokenAsUsed = async token => {
+const markTokenAsUsed = async (token) => {
   return new Promise((resolve, reject) => {
     try {
-      const db = getDatabase();
-      const stmt = db.prepare(`
-        UPDATE password_reset_tokens
-        SET used = 1
-        WHERE token = ?
-      `);
+      const tokens = readTokens();
+      const tokenIndex = tokens.findIndex((t) => t.token === token);
 
-      stmt.run(token);
+      if (tokenIndex !== -1) {
+        tokens[tokenIndex].used = 1;
+        writeTokens(tokens);
+      }
+
       resolve();
     } catch (error) {
       reject(error);
@@ -133,14 +175,16 @@ const markTokenAsUsed = async token => {
 const cleanupExpiredTokens = async () => {
   return new Promise((resolve, reject) => {
     try {
-      const db = getDatabase();
-      const stmt = db.prepare(`
-        DELETE FROM password_reset_tokens
-        WHERE expires_at < datetime('now') OR used = 1
-      `);
+      const tokens = readTokens();
+      const now = new Date().toISOString();
+      const initialLength = tokens.length;
 
-      const result = stmt.run();
-      resolve(result.changes);
+      const activeTokens = tokens.filter(
+        (t) => new Date(t.expires_at) >= new Date(now) && t.used === 0
+      );
+
+      writeTokens(activeTokens);
+      resolve(initialLength - activeTokens.length);
     } catch (error) {
       reject(error);
     }

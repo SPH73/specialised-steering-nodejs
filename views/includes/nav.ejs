@@ -1,8 +1,11 @@
-<% // isAdmin is passed from parent template or defaults to false const
-adminMode = typeof isAdmin !== 'undefined' && isAdmin === true; // Use absolute
-paths for consistency (admin uses /, public can use / too) const basePath = '/';
-// For admin, show: home, gallery, logout // For public, show: home, about,
-enquiry, gallery, contact %>
+<%
+// isAdmin is passed from parent template or defaults to false
+const adminMode = typeof isAdmin !== 'undefined' && isAdmin === true;
+// Use absolute paths for consistency (admin uses /, public can use / too)
+const basePath = '/';
+// For admin, show: home, gallery, logout
+// For public, show: home, about, enquiry, gallery, contact
+%>
 <nav
   data-w-id="15c6fe86-0da0-6554-a202-c50b959f2b40"
   class="navbar <%= adminMode ? 'admin-navbar' : '' %>"
