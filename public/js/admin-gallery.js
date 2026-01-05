@@ -3,7 +3,7 @@
 
   const API_BASE = window.ADMIN_API_BASE || '/admin/google/photos';
   const GOOGLE_CLIENT_ID = window.GOOGLE_CLIENT_ID;
-  
+
   let currentSessionId = null;
 
   /**
@@ -12,13 +12,14 @@
   function updateStatus(message, type = 'info') {
     const statusDiv = document.getElementById('galleryStatus');
     const statusMessage = document.getElementById('statusMessage');
-    
+
     if (!statusDiv || !statusMessage) return;
-    
+
     statusDiv.style.display = 'block';
-    statusMessage.textContent = message;
+    statusMessage.innerHTML = message; // Changed to innerHTML to support countdown
     statusDiv.className = `gallery-status status-${type}`;
   }
+
 
   /**
    * Show/hide progress indicator
@@ -74,7 +75,7 @@
   async function getSessionStatus(sessionId) {
     try {
       const response = await fetch(`${API_BASE}/sessions/${sessionId}/status`);
-      
+
       if (!response.ok) {
         throw new Error('Failed to get session status');
       }
@@ -92,11 +93,11 @@
   function openPicker(pickerUri) {
     // Open picker in a new window/tab
     const pickerWindow = window.open(pickerUri, 'Google Photos Picker', 'width=800,height=600');
-    
+
     if (!pickerWindow) {
       throw new Error('Popup blocked. Please allow popups for this site.');
     }
-    
+
     // Return a promise that resolves when the window is closed
     // (we'll poll for status instead of waiting for window close)
     return new Promise((resolve, reject) => {
@@ -108,7 +109,7 @@
           resolve();
         }
       }, 500);
-      
+
       // Note: We don't reject on close because the user might have selected items
       // before closing. We'll poll the status instead.
     });
@@ -116,31 +117,47 @@
 
   /**
    * Poll session status
+   * Polls the session status until mediaItemsSet is true or maxAttempts reached
    */
-  async function pollSessionStatus(sessionId, maxAttempts = 30) {
+  async function pollSessionStatus(sessionId, maxAttempts = 60) {
+    const pollInterval = 1000; // Poll every 1 second
+
     for (let i = 0; i < maxAttempts; i++) {
       try {
         const response = await fetch(`${API_BASE}/sessions/${sessionId}/status`);
-        
+
         if (!response.ok) {
+          // Check for session expiration errors (404 or 400)
+          if (response.status === 404 || response.status === 400) {
+            const errorData = await response.json().catch(() => ({}));
+            if (errorData.message && errorData.message.includes('session')) {
+              throw new Error('SESSION_EXPIRED');
+            }
+          }
           throw new Error('Failed to get session status');
         }
 
         const status = await response.json();
-        
+
         if (status.mediaItemsSet) {
           return status;
         }
-        
-        // Wait before next poll (exponential backoff)
-        await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+
+        // Wait before next poll
+        await new Promise(resolve => setTimeout(resolve, pollInterval));
       } catch (error) {
-        if (i === maxAttempts - 1) throw error;
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        if (error.message === 'SESSION_EXPIRED') {
+          throw error;
+        }
+        if (i === maxAttempts - 1) {
+          // Last attempt failed
+          throw new Error('Session status polling timeout - maximum polling attempts reached');
+        }
+        await new Promise(resolve => setTimeout(resolve, pollInterval));
       }
     }
-    
-    throw new Error('Session status polling timeout');
+
+    throw new Error('Session status polling timeout - maximum polling attempts reached');
   }
 
   /**
@@ -165,7 +182,7 @@
       }
 
       const result = await response.json();
-      
+
       if (result.errors && result.errors.length > 0) {
         updateStatus(
           `Completed with ${result.errors.length} error(s). Ingested: ${result.ingested}, Skipped: ${result.skipped}`,
@@ -180,7 +197,7 @@
 
       // Update item count
       await updateItemCount();
-      
+
       return result;
     } catch (error) {
       console.error('Error ingesting media:', error);
@@ -212,7 +229,7 @@
       // Get session status to retrieve pickerUri
       updateStatus('Getting picker URL...', 'info');
       const sessionStatus = await getSessionStatus(sessionId);
-      
+
       if (!sessionStatus.pickerUri) {
         throw new Error('Picker URI not available in session');
       }
@@ -222,7 +239,7 @@
       // Open picker (redirects to pickerUri)
       await openPicker(sessionStatus.pickerUri);
 
-      updateStatus('Waiting for photo selection...', 'info');
+      updateStatus('Waiting for photo selection... Please select photos and click "Done" when finished.', 'info');
 
       // Poll for session completion
       await pollSessionStatus(sessionId);
@@ -234,7 +251,18 @@
 
     } catch (error) {
       console.error('Error updating gallery:', error);
-      updateStatus(`Error: ${error.message}`, 'error');
+
+      // Provide user-friendly error messages for common issues
+      let errorMessage = error.message;
+      if (error.message === 'SESSION_EXPIRED') {
+        errorMessage = '❌ The session has expired. Please try again by clicking the "Update Gallery" button.';
+      } else if (error.message.includes('timeout')) {
+        errorMessage = '⏱️ The request timed out while waiting for photo selection. Please try again.';
+      } else if (error.message.includes('Failed to get session status')) {
+        errorMessage = '❌ Unable to check session status. The session may have expired. Please try again.';
+      }
+
+      updateStatus(`Error: ${errorMessage}`, 'error');
     } finally {
       if (updateBtn) updateBtn.disabled = false;
     }
