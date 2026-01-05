@@ -15,12 +15,13 @@
         <div class="container">
           <h1>Welcome To Our Gallery Of Completed Projects!</h1>
           <p>
-            At Specialised Steering, we take pride in the quality of our hydraulic
-            component repair work across the mining, agricultural, and automotive
-            industries. We believe in transparency, and this gallery showcases the
-            craftsmanship and dedication we bring to every project for our valued
-            clients. Browse through these photos to see firsthand the results of our
-            expertise and the exceptional service you can expect from us.
+            At Specialised Steering, we take pride in the quality of our
+            hydraulic component repair work across the mining, agricultural, and
+            automotive industries. We believe in transparency, and this gallery
+            showcases the craftsmanship and dedication we bring to every project
+            for our valued clients. Browse through these photos to see firsthand
+            the results of our expertise and the exceptional service you can
+            expect from us.
           </p>
         </div>
       </section>
@@ -33,7 +34,7 @@
             <p><%= error %></p>
           </div>
           <% } else if (hasPhotos) { %>
-          <div id="photo-gallery" class="photo-gallery" data-layout="auto">
+          <div id="photo-gallery" class="photo-gallery" data-layout="masonry">
             <% photos.forEach((photo, index) => { %>
             <div class="gallery-item" data-photo-id="<%= photo.id %>">
               <img
@@ -48,7 +49,11 @@
             </div>
             <% }); %>
           </div>
-          <div id="gallery-loading" class="gallery-loading" style="display: none;">
+          <div
+            id="gallery-loading"
+            class="gallery-loading"
+            style="display: none"
+          >
             <p>Loading gallery...</p>
           </div>
           <% } else { %>
@@ -62,4 +67,3 @@
     <%- include('includes/footer') %> <%- include('includes/blockjs') %>
   </body>
 </html>
-

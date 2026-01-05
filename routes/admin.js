@@ -113,6 +113,19 @@ router.post("/google/photos/sessions/:sessionId/ingest", async (req, res) => {
       return res.json({ success: true, ingested: 0, skipped: 0, errors: [] });
     }
 
+    // Log first media item structure for debugging
+    if (mediaItems.length > 0) {
+      console.log(
+        "Sample media item structure:",
+        JSON.stringify(mediaItems[0], null, 2),
+      );
+    }
+
+    // Get OAuth token once for all downloads (more efficient)
+    const { getAuthenticatedClient } = require("../utils/google-oauth");
+    const oauthClient = await getAuthenticatedClient();
+    const accessToken = oauthClient.credentials.access_token;
+
     const results = {
       ingested: 0,
       skipped: 0,
@@ -123,7 +136,45 @@ router.post("/google/photos/sessions/:sessionId/ingest", async (req, res) => {
     for (const item of mediaItems) {
       try {
         const sourceMediaItemId = item.id;
-        const baseUrl = item.baseUrl; // Google Photos base URL
+
+        // Log every item structure to see what Google returns
+        console.log(
+          `Processing item ${sourceMediaItemId}:`,
+          JSON.stringify(item, null, 2),
+        );
+
+        // Google Photos Picker API returns baseUrl nested in mediaFile object
+        // Structure: item.mediaFile.baseUrl
+        const baseUrl =
+          item.mediaFile?.baseUrl || item.baseUrl || item.base_url;
+
+        if (!baseUrl) {
+          console.error(
+            `Missing baseUrl for item ${sourceMediaItemId}. Full item structure:`,
+            JSON.stringify(item, null, 2),
+          );
+          results.errors.push({
+            itemId: sourceMediaItemId,
+            error:
+              "Missing baseUrl in media item - check server logs for full item structure",
+          });
+          continue;
+        }
+
+        // Validate URL format
+        try {
+          new URL(baseUrl);
+        } catch (urlError) {
+          console.error(
+            `Invalid URL format for item ${sourceMediaItemId}: ${baseUrl}`,
+          );
+          console.error(`URL validation error:`, urlError.message);
+          results.errors.push({
+            itemId: sourceMediaItemId,
+            error: `Invalid URL: ${baseUrl}`,
+          });
+          continue;
+        }
 
         // Check if item already exists (idempotency)
         const existing = await getGalleryItemBySourceId(sourceMediaItemId);
@@ -133,8 +184,28 @@ router.post("/google/photos/sessions/:sessionId/ingest", async (req, res) => {
           continue;
         }
 
-        // Upload to Cloudinary
+        // Double-check baseUrl is valid before uploading
+        if (!baseUrl || typeof baseUrl !== "string") {
+          console.error(
+            `baseUrl validation failed for item ${sourceMediaItemId}:`,
+            {
+              baseUrl,
+              baseUrlType: typeof baseUrl,
+              itemKeys: Object.keys(item),
+            },
+          );
+          results.errors.push({
+            itemId: sourceMediaItemId,
+            error: `Invalid baseUrl: ${baseUrl} (type: ${typeof baseUrl})`,
+          });
+          continue;
+        }
+
+        console.log(`Uploading item ${sourceMediaItemId} from URL: ${baseUrl}`);
+
+        // Upload to Cloudinary (with OAuth token for Google Photos URL)
         const uploadResult = await uploadFromUrl(baseUrl, {
+          accessToken: accessToken, // Pass OAuth token for authenticated download
           folder: process.env.CLOUDINARY_FOLDER || "gallery/google-photos",
           public_id: `gallery-${sourceMediaItemId.replace(
             /[^a-zA-Z0-9]/g,

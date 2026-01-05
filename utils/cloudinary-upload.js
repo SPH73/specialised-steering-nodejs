@@ -15,9 +15,17 @@ const { cloudinary } = require('./cloudinary');
 const uploadFromUrl = async (url, options = {}) => {
   return new Promise((resolve, reject) => {
     try {
+      // Validate URL parameter
+      if (!url || typeof url !== 'string') {
+        const errorMsg = `Invalid URL parameter: ${url} (type: ${typeof url})`;
+        console.error('Cloudinary upload error:', errorMsg);
+        reject(new Error(errorMsg));
+        return;
+      }
+
       const folder = options.folder || process.env.CLOUDINARY_FOLDER || 'gallery/google-photos';
       const publicId = options.public_id || null;
-      
+
       // Cloudinary upload options with transformations
       const uploadOptions = {
         folder: folder,
@@ -29,8 +37,16 @@ const uploadFromUrl = async (url, options = {}) => {
         ...(publicId && { public_id: publicId })
       };
 
-      // Determine protocol
-      const urlObj = new URL(url);
+      // Validate URL format
+      let urlObj;
+      try {
+        urlObj = new URL(url);
+      } catch (urlError) {
+        const errorMsg = `Invalid URL format: ${url}`;
+        console.error('Cloudinary upload error:', errorMsg, urlError);
+        reject(new Error(errorMsg));
+        return;
+      }
       const isHttps = urlObj.protocol === 'https:';
       const httpModule = isHttps ? https : http;
 
@@ -47,8 +63,18 @@ const uploadFromUrl = async (url, options = {}) => {
         }
       );
 
+      // Prepare request options with Authorization header for Google Photos URLs
+      const requestOptions = {
+        headers: {}
+      };
+
+      // If this is a Google Photos URL and we have an access token, add Authorization header
+      if (urlObj.hostname.includes('googleusercontent.com') && options.accessToken) {
+        requestOptions.headers['Authorization'] = `Bearer ${options.accessToken}`;
+      }
+
       // Download and pipe to Cloudinary
-      const request = httpModule.get(url, (response) => {
+      const request = httpModule.get(url, requestOptions, (response) => {
         // Handle HTTP errors
         if (response.statusCode < 200 || response.statusCode >= 300) {
           uploadStream.destroy();
@@ -58,7 +84,7 @@ const uploadFromUrl = async (url, options = {}) => {
 
         // Pipe response to Cloudinary upload stream
         response.pipe(uploadStream);
-        
+
         // Handle response errors
         response.on('error', (err) => {
           uploadStream.destroy();
@@ -95,9 +121,9 @@ const generateCloudinaryUrl = (publicId, transformations = []) => {
     { quality: 'auto:good' },
     { fetch_format: 'auto' } // WebP when supported
   ];
-  
+
   const allTransformations = [...defaultTransformations, ...transformations];
-  
+
   return cloudinary.url(publicId, {
     secure: true,
     transformation: allTransformations

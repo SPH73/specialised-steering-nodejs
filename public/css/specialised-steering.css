@@ -2709,10 +2709,11 @@ img {
   cursor: pointer;
 }
 
-/* Masonry Layout (for varied image dimensions) */
+/* Masonry Layout (for varied image dimensions - brick layout) */
 .photo-gallery[data-layout="masonry"] {
   column-count: 3;
   column-gap: 1.5rem;
+  column-fill: auto;
 }
 
 .photo-gallery[data-layout="masonry"] .gallery-item {
@@ -2720,10 +2721,13 @@ img {
   width: 100%;
   margin-bottom: 1.5rem;
   break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
   border-radius: 4px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  vertical-align: top;
 }
 
 .photo-gallery[data-layout="masonry"] .gallery-item:hover {

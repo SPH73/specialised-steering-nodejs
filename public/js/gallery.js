@@ -39,14 +39,14 @@
    */
   function analyzeLayout(images) {
     if (images.length < MIN_IMAGES_FOR_ANALYSIS) {
-      return "grid"; // Default to grid for small sets
+      return "masonry"; // Default to masonry for brick layout
     }
 
     const aspectRatios = [];
     let loadedCount = 0;
 
-    return new Promise((resolve) => {
-      images.forEach((img) => {
+    return new Promise(resolve => {
+      images.forEach(img => {
         if (img.complete && img.naturalWidth > 0) {
           // Image already loaded
           const width = parseInt(img.dataset.width) || img.naturalWidth;
@@ -56,9 +56,7 @@
           loadedCount++;
 
           if (loadedCount === images.length) {
-            resolve(
-              areAspectRatiosSimilar(aspectRatios) ? "grid" : "masonry"
-            );
+            resolve(areAspectRatiosSimilar(aspectRatios) ? "grid" : "masonry");
           }
         } else {
           // Wait for image to load
@@ -72,7 +70,7 @@
 
             if (loadedCount === images.length) {
               resolve(
-                areAspectRatiosSimilar(aspectRatios) ? "grid" : "masonry"
+                areAspectRatiosSimilar(aspectRatios) ? "grid" : "masonry",
               );
             }
           });
@@ -86,17 +84,17 @@
 
             if (loadedCount === images.length) {
               resolve(
-                areAspectRatiosSimilar(aspectRatios) ? "grid" : "masonry"
+                areAspectRatiosSimilar(aspectRatios) ? "grid" : "masonry",
               );
             }
           });
         }
       });
 
-      // Fallback: if no images load within timeout, use grid
+      // Fallback: if no images load within timeout, use masonry
       setTimeout(() => {
         if (loadedCount < images.length) {
-          resolve("grid");
+          resolve("masonry");
         }
       }, 5000);
     });
@@ -114,7 +112,7 @@
    * Handle image click for lightbox (optional enhancement)
    */
   function setupImageClickHandlers(items) {
-    items.forEach((item) => {
+    items.forEach(item => {
       const img = item.querySelector(PHOTO_SELECTOR);
       if (img) {
         img.addEventListener("click", function () {
@@ -147,20 +145,20 @@
 
     // Analyze layout and apply
     analyzeLayout(Array.from(images))
-      .then((layout) => {
+      .then(layout => {
         applyLayout(gallery, layout);
         console.log(`Gallery layout set to: ${layout}`);
       })
-      .catch((error) => {
+      .catch(error => {
         console.error("Error analyzing gallery layout:", error);
-        // Fallback to grid
-        applyLayout(gallery, "grid");
+        // Fallback to masonry
+        applyLayout(gallery, "masonry");
       });
 
     // Lazy load full-resolution images
     if ("IntersectionObserver" in window) {
       const imageObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach((entry) => {
+        entries.forEach(entry => {
           if (entry.isIntersecting) {
             const img = entry.target;
             const fullUrl = img.dataset.src;
@@ -173,7 +171,7 @@
         });
       });
 
-      images.forEach((img) => {
+      images.forEach(img => {
         if (img.dataset.src) {
           imageObserver.observe(img);
         }
@@ -188,4 +186,3 @@
     initGallery();
   }
 })();
-
