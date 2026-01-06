@@ -143,17 +143,13 @@
     // Set up click handlers
     setupImageClickHandlers(items);
 
-    // Analyze layout and apply
-    analyzeLayout(Array.from(images))
-      .then(layout => {
-        applyLayout(gallery, layout);
-        console.log(`Gallery layout set to: ${layout}`);
-      })
-      .catch(error => {
-        console.error("Error analyzing gallery layout:", error);
-        // Fallback to masonry
-        applyLayout(gallery, "masonry");
-      });
+    // Force masonry layout (user requested masonry for all devices)
+    // Don't analyze - just use masonry
+    const currentLayout = gallery.getAttribute("data-layout");
+    if (currentLayout !== "masonry") {
+      applyLayout(gallery, "masonry");
+      console.log("Gallery layout set to: masonry (forced)");
+    }
 
     // Lazy load full-resolution images
     if ("IntersectionObserver" in window) {

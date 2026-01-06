@@ -2696,12 +2696,16 @@ img {
   max-width: 100%;
   padding-right: 10vw;
   padding-left: 10vw;
+  /* Ensure container doesn't break column layout */
+  overflow: visible;
 }
 
 .photo-gallery {
   width: 100%;
   margin: 2rem auto;
   display: block;
+  /* Ensure gallery container doesn't constrain columns */
+  overflow: visible;
 }
 
 /* Grid Layout (for uniform images) */
@@ -2736,27 +2740,45 @@ img {
   cursor: pointer;
 }
 
-/* Masonry Layout (for varied image dimensions - brick layout) */
+/* Masonry Layout (for varied image dimensions - brick layout)
+ * Using CSS columns as fallback (MDN recommended approach)
+ * Modern grid-template-rows: masonry is experimental and only in Firefox
+ * Reference: https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Grid_layout/Masonry_layout
+ */
 .photo-gallery[data-layout="masonry"] {
+  /* Column-based masonry layout */
   column-count: 3;
+  -webkit-column-count: 3;
+  -moz-column-count: 3;
   column-gap: 1.5rem;
-  column-fill: auto;
+  -webkit-column-gap: 1.5rem;
+  -moz-column-gap: 1.5rem;
+  column-fill: auto; /* Distribute items evenly across columns */
+  column-rule: none; /* No visual separator between columns */
   width: 100%;
   display: block;
+  /* Ensure container doesn't constrain columns */
+  overflow: visible;
+  min-height: 0;
 }
 
 .photo-gallery[data-layout="masonry"] .gallery-item {
+  /* Critical for CSS columns masonry - items must be inline-block */
   display: inline-block;
   width: 100%;
   margin-bottom: 1.5rem;
+  /* Prevent items from breaking across columns */
   break-inside: avoid;
   -webkit-column-break-inside: avoid;
+  -moz-column-break-inside: avoid;
   page-break-inside: avoid;
+  /* Align items to top of columns */
+  vertical-align: top;
+  /* Visual styling */
   border-radius: 4px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  vertical-align: top;
 }
 
 .photo-gallery[data-layout="masonry"] .gallery-item:hover {
@@ -2832,7 +2854,11 @@ img {
 
   .photo-gallery[data-layout="masonry"] {
     column-count: 2;
+    -webkit-column-count: 2;
+    -moz-column-count: 2;
     column-gap: 1rem;
+    -webkit-column-gap: 1rem;
+    -moz-column-gap: 1rem;
   }
 }
 
@@ -2846,7 +2872,11 @@ img {
 
   .photo-gallery[data-layout="masonry"] {
     column-count: 2;
+    -webkit-column-count: 2;
+    -moz-column-count: 2;
     column-gap: 0.75rem;
+    -webkit-column-gap: 0.75rem;
+    -moz-column-gap: 0.75rem;
   }
 
   .photo-gallery[data-layout="masonry"] .gallery-item {
@@ -2868,7 +2898,11 @@ img {
 @media screen and (max-width: 360px) {
   .photo-gallery[data-layout="masonry"] {
     column-count: 1;
+    -webkit-column-count: 1;
+    -moz-column-count: 1;
     column-gap: 0.5rem;
+    -webkit-column-gap: 0.5rem;
+    -moz-column-gap: 0.5rem;
   }
 
   .photo-gallery[data-layout="masonry"] .gallery-item {
@@ -2880,7 +2914,11 @@ img {
 @media screen and (min-width: 1200px) {
   .photo-gallery[data-layout="masonry"] {
     column-count: 4;
+    -webkit-column-count: 4;
+    -moz-column-count: 4;
     column-gap: 2rem;
+    -webkit-column-gap: 2rem;
+    -moz-column-gap: 2rem;
   }
 }
 
@@ -2888,6 +2926,10 @@ img {
 @media screen and (min-width: 1600px) {
   .photo-gallery[data-layout="masonry"] {
     column-count: 5;
+    -webkit-column-count: 5;
+    -moz-column-count: 5;
     column-gap: 2rem;
+    -webkit-column-gap: 2rem;
+    -moz-column-gap: 2rem;
   }
 }
