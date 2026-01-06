@@ -98,12 +98,12 @@ const basePath = '/';
       <div class="text-block">contact</div>
     </a>
     <% } %>
-    <!-- BBBEE Badge - Mobile Navigation Drawer -->
-    <div class="navbar_bbbee-badge">
+    <!-- BBBEE Badge - Mobile Navigation Drawer (Bottom) -->
+    <div class="navbar_bbbee-badge-mobile">
       <img
         src="<%= basePath %>images/BBBEE-Level-2-SS.jpg"
         alt="BBBEE Level 2 Certification - Specialised Steering"
-        class="bbbee-badge-img"
+        class="bbbee-badge-img-mobile"
         loading="lazy"
       />
     </div>
@@ -243,7 +243,7 @@ const basePath = '/';
 
   /* Desktop Badge - Right side of navbar */
   .navbar_bbbee-badge-desktop {
-    display: none; /* Hidden on mobile */
+    display: none;
   }
 
   .bbbee-badge-img-desktop {
@@ -254,11 +254,11 @@ const basePath = '/';
   }
 
   /* Mobile Badge - Bottom of navigation drawer */
-  .navbar_bbbee-badge {
-    display: none; /* Hidden on desktop */
+  .navbar_bbbee-badge-mobile {
+    display: none;
   }
 
-  .bbbee-badge-img {
+  .bbbee-badge-img-mobile {
     max-width: 140px;
     width: 100%;
     height: auto;
@@ -266,46 +266,58 @@ const basePath = '/';
     margin: 0 auto;
   }
 
-  /* Show desktop badge on large screens */
+  /* Desktop: Show badge in navbar */
   @media screen and (min-width: 992px) {
     .navbar_bbbee-badge-desktop {
       display: block;
       flex-shrink: 0;
-      margin-left: 1rem;
+      margin-left: 2rem; /* Spacing from navigation menu links */
+      align-self: center; /* Vertically center with navbar items */
+    }
+
+    .bbbee-badge-img-desktop {
+      max-width: 120px;
+      height: auto;
     }
   }
 
-  /* Show mobile badge in drawer on small screens */
+  /* Mobile: Show badge at bottom of drawer */
   @media screen and (max-width: 991px) {
-    .navbar_menu {
-      position: relative; /* Ensure relative positioning for absolute badge */
+    /* Ensure logo and hamburger icon stay above the open menu drawer */
+    /* Menu gets z-index: 20 when open, so navbar elements need higher z-index */
+    .navbar_logo {
+      position: relative;
+      z-index: 25 !important; /* Higher than menu z-index of 20 */
     }
-    
-    .navbar_bbbee-badge {
+
+    .navbar_menu-icon {
+      position: relative;
+      z-index: 25 !important; /* Higher than menu z-index of 20 when open */
+    }
+
+    /* Position badge absolutely at bottom - menu already has position: absolute from CSS */
+    /* Badge is positioned relative to the menu container */
+    .navbar_bbbee-badge-mobile {
       display: block;
       position: absolute;
       bottom: 2rem;
       left: 50%;
       transform: translateX(-50%);
-      width: 100%;
-      padding: 0 1rem;
+      width: calc(100% - 2rem);
+      max-width: 140px;
       text-align: center;
       z-index: 1;
-      pointer-events: none; /* Allow clicks to pass through to menu items */
+      pointer-events: none; /* Don't interfere with menu clicks */
     }
-    
-    .bbbee-badge-img {
-      pointer-events: auto; /* Re-enable clicks on badge itself */
+
+    .bbbee-badge-img-mobile {
+      pointer-events: auto; /* Allow clicks on badge itself */
     }
   }
 
   /* Very small screens - adjust badge size */
   @media screen and (max-width: 479px) {
-    .navbar_bbbee-badge {
-      bottom: 1.5rem;
-    }
-    
-    .bbbee-badge-img {
+    .bbbee-badge-img-mobile {
       max-width: 120px;
     }
   }
