@@ -98,6 +98,24 @@ const basePath = '/';
       <div class="text-block">contact</div>
     </a>
     <% } %>
+    <!-- BBBEE Badge - Mobile Navigation Drawer -->
+    <div class="navbar_bbbee-badge">
+      <img
+        src="<%= basePath %>images/BBBEE-Level-2-SS.jpg"
+        alt="BBBEE Level 2 Certification - Specialised Steering"
+        class="bbbee-badge-img"
+        loading="lazy"
+      />
+    </div>
+  </div>
+  <!-- BBBEE Badge - Desktop Navbar (Right Side) -->
+  <div class="navbar_bbbee-badge-desktop">
+    <img
+      src="<%= basePath %>images/BBBEE-Level-2-SS.jpg"
+      alt="BBBEE Level 2 Certification - Specialised Steering"
+      class="bbbee-badge-img-desktop"
+      loading="lazy"
+    />
   </div>
 </nav>
 
@@ -218,6 +236,66 @@ const basePath = '/';
     .admin-nav-menu.navbar_menu .navbar_menu-link.admin-logout:hover {
       background-color: var(--color-secondary);
       color: var(--color-button);
+    }
+  }
+
+  /* BBBEE Badge Styles */
+
+  /* Desktop Badge - Right side of navbar */
+  .navbar_bbbee-badge-desktop {
+    display: none; /* Hidden on mobile */
+  }
+
+  .bbbee-badge-img-desktop {
+    max-width: 120px;
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Mobile Badge - Bottom of navigation drawer */
+  .navbar_bbbee-badge {
+    display: none; /* Hidden on desktop */
+    padding: 2rem 1rem 1rem;
+    text-align: center;
+    margin-top: auto; /* Push to bottom of drawer */
+  }
+
+  .bbbee-badge-img {
+    max-width: 140px;
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+  }
+
+  /* Show desktop badge on large screens */
+  @media screen and (min-width: 992px) {
+    .navbar_bbbee-badge-desktop {
+      display: block;
+      flex-shrink: 0;
+      margin-left: 1rem;
+    }
+  }
+
+  /* Show mobile badge in drawer on small screens */
+  @media screen and (max-width: 991px) {
+    .navbar_menu {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .navbar_bbbee-badge {
+      display: block;
+    }
+  }
+
+  /* Very small screens - adjust badge size */
+  @media screen and (max-width: 479px) {
+    .bbbee-badge-img {
+      max-width: 120px;
     }
   }
 </style>
