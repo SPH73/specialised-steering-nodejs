@@ -68,6 +68,13 @@ app.use(express.json({ limit: "10mb" }));
 // Use extended: true for better compatibility with form submissions
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
+// Make notification email available to all templates
+app.use((req, res, next) => {
+  res.locals.notificationEmail =
+    process.env.NOTIFICATION_EMAIL || "admin@ssteering.co.za";
+  next();
+});
+
 // Block WordPress/Elementor query parameters - return 410 Gone to signal permanent removal
 // 410 Gone tells search engines the resource is permanently removed and should be de-indexed
 app.use((req, res, next) => {
