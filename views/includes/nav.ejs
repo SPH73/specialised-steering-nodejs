@@ -256,9 +256,6 @@ const basePath = '/';
   /* Mobile Badge - Bottom of navigation drawer */
   .navbar_bbbee-badge {
     display: none; /* Hidden on desktop */
-    padding: 2rem 1rem 1rem;
-    text-align: center;
-    margin-top: auto; /* Push to bottom of drawer */
   }
 
   .bbbee-badge-img {
@@ -281,19 +278,33 @@ const basePath = '/';
   /* Show mobile badge in drawer on small screens */
   @media screen and (max-width: 991px) {
     .navbar_menu {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      position: relative; /* Ensure relative positioning for absolute badge */
     }
-
+    
     .navbar_bbbee-badge {
       display: block;
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      padding: 0 1rem;
+      text-align: center;
+      z-index: 1;
+      pointer-events: none; /* Allow clicks to pass through to menu items */
+    }
+    
+    .bbbee-badge-img {
+      pointer-events: auto; /* Re-enable clicks on badge itself */
     }
   }
 
   /* Very small screens - adjust badge size */
   @media screen and (max-width: 479px) {
+    .navbar_bbbee-badge {
+      bottom: 1.5rem;
+    }
+    
     .bbbee-badge-img {
       max-width: 120px;
     }
