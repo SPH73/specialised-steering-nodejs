@@ -2686,7 +2686,9 @@ img {
   }
 }
 
-/* Photo Gallery Styles */
+/* Photo Gallery Styles - MOVED TO public/css/gallery.css */
+/* Gallery styles are now in a separate file to avoid conflicts */
+/*
 .gallery-section {
   padding: 2rem 0;
 }
@@ -2698,6 +2700,12 @@ img {
   padding-left: 10vw;
   /* Ensure container doesn't break column layout */
   overflow: visible;
+  /* Ensure minimum width for columns to work */
+  min-width: 0;
+  /* Force container to allow columns to flow */
+  display: block;
+  /* Ensure container width calculation includes padding */
+  box-sizing: border-box;
 }
 
 .photo-gallery {
@@ -2706,6 +2714,10 @@ img {
   display: block;
   /* Ensure gallery container doesn't constrain columns */
   overflow: visible;
+  /* Reset any grid/flex properties that might interfere */
+  grid-template-columns: none;
+  grid-template-rows: none;
+  flex-direction: unset;
 }
 
 /* Grid Layout (for uniform images) */
@@ -2740,45 +2752,57 @@ img {
   cursor: pointer;
 }
 
-/* Masonry Layout (for varied image dimensions - brick layout)
- * Using CSS columns as fallback (MDN recommended approach)
- * Modern grid-template-rows: masonry is experimental and only in Firefox
- * Reference: https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Grid_layout/Masonry_layout
- */
-.photo-gallery[data-layout="masonry"] {
-  /* Column-based masonry layout */
-  column-count: 3;
-  -webkit-column-count: 3;
-  -moz-column-count: 3;
+#photo-gallery[data-layout="masonry"] {
+  /* CSS Columns - simplest approach */
+  column-width: 300px;
+  -webkit-column-width: 300px;
+  -moz-column-width: 300px;
   column-gap: 1.5rem;
   -webkit-column-gap: 1.5rem;
   -moz-column-gap: 1.5rem;
-  column-fill: auto; /* Distribute items evenly across columns */
-  column-rule: none; /* No visual separator between columns */
-  width: 100%;
+  column-fill: auto;
+  column-rule: none;
+  /* Critical: must be block, not grid/flex */
   display: block;
-  /* Ensure container doesn't constrain columns */
+  width: 100%;
   overflow: visible;
-  min-height: 0;
+  box-sizing: border-box;
 }
 
+/* Fallback selectors for other contexts */
+.photo-gallery[data-layout="masonry"] {
+  column-width: 300px;
+  -webkit-column-width: 300px;
+  -moz-column-width: 300px;
+  column-gap: 1.5rem;
+  -webkit-column-gap: 1.5rem;
+  -moz-column-gap: 1.5rem;
+  column-fill: auto;
+  column-rule: none;
+  display: block;
+  width: 100%;
+  overflow: visible;
+  box-sizing: border-box;
+}
+
+#photo-gallery[data-layout="masonry"] .gallery-item,
 .photo-gallery[data-layout="masonry"] .gallery-item {
-  /* Critical for CSS columns masonry - items must be inline-block */
+  /* Critical: inline-block for CSS columns */
   display: inline-block;
   width: 100%;
   margin-bottom: 1.5rem;
-  /* Prevent items from breaking across columns */
+  /* Critical: prevent breaking across columns */
   break-inside: avoid;
   -webkit-column-break-inside: avoid;
   -moz-column-break-inside: avoid;
   page-break-inside: avoid;
-  /* Align items to top of columns */
   vertical-align: top;
   /* Visual styling */
   border-radius: 4px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-sizing: border-box;
 }
 
 .photo-gallery[data-layout="masonry"] .gallery-item:hover {
@@ -2852,7 +2876,12 @@ img {
     gap: 1rem;
   }
 
+  .gallery-section .container .photo-gallery[data-layout="masonry"],
+  section.gallery-section .container .photo-gallery[data-layout="masonry"],
   .photo-gallery[data-layout="masonry"] {
+    column-width: 250px;
+    -webkit-column-width: 250px;
+    -moz-column-width: 250px;
     column-count: 2;
     -webkit-column-count: 2;
     -moz-column-count: 2;
@@ -2924,7 +2953,12 @@ img {
 
 /* Extra large desktop - even more columns */
 @media screen and (min-width: 1600px) {
+  .gallery-section .container .photo-gallery[data-layout="masonry"],
+  section.gallery-section .container .photo-gallery[data-layout="masonry"],
   .photo-gallery[data-layout="masonry"] {
+    column-width: 350px;
+    -webkit-column-width: 350px;
+    -moz-column-width: 350px;
     column-count: 5;
     -webkit-column-count: 5;
     -moz-column-count: 5;
@@ -2933,3 +2967,4 @@ img {
     -moz-column-gap: 2rem;
   }
 }
+*/

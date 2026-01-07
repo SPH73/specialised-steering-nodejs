@@ -6,6 +6,7 @@
 
     <link href="https://www.specialisedsteering.com/gallery" rel="canonical" />
     <link rel="stylesheet" href="../css/specialised-steering.css" />
+    <link rel="stylesheet" href="../css/gallery.css" />
     <script src="../js/gallery.js" defer></script>
   </head>
   <body>
@@ -34,20 +35,22 @@
             <p><%= error %></p>
           </div>
           <% } else if (hasPhotos) { %>
-          <div id="photo-gallery" class="photo-gallery" data-layout="masonry">
-            <% photos.forEach((photo, index) => { %>
-            <div class="gallery-item" data-photo-id="<%= photo.id %>">
-              <img
-                src="<%= photo.thumbnailUrl %>"
-                data-src="<%= photo.url %>"
-                data-width="<%= photo.width %>"
-                data-height="<%= photo.height %>"
-                alt="<%= photo.description || photo.filename %>"
-                class="gallery-photo"
-                loading="lazy"
-              />
+          <div class="masonry-wrapper">
+            <div id="photo-gallery" class="photo-gallery masonry">
+              <% photos.forEach((photo, index) => { %>
+              <div class="gallery-item masonry-item" data-photo-id="<%= photo.id %>">
+                <img
+                  src="<%= photo.thumbnailUrl %>"
+                  data-src="<%= photo.url %>"
+                  data-width="<%= photo.width %>"
+                  data-height="<%= photo.height %>"
+                  alt="<%= photo.description || photo.filename %>"
+                  class="gallery-photo masonry-content"
+                  loading="lazy"
+                />
+              </div>
+              <% }); %>
             </div>
-            <% }); %>
           </div>
           <div
             id="gallery-loading"
@@ -64,6 +67,8 @@
         </div>
       </section>
     </main>
+    <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js" defer></script>
+    <script src="../js/masonry-w3bits.js" defer></script>
     <%- include('includes/footer') %> <%- include('includes/blockjs') %>
   </body>
 </html>

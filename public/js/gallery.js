@@ -133,6 +133,38 @@
       return; // Gallery not found on this page
     }
 
+    // If gallery uses the W3Bits masonry (.masonry class), skip layout forcing
+    if (gallery.classList.contains("masonry")) {
+      const items = gallery.querySelectorAll(GALLERY_ITEM_SELECTOR);
+      const images = gallery.querySelectorAll(PHOTO_SELECTOR);
+      if (items.length === 0 || images.length === 0) {
+        return;
+      }
+      setupImageClickHandlers(items);
+      // keep lazy-loading behavior
+      if ("IntersectionObserver" in window) {
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const img = entry.target;
+              const fullUrl = img.dataset.src;
+              if (fullUrl && img.src !== fullUrl) {
+                img.src = fullUrl;
+                img.removeAttribute("data-src");
+              }
+              observer.unobserve(img);
+            }
+          });
+        });
+        images.forEach(img => {
+          if (img.dataset.src) {
+            imageObserver.observe(img);
+          }
+        });
+      }
+      return; // do not set data-layout or analyze
+    }
+
     const items = gallery.querySelectorAll(GALLERY_ITEM_SELECTOR);
     const images = gallery.querySelectorAll(PHOTO_SELECTOR);
 
