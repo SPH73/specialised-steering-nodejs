@@ -38,10 +38,7 @@
           <div class="masonry-wrapper">
             <div id="photo-gallery" class="photo-gallery masonry">
               <% photos.forEach((photo, index) => { %>
-              <div
-                class="gallery-item masonry-item"
-                data-photo-id="<%= photo.id %>"
-              >
+              <div class="gallery-item masonry-item" data-photo-id="<%= photo.id %>">
                 <img
                   src="<%= photo.thumbnailUrl %>"
                   data-src="<%= photo.url %>"
@@ -49,21 +46,10 @@
                   data-height="<%= photo.height %>"
                   alt="<%= photo.description || photo.filename %>"
                   class="gallery-photo masonry-content"
-                  loading="lazy"
+                  loading="<%= index < 6 ? 'eager' : 'lazy' %>"
                 />
               </div>
               <% }); %>
-            </div>
-            <div class="masonry-footer">
-              <p>
-                Created with &#10084; with
-                <a
-                  href="//w3bits.com/tools/masonry-generator/"
-                  target="_blank"
-                  rel="external noopener nofollow"
-                  >CSS Masonry Generator</a
-                >
-              </p>
             </div>
           </div>
           <div
@@ -81,6 +67,8 @@
         </div>
       </section>
     </main>
+    <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js" defer></script>
+    <script src="../js/masonry-w3bits.js" defer></script>
     <%- include('includes/footer') %> <%- include('includes/blockjs') %>
   </body>
 </html>

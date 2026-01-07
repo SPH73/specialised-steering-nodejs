@@ -1,10 +1,13 @@
-/* Gallery Masonry Layout CSS - CSS Columns (Top to Bottom)
- * Simple CSS columns approach - no JavaScript required
+/* Gallery Masonry Layout CSS (Grid-Lanes)
+ * Modern CSS Grid masonry layout with CSS columns fallback
+ * Reference: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout/Masonry_layout
+ *
  * This file loads AFTER specialised-steering.css, so we can use proper specificity
  * without !important flags.
  */
 
 /* Gallery Section Container - uses standard container styles */
+/* Only ensure overflow is visible for masonry to work */
 .gallery-section {
   overflow: visible;
 }
@@ -22,89 +25,315 @@
   box-sizing: border-box;
 }
 
-/* Masonry Wrapper - uses container padding, no additional padding/max-width */
+/* W3Bits Masonry Grid (exclusive to gallery) */
 .masonry-wrapper {
   padding: 0; /* use container padding */
   max-width: 100%; /* use container max-width */
   margin-right: auto;
   margin-left: auto;
   overflow: visible;
+  min-height: 0; /* allow content to expand */
 }
-
-/* CSS Columns Masonry Layout */
 .masonry {
-  columns: 1;
-  column-gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(1, minmax(100px, 1fr));
+  grid-gap: 10px;
   overflow: visible;
+  min-height: 0; /* allow grid to expand with content */
+  grid-auto-rows: 1px; /* smaller base for tighter packing */
 }
-
-.masonry-item {
-  display: inline-block;
-  vertical-align: top;
-  margin-bottom: 10px;
-  width: 100%;
-  break-inside: avoid;
-  -webkit-column-break-inside: avoid;
-  -moz-column-break-inside: avoid;
-  page-break-inside: avoid;
-  box-sizing: border-box;
-}
-
-/* Responsive columns */
 @media only screen and (max-width: 1023px) and (min-width: 768px) {
   .masonry {
-    columns: 2;
+    grid-template-columns: repeat(2, minmax(100px, 1fr));
   }
 }
-
 @media only screen and (min-width: 1024px) {
   .masonry {
-    columns: 3;
+    grid-template-columns: repeat(3, minmax(100px, 1fr));
   }
 }
-
-/* Styling for masonry items and content */
 .masonry-item,
 .masonry-content {
   border-radius: 4px;
   overflow: hidden;
 }
-
 .masonry-item {
-  filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.15));
   transition: filter 0.25s ease-in-out;
+  min-height: 200px; /* Ensure items have space for images to render */
 }
-
 .masonry-item:hover {
-  filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.25));
 }
-
 .masonry-content {
   width: 100%;
   height: auto;
   display: block;
+  object-fit: contain;
+}
+
+/* Masonry Layout - CSS Columns (fallback for most browsers) */
+/* Using ID selector for higher specificity than class-only selectors */
+#photo-gallery[data-layout="masonry"] {
+  display: block;
+  /* Use column-width instead of column-count to let browser calculate based on available space */
+  column-width: 280px;
+  -webkit-column-width: 280px;
+  -moz-column-width: 280px;
+  column-gap: 1.5rem;
+  -webkit-column-gap: 1.5rem;
+  -moz-column-gap: 1.5rem;
+  column-fill: auto;
+  column-rule: none;
+  width: 100%;
+  max-width: 100%;
+  overflow: visible;
+  box-sizing: border-box;
+}
+
+/* Class selector for contexts where ID might not be available */
+.photo-gallery[data-layout="masonry"] {
+  display: block;
+  /* Use column-width instead of column-count to let browser calculate based on available space */
+  column-width: 280px;
+  -webkit-column-width: 280px;
+  -moz-column-width: 280px;
+  column-gap: 1.5rem;
+  -webkit-column-gap: 1.5rem;
+  -moz-column-gap: 1.5rem;
+  column-fill: auto;
+  column-rule: none;
+  width: 100%;
+  max-width: 100%;
+  overflow: visible;
+  box-sizing: border-box;
+}
+
+/* Modern CSS Grid Masonry (Grid-Lanes) - Firefox only */
+@supports (grid-template-rows: masonry) {
+  #photo-gallery[data-layout="masonry"],
+  .photo-gallery[data-layout="masonry"] {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-rows: masonry; /* Grid-lanes */
+    gap: 1.5rem;
+    /* Reset column properties when using grid */
+    column-count: auto;
+    -webkit-column-count: auto;
+    -moz-column-count: auto;
+    column-width: auto;
+    -webkit-column-width: auto;
+    -moz-column-width: auto;
+    column-gap: 0;
+    -webkit-column-gap: 0;
+    -moz-column-gap: 0;
+  }
+}
+
+/* Gallery Items in Masonry Layout */
+#photo-gallery[data-layout="masonry"] .gallery-item,
+.photo-gallery[data-layout="masonry"] .gallery-item {
+  /* For CSS Columns: inline-block is required */
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 1.5rem; /* vertical gutter for column fallback */
+  /* Critical: prevent breaking across columns */
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  -moz-column-break-inside: avoid;
+  page-break-inside: avoid;
+  vertical-align: top;
+  /* Visual styling */
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-sizing: border-box;
+}
+
+/* For browsers with grid masonry support */
+@supports (grid-template-rows: masonry) {
+  #photo-gallery[data-layout="masonry"] .gallery-item,
+  .photo-gallery[data-layout="masonry"] .gallery-item {
+    display: block; /* Grid items are block by default */
+    margin-bottom: 0; /* Gap handled by grid gap */
+  }
+}
+
+#photo-gallery[data-layout="masonry"] .gallery-item:hover,
+.photo-gallery[data-layout="masonry"] .gallery-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Gallery Photos */
+#photo-gallery[data-layout="masonry"] .gallery-photo,
+.photo-gallery[data-layout="masonry"] .gallery-photo {
+  width: 100%;
+  height: auto;
+  display: block;
   cursor: pointer;
+  object-fit: contain;
+  max-width: 100%;
 }
 
-/* Masonry Footer */
-.masonry-footer {
-  font-size: 0.75em;
-  opacity: 0.25;
-  text-align: center;
-  padding-top: 3em;
-  padding-bottom: 3em;
-  margin-bottom: -1.5em;
-  transition: opacity 1s ease-in-out;
+/* Responsive Design */
+/* Tablet and smaller desktop */
+@media screen and (max-width: 991px) {
+  #photo-gallery[data-layout="masonry"],
+  .photo-gallery[data-layout="masonry"] {
+    /* Force 2 columns on tablet */
+    column-count: 2;
+    -webkit-column-count: 2;
+    -moz-column-count: 2;
+    column-width: auto;
+    -webkit-column-width: auto;
+    -moz-column-width: auto;
+    column-gap: 1rem;
+    -webkit-column-gap: 1rem;
+    -moz-column-gap: 1rem;
+  }
+
+  @supports (grid-template-rows: masonry) {
+    #photo-gallery[data-layout="masonry"],
+    .photo-gallery[data-layout="masonry"] {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      column-count: auto;
+      -webkit-column-count: auto;
+      -moz-column-count: auto;
+      column-width: auto;
+      -webkit-column-width: auto;
+      -moz-column-width: auto;
+      column-gap: 0;
+      -webkit-column-gap: 0;
+      -moz-column-gap: 0;
+    }
+  }
+  #photo-gallery[data-layout="masonry"] .gallery-item,
+  .photo-gallery[data-layout="masonry"] .gallery-item {
+    margin-bottom: 1rem;
+  }
 }
 
-.masonry-footer a {
-  color: currentColor;
+/* Mobile devices */
+@media screen and (max-width: 479px) {
+  #photo-gallery[data-layout="masonry"],
+  .photo-gallery[data-layout="masonry"] {
+    /* Smaller column width for mobile - browser will calculate how many fit */
+    column-width: 150px;
+    -webkit-column-width: 150px;
+    -moz-column-width: 150px;
+    column-gap: 0.75rem;
+    -webkit-column-gap: 0.75rem;
+    -moz-column-gap: 0.75rem;
+  }
+
+  @supports (grid-template-rows: masonry) {
+    #photo-gallery[data-layout="masonry"],
+    .photo-gallery[data-layout="masonry"] {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.75rem;
+      column-count: auto;
+      -webkit-column-count: auto;
+      -moz-column-count: auto;
+      column-width: auto;
+      -webkit-column-width: auto;
+      -moz-column-width: auto;
+      column-gap: 0;
+      -webkit-column-gap: 0;
+      -moz-column-gap: 0;
+    }
+  }
+  #photo-gallery[data-layout="masonry"] .gallery-item,
+  .photo-gallery[data-layout="masonry"] .gallery-item {
+    margin-bottom: 0.75rem;
+  }
 }
 
-.masonry-footer:hover,
-.masonry-footer:active,
-.masonry-footer:focus {
-  opacity: 0.75;
+/* Very small mobile devices - single column */
+@media screen and (max-width: 360px) {
+  #photo-gallery[data-layout="masonry"],
+  .photo-gallery[data-layout="masonry"] {
+    column-width: auto;
+    -webkit-column-width: auto;
+    -moz-column-width: auto;
+    column-count: 1;
+    -webkit-column-count: 1;
+    -moz-column-count: 1;
+    column-gap: 0.5rem;
+    -webkit-column-gap: 0.5rem;
+    -moz-column-gap: 0.5rem;
+  }
+
+  @supports (grid-template-rows: masonry) {
+    #photo-gallery[data-layout="masonry"],
+    .photo-gallery[data-layout="masonry"] {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+      column-width: auto;
+      -webkit-column-width: auto;
+      -moz-column-width: auto;
+      column-count: auto;
+      -webkit-column-count: auto;
+      -moz-column-count: auto;
+      column-gap: 0;
+      -webkit-column-gap: 0;
+      -moz-column-gap: 0;
+    }
+  }
+  #photo-gallery[data-layout="masonry"] .gallery-item,
+  .photo-gallery[data-layout="masonry"] .gallery-item {
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Large desktop - more columns */
+@media screen and (min-width: 1200px) {
+  #photo-gallery[data-layout="masonry"],
+  .photo-gallery[data-layout="masonry"] {
+    /* Larger column width for desktop - browser calculates how many fit */
+    column-width: 320px;
+    -webkit-column-width: 320px;
+    -moz-column-width: 320px;
+  }
+
+  @supports (grid-template-rows: masonry) {
+    #photo-gallery[data-layout="masonry"],
+    .photo-gallery[data-layout="masonry"] {
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      column-count: auto;
+      -webkit-column-count: auto;
+      -moz-column-count: auto;
+      column-width: auto;
+      -webkit-column-width: auto;
+      -moz-column-width: auto;
+    }
+  }
+}
+
+/* Extra large desktop - even more columns */
+@media screen and (min-width: 1600px) {
+  #photo-gallery[data-layout="masonry"],
+  .photo-gallery[data-layout="masonry"] {
+    /* Even larger column width for extra large screens */
+    column-width: 350px;
+    -webkit-column-width: 350px;
+    -moz-column-width: 350px;
+  }
+
+  @supports (grid-template-rows: masonry) {
+    #photo-gallery[data-layout="masonry"],
+    .photo-gallery[data-layout="masonry"] {
+      column-count: auto;
+      -webkit-column-count: auto;
+      -moz-column-count: auto;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      column-width: auto;
+      -webkit-column-width: auto;
+      -moz-column-width: auto;
+    }
+  }
 }
 
 /* Gallery Error and Empty States */

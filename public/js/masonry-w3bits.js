@@ -19,15 +19,35 @@
 
     var contentHeight = content.getBoundingClientRect().height;
 
-    // Ensure we have valid dimensions
-    if (!contentHeight || contentHeight === 0) {
-      contentHeight = content.naturalHeight || 300; // fallback
+    // If height is 0 or very small, calculate from data attributes or natural dimensions
+    if (!contentHeight || contentHeight < 10) {
+      if (content.tagName === "IMG") {
+        // Try data attributes first (full image dimensions)
+        var imgWidth = parseInt(content.dataset.width) || 0;
+        var imgHeight = parseInt(content.dataset.height) || 0;
+
+        if (imgWidth > 0 && imgHeight > 0) {
+          // Calculate height based on item width and aspect ratio
+          var itemWidth = item.getBoundingClientRect().width || grid.getBoundingClientRect().width / 3 || 300;
+          var aspectRatio = imgWidth / imgHeight;
+          contentHeight = itemWidth / aspectRatio;
+        } else if (content.naturalHeight > 0) {
+          // Use natural dimensions if available
+          contentHeight = content.naturalHeight;
+        } else {
+          // Fallback minimum height
+          contentHeight = 300;
+        }
+      } else {
+        contentHeight = 300; // fallback for non-images
+      }
     }
 
     var rowSpan = Math.ceil((contentHeight + rowGap) / (rowHeight + rowGap));
+    if (rowSpan < 1) rowSpan = 1;
     item.style.gridRowEnd = "span " + rowSpan;
 
-    // Don't force image height - let it be natural
+    // Ensure image displays properly
     if (content && content.tagName === "IMG") {
       content.style.width = "100%";
       content.style.height = "auto";
