@@ -31,17 +31,27 @@ if [ -f .env.backup ]; then
     echo "✅ .env restored"
 fi
 
+# Set Node.js PATH (required for npm to work on this server)
+export PATH=~/nodevenv/staging.specialisedsteering.com/20/bin:$PATH
+
+# Verify Node.js is available
+if ! command -v node &> /dev/null; then
+    echo "❌ Error: Node.js not found in PATH"
+    echo "   Expected path: ~/nodevenv/staging.specialisedsteering.com/20/bin/node"
+    exit 1
+fi
+
+echo "✅ Node.js version: $(node --version)"
+
 # Install/update dependencies
 echo "📦 Installing dependencies..."
 npm install --omit=dev
 
-# Restart application (adjust based on your setup)
-echo "🔄 Restarting application..."
-# If using PM2, uncomment:
-# pm2 restart specialised-steering-staging
-
-# If using other process manager, add restart command here
-# Example: pkill -f "node app.js" && nohup node app.js > app.log 2>&1 &
+# Restart Passenger application
+echo "🔄 Restarting Passenger application..."
+mkdir -p tmp
+touch tmp/restart.txt
+echo "✅ Restart file created (Passenger will restart automatically)"
 
 echo "✅ Staging deployment complete!"
 echo "📍 Current branch: $(git branch --show-current)"
