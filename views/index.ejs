@@ -66,27 +66,13 @@
             Send us a parts enquiry for any components you need. We will source
             them for you in the shortest possible timeframe.
           </p>
-          <div class="w-layout-grid grid">
-            <ul
-              id="w-node-_8a176121-2007-2647-3a23-84a4ac1fac02-a97c437c"
-              role="list"
-              class="range w-list-unstyled"
-            >
-              <li class="range-item">Articulated Dump Trucks</li>
-              <li class="range-item">Rigid Dump Trucks</li>
-              <li class="range-item">Motor Graders</li>
-              <li class="range-item">Backhoe Loaders</li>
-              <li class="range-item">Bulldozers</li>
-              <li class="range-item">Excavators</li>
-              <li class="range-item">Track Loaders</li>
-              <li class="range-item">Crawler Dozers</li>
-              <li class="range-item">Wheel Loaders</li>
-              <li class="range-item">Engine parts for selected applications</li>
-            </ul>
-            <div
-              id="w-node-_60c71446-d505-6c7d-83fd-9f4cb390f98e-a97c437c"
-              class="range-grid"
-            >
+          <!-- Machinery types carousel (top) -->
+          <%- include('includes/range-carousel-machinery') %>
+          <!-- Image grid only - text removed from grid -->
+          <div
+            id="w-node-_60c71446-d505-6c7d-83fd-9f4cb390f98e-a97c437c"
+            class="range-grid"
+          >
               <img
                 src="https://sswebimages.mo.cloudinary.net/Articulated-dump-truck_cat.png"
                 loading="lazy"
@@ -210,24 +196,9 @@
                 alt="Eaton Steering Orbitrol"
                 class="range-image"
               />
-            </div>
-            <ul
-              id="w-node-_5700390f-ef02-d55e-2c05-3c7b6b8a851d-a97c437c"
-              role="list"
-              class="range w-list-unstyled"
-            >
-              <li class="range-item">Travel Motors</li>
-              <li class="range-item">Geroler Motors</li>
-              <li class="range-item">Gerotar Motors</li>
-              <li class="range-item">Piston Motors</li>
-              <li class="range-item">Gear Pumps</li>
-              <li class="range-item">Piston Pumps</li>
-              <li class="range-item">Fuel Pumps</li>
-              <li class="range-item">Shut-off valves</li>
-              <li class="range-item">Diesel Injectors</li>
-              <li class="range-item">Steering Orbitrols</li>
-            </ul>
           </div>
+          <!-- Component types carousel (bottom) -->
+          <%- include('includes/range-carousel-components') %>
         </div>
       </section>
       <div class="parallax-2">
