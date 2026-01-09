@@ -173,6 +173,7 @@ Gallery images are stored in Cloudinary, with metadata in JSON file. This approa
 - **Google reCAPTCHA v3** - Form spam protection
 - **Google Photos Picker API** - Photo selection for gallery (replaces deprecated Library API)
 - **Google OAuth 2.0** - Authentication for Google Photos Picker API
+  - **OAuth Scope:** `https://www.googleapis.com/auth/photospicker.mediaitems.readonly` (replaces deprecated Library API scopes)
 
 ### Cookie Consent
 
