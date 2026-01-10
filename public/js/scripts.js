@@ -29286,7 +29286,7 @@ Webflow.require('ix2').init({
       config: {
         loop: false,
         playInReverse: false,
-        scrollOffsetValue: 0,
+        scrollOffsetValue: 50,
         scrollOffsetUnit: '%',
         delay: 0,
         direction: null,
@@ -29328,6 +29328,7 @@ Webflow.require('ix2').init({
         delay: 0,
         direction: null,
         effectIn: false,
+        disabled: true, // Disabled - no fade out on range images
       },
       createdOn: 1637183818208,
     },

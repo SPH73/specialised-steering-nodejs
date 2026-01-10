@@ -107,6 +107,39 @@ a {
   text-decoration: none;
 }
 
+/* Style links in "Our Range" section to be obviously clickable */
+#products.container p a,
+#products .container p a,
+section#products p a {
+  font-weight: bold !important;
+  text-decoration: underline !important;
+  color: var(--color-primary, #4f4f4f) !important;
+  transition: color 0.3s ease;
+}
+
+#products.container p a:hover,
+#products .container p a:hover,
+section#products p a:hover {
+  color: var(--color-secondary, #f9b101) !important;
+}
+
+/* Style links in "Our Repairs Service" section to match "Our Range" styling */
+#repair-process .container p a,
+section#repair-process .container p a,
+section#repair-process p a {
+  font-weight: bold !important;
+  text-decoration: underline !important;
+  text-decoration-line: underline !important;
+  color: var(--color-primary, #4f4f4f) !important;
+  transition: color 0.3s ease;
+}
+
+#repair-process .container p a:hover,
+section#repair-process .container p a:hover,
+section#repair-process p a:hover {
+  color: var(--color-secondary, #f9b101) !important;
+}
+
 .page-heading {
   margin-top: 2em;
 }
@@ -1201,6 +1234,7 @@ img {
 .range-image {
   -webkit-transition: all 600ms cubic-bezier(0.6, -0.28, 0.735, 0.045);
   transition: all 600ms cubic-bezier(0.6, -0.28, 0.735, 0.045);
+  opacity: 1 !important; /* Always visible - no fade in/out */
 }
 
 .detail-link {
