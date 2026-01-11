@@ -321,10 +321,8 @@ router.get("/logout", (req, res) => {
           <p>You will be redirected to the home page...</p>
         </div>
         <script>
-          // Clear any cached credentials and redirect
-          setTimeout(() => {
-            window.location.href = '/';
-          }, 2000);
+          // Clear any cached credentials and redirect to home page immediately
+          window.location.href = '/';
         </script>
       </body>
     </html>
