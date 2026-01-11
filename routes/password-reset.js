@@ -33,7 +33,7 @@ router.get("/forgot-password", (req, res) => {
 });
 
 /**
- * POST /admin/forgot-password
+ * POST /auth/forgot-password
  * Process forgot password request
  */
 router.post("/forgot-password", async (req, res) => {
@@ -59,9 +59,10 @@ router.post("/forgot-password", async (req, res) => {
     const token = await createResetToken(ADMIN_EMAIL, 1); // 1 hour expiration
 
     // Build reset URL
+    // Use /auth path to avoid browser's cached Basic Auth credentials for /admin/*
     const protocol = req.protocol;
     const host = req.get("host");
-    const resetUrl = `${protocol}://${host}/admin/reset-password/${token}`;
+    const resetUrl = `${protocol}://${host}/auth/reset-password/${token}`;
 
     // Send reset email
     try {
@@ -104,7 +105,7 @@ router.post("/forgot-password", async (req, res) => {
 });
 
 /**
- * GET /admin/reset-password/:token
+ * GET /auth/reset-password/:token
  * Display password reset form
  */
 router.get("/reset-password/:token", async (req, res) => {
@@ -152,7 +153,7 @@ router.get("/reset-password/:token", async (req, res) => {
 });
 
 /**
- * POST /admin/reset-password/:token
+ * POST /auth/reset-password/:token
  * Process password reset
  */
 router.post("/reset-password/:token", async (req, res) => {

@@ -98,8 +98,19 @@ app.use((req, res, next) => {
 });
 
 // Password reset routes (public, no auth required)
+// Use /auth path to avoid browser's cached Basic Auth credentials for /admin/*
 const passwordResetRoutes = require("./routes/password-reset");
-app.use("/admin", passwordResetRoutes);
+app.use("/auth", passwordResetRoutes);
+
+// Redirect old /admin/forgot-password and /admin/reset-password paths to new /auth paths
+// IMPORTANT: These redirects MUST be registered BEFORE the admin routes middleware
+// to prevent basic auth from intercepting the requests
+app.get("/admin/forgot-password", (req, res) => {
+  res.redirect(301, "/auth/forgot-password");
+});
+app.get("/admin/reset-password/:token", (req, res) => {
+  res.redirect(301, `/auth/reset-password/${req.params.token}`);
+});
 
 // Admin routes (protected with basic auth)
 const basicAuth = require("./middleware/basic-auth");
