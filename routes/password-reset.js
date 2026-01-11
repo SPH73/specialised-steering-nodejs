@@ -203,8 +203,9 @@ router.post("/reset-password/:token", async (req, res) => {
     }
 
     // Update password in .env or .htaccess file
+    // Trim password to avoid whitespace issues when reading from .env/.htaccess
     try {
-      await updateAdminPassword(password);
+      await updateAdminPassword(password.trim());
       console.log("Admin password updated successfully");
 
       // Trigger Passenger restart by touching restart.txt
@@ -220,9 +221,27 @@ router.post("/reset-password/:token", async (req, res) => {
           fs.mkdirSync(tmpDir, { recursive: true });
         }
 
-        // Touch the restart file to trigger Passenger restart
-        fs.writeFileSync(restartFile, Date.now().toString(), "utf8");
-        console.log("Passenger restart triggered");
+        // Touch the restart file multiple times with delays to ensure Passenger detects it
+        // Passenger monitors file modification time, so updating it multiple times increases reliability
+        const touchRestartFile = () => {
+          fs.writeFileSync(restartFile, Date.now().toString(), "utf8");
+        };
+
+        // Initial touch
+        touchRestartFile();
+        console.log("Passenger restart triggered (attempt 1)");
+
+        // Touch again after short delay (ensures file modification time is updated)
+        setTimeout(() => {
+          touchRestartFile();
+          console.log("Passenger restart triggered (attempt 2)");
+        }, 500);
+
+        // Final touch after another delay
+        setTimeout(() => {
+          touchRestartFile();
+          console.log("Passenger restart triggered (attempt 3)");
+        }, 1500);
       } catch (restartError) {
         // Non-fatal error - log but continue
         console.warn(
@@ -258,7 +277,7 @@ router.post("/reset-password/:token", async (req, res) => {
       error: null,
       success: true,
       message:
-        "Password has been reset successfully. The application is restarting to apply changes. You can log in with your new password in a few moments.",
+        "Password has been reset successfully. The server is restarting to apply changes. You will be redirected to login in a few moments.",
       token: null,
     });
   } catch (error) {
