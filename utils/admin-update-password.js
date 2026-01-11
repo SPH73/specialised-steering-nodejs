@@ -2,6 +2,22 @@ const fs = require("fs");
 const path = require("path");
 
 const ENV_FILE = path.join(__dirname, "..", ".env");
+const HTACCESS_FILE = path.join(__dirname, "..", ".htaccess");
+
+/**
+ * Check if we're on production/staging (using .htaccess) or development (using .env)
+ * @returns {boolean} True if .htaccess exists and contains ADMIN_USERNAME/ADMIN_PASSWORD
+ */
+function isUsingHtaccess() {
+  if (!fs.existsSync(HTACCESS_FILE)) {
+    return false;
+  }
+  const htaccessContent = fs.readFileSync(HTACCESS_FILE, "utf8");
+  return (
+    htaccessContent.includes("SetEnv ADMIN_USERNAME") ||
+    htaccessContent.includes("SetEnv ADMIN_PASSWORD")
+  );
+}
 
 /**
  * Read .env file content
@@ -15,6 +31,17 @@ function readEnvFile() {
 }
 
 /**
+ * Read .htaccess file content
+ * @returns {string} File content
+ */
+function readHtaccessFile() {
+  if (!fs.existsSync(HTACCESS_FILE)) {
+    return "";
+  }
+  return fs.readFileSync(HTACCESS_FILE, "utf8");
+}
+
+/**
  * Write .env file content
  * @param {string} content - File content to write
  */
@@ -23,11 +50,19 @@ function writeEnvFile(content) {
 }
 
 /**
+ * Write .htaccess file content
+ * @param {string} content - File content to write
+ */
+function writeHtaccessFile(content) {
+  fs.writeFileSync(HTACCESS_FILE, content, "utf8");
+}
+
+/**
  * Update ADMIN_PASSWORD in .env file
  * @param {string} newPassword - New password to set
  * @returns {Promise<void>}
  */
-const updateAdminPassword = async newPassword => {
+const updateAdminPasswordInEnv = async newPassword => {
   return new Promise((resolve, reject) => {
     try {
       let envContent = readEnvFile();
@@ -148,6 +183,80 @@ const updateAdminPassword = async newPassword => {
       reject(error);
     }
   });
+};
+
+/**
+ * Update ADMIN_PASSWORD in .htaccess file
+ * @param {string} newPassword - New password to set
+ * @returns {Promise<void>}
+ */
+const updateAdminPasswordInHtaccess = async newPassword => {
+  return new Promise((resolve, reject) => {
+    try {
+      let htaccessContent = readHtaccessFile();
+
+      if (!htaccessContent) {
+        reject(new Error(".htaccess file not found or empty"));
+        return;
+      }
+
+      // Remove existing ADMIN_PASSWORD line (handle various whitespace formats)
+      const lines = htaccessContent.split("\n");
+      const filteredLines = lines.filter(
+        line => !line.trim().match(/^SetEnv\s+ADMIN_PASSWORD\s+/),
+      );
+
+      // Find ADMIN_USERNAME line to insert password after it
+      let insertIndex = -1;
+      for (let i = 0; i < filteredLines.length; i++) {
+        if (filteredLines[i].trim().match(/^SetEnv\s+ADMIN_USERNAME\s+/)) {
+          insertIndex = i + 1;
+          break;
+        }
+      }
+
+      // If ADMIN_USERNAME not found, try to find a good place to add both
+      if (insertIndex === -1) {
+        // Look for other SetEnv directives to add near them
+        for (let i = 0; i < filteredLines.length; i++) {
+          if (filteredLines[i].trim().startsWith("SetEnv")) {
+            insertIndex = i + 1;
+            break;
+          }
+        }
+      }
+
+      // If still not found, add at the end
+      if (insertIndex === -1) {
+        insertIndex = filteredLines.length;
+      }
+
+      // Insert password (use SetEnv directive format)
+      filteredLines.splice(
+        insertIndex,
+        0,
+        `SetEnv ADMIN_PASSWORD ${newPassword}`,
+      );
+
+      writeHtaccessFile(filteredLines.join("\n"));
+      resolve();
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+/**
+ * Update ADMIN_PASSWORD (works with both .env and .htaccess)
+ * @param {string} newPassword - New password to set
+ * @returns {Promise<void>}
+ */
+const updateAdminPassword = async newPassword => {
+  if (isUsingHtaccess()) {
+    return updateAdminPasswordInHtaccess(newPassword);
+  } else {
+    return updateAdminPasswordInEnv(newPassword);
+  }
 };
 
 module.exports = {

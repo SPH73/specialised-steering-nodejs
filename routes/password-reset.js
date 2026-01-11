@@ -201,10 +201,37 @@ router.post("/reset-password/:token", async (req, res) => {
       });
     }
 
-    // Update password in .env file
+    // Update password in .env or .htaccess file
     try {
       await updateAdminPassword(password);
       console.log("Admin password updated successfully");
+
+      // Trigger Passenger restart by touching restart.txt
+      // This works on production/staging servers using Passenger
+      try {
+        const fs = require("fs");
+        const path = require("path");
+        const restartFile = path.join(__dirname, "..", "tmp", "restart.txt");
+        const tmpDir = path.join(__dirname, "..", "tmp");
+
+        // Ensure tmp directory exists
+        if (!fs.existsSync(tmpDir)) {
+          fs.mkdirSync(tmpDir, { recursive: true });
+        }
+
+        // Touch the restart file to trigger Passenger restart
+        fs.writeFileSync(restartFile, Date.now().toString(), "utf8");
+        console.log("Passenger restart triggered");
+      } catch (restartError) {
+        // Non-fatal error - log but continue
+        console.warn(
+          "Could not trigger automatic restart:",
+          restartError.message,
+        );
+        console.log(
+          "Password updated successfully, but manual restart may be required",
+        );
+      }
     } catch (updateError) {
       console.error("Error updating admin password:", updateError);
       return res.render("admin-reset-password", {
@@ -230,7 +257,7 @@ router.post("/reset-password/:token", async (req, res) => {
       error: null,
       success: true,
       message:
-        "Password has been reset successfully. Please restart the server for changes to take effect, then log in with your new password.",
+        "Password has been reset successfully. The application is restarting to apply changes. You can log in with your new password in a few moments.",
       token: null,
     });
   } catch (error) {
