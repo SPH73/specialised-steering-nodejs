@@ -47,7 +47,8 @@ app.use((req, res, next) => {
   res.setHeader("set-cookie", [
     "_ga:GA1.1.376191239.1659268542; SameSite=Strict",
     "_ga_V4W8VP4GL8:GA1.1.376191239.1659268542; SameSite=Strict",
-    "_GRECAPTCHA=09AMjm62UjUi9gunpNhie9zFn-6UPNnedIXhe3Y603QUMzv_HaMV83xZxO1UNsxkL3TaxfRB1N9CS4Gws4xoiXDCw; SameSite=None; Secure; Domain=www.recaptcha.net; Path=/recaptcha",
+    // Note: _GRECAPTCHA cookie is set by reCAPTCHA itself from www.recaptcha.net
+    // Chrome blocks third-party cookies, but reCAPTCHA still works without them
   ]);
   next();
 });
