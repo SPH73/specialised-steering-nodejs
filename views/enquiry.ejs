@@ -8,11 +8,7 @@
     <!-- file upload preview -->
     <script src="../js/upload-preview.js" defer></script>
     <script src="../js/block-scripts.js" defer></script>
-    <script
-      src="https://www.recaptcha.net/recaptcha/api.js"
-      async
-      defer
-    ></script>
+    <%- include('includes/recaptcha-script') %>
     <script>
       // Set form load time for spam detection
       document.addEventListener("DOMContentLoaded", function () {
@@ -28,21 +24,7 @@
     </script>
   </head>
   <body>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-V4W8VP4GL8"
-    ></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-
-      gtag("config", "G-V4W8VP4GL8");
-    </script>
-    <!-- G-tag end -->
+    <%- include('includes/analytics') %>
     <%- include('includes/nav') %>
     <main>
       <section id="parts-enquiry" class="section main">

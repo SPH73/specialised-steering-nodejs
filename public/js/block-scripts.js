@@ -1,32 +1,33 @@
-// get date and time when submitting forms
+// Set date/time fields when submitting forms (only on pages that include them)
+const dayField = document.getElementById('day');
+const timeField = document.getElementById('time');
 
-const date = new Date();
-let d = date.getDate();
-let mth = date.getMonth() + 1;
-const yr = date.getFullYear();
-if (d < 10) {
-  d = '0' + d;
-}
-if (mth < 10) {
-  mth = '0' + mth;
-}
-document.getElementById('day').value = `${yr}/${mth}/${d}`;
+if (dayField || timeField) {
+  const date = new Date();
+  let d = date.getDate();
+  let mth = date.getMonth() + 1;
+  const yr = date.getFullYear();
+  if (d < 10) {
+    d = '0' + d;
+  }
+  if (mth < 10) {
+    mth = '0' + mth;
+  }
 
-let hr = date.getHours();
-let min = date.getMinutes();
-if (hr < 10) {
-  hr = '0' + hr;
-}
-if (min < 10) {
-  min = '0' + min;
-}
-document.getElementById('time').value = `${hr}:${min}`;
+  if (dayField) {
+    dayField.value = `${yr}/${mth}/${d}`;
+  }
 
-// update copyright
-let thisYear = new Date().getFullYear();
-let yearEl = document.querySelector('.year');
-yearEl.textContent = thisYear;
+  let hr = date.getHours();
+  let min = date.getMinutes();
+  if (hr < 10) {
+    hr = '0' + hr;
+  }
+  if (min < 10) {
+    min = '0' + min;
+  }
 
-// remove r-click for images
-let img = document.getElementsByTagName('img');
-img.oncontextmenu = 'return false';
+  if (timeField) {
+    timeField.value = `${hr}:${min}`;
+  }
+}

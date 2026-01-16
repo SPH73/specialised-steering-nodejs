@@ -10,27 +10,15 @@
       rel="preload"
       as="image"
       href="https://sswebimages.mo.cloudinary.net/lrg_komatsu-earth-moving-machinery.jpg?v=1"
-      media="(min-width: 992px)"
+      imagesrcset="
+        https://sswebimages.mo.cloudinary.net/sml_komatsu-earth-moving-machinery.jpeg?v=1 500w,
+        https://sswebimages.mo.cloudinary.net/med_komatsu-earth-moving-machinery.jpeg?v=1 1000w,
+        https://sswebimages.mo.cloudinary.net/lrg_komatsu-earth-moving-machinery.jpg?v=1 1600w
+      "
+      imagesizes="(min-width: 992px) 1600px, (min-width: 480px) 1000px, 500px"
     />
-    <link
-      rel="preload"
-      as="image"
-      href="https://sswebimages.mo.cloudinary.net/med_komatsu-earth-moving-machinery.jpeg?v=1"
-      media="(min-width: 480px) and (max-width: 991px)"
-    />
-    <link
-      rel="preload"
-      as="image"
-      href="https://sswebimages.mo.cloudinary.net/sml_komatsu-earth-moving-machinery.jpeg?v=1"
-      media="(max-width: 479px)"
-    />
-    <script src="../js/block-scripts.js" defer></script>
     <script src="/js/hero-parallax.js" defer></script>
-    <script
-      src="https://www.recaptcha.net/recaptcha/api.js"
-      async
-      defer
-    ></script>
+    <%- include('includes/recaptcha-script') %>
     <script>
       function onSubmit(token) {
         document.getElementById("contactForm").submit();
@@ -38,21 +26,7 @@
     </script>
   </head>
   <body>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-V4W8VP4GL8"
-    ></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-
-      gtag("config", "G-V4W8VP4GL8");
-    </script>
-    <!-- G-tag end -->
+    <%- include('includes/analytics') %>
 
     <%- include('includes/nav') %> <%- include('includes/header') %>
     <main>
