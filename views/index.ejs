@@ -9,22 +9,23 @@
     <link
       rel="preload"
       as="image"
-      href="https://sswebimages.mo.cloudinary.net/lrg_komatsu-earth-moving-machinery.jpg"
+      href="https://sswebimages.mo.cloudinary.net/lrg_komatsu-earth-moving-machinery.jpg?v=1"
       media="(min-width: 992px)"
     />
     <link
       rel="preload"
       as="image"
-      href="https://sswebimages.mo.cloudinary.net/med_komatsu-earth-moving-machinery.jpeg"
+      href="https://sswebimages.mo.cloudinary.net/med_komatsu-earth-moving-machinery.jpeg?v=1"
       media="(min-width: 480px) and (max-width: 991px)"
     />
     <link
       rel="preload"
       as="image"
-      href="https://sswebimages.mo.cloudinary.net/sml_komatsu-earth-moving-machinery.jpeg"
+      href="https://sswebimages.mo.cloudinary.net/sml_komatsu-earth-moving-machinery.jpeg?v=1"
       media="(max-width: 479px)"
     />
     <script src="../js/block-scripts.js" defer></script>
+    <script src="/js/hero-parallax.js" defer></script>
     <script
       src="https://www.recaptcha.net/recaptcha/api.js"
       async
@@ -56,6 +57,20 @@
     <%- include('includes/nav') %> <%- include('includes/header') %>
     <main>
       <div class="parallax-1">
+        <img
+          class="hero-background"
+          src="https://sswebimages.mo.cloudinary.net/lrg_komatsu-earth-moving-machinery.jpg?v=1"
+          srcset="
+            https://sswebimages.mo.cloudinary.net/sml_komatsu-earth-moving-machinery.jpeg?v=1 500w,
+            https://sswebimages.mo.cloudinary.net/med_komatsu-earth-moving-machinery.jpeg?v=1 1000w,
+            https://sswebimages.mo.cloudinary.net/lrg_komatsu-earth-moving-machinery.jpg?v=1 1600w
+          "
+          sizes="(min-width: 992px) 1600px, (min-width: 480px) 1000px, 500px"
+          alt="Earth moving machinery in operation"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+        />
         <section id="professional" class="section">
           <div class="container">
             <h2>Professional Hydraulic Engineers</h2>
