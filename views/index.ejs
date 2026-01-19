@@ -9,13 +9,20 @@
     <link
       rel="preload"
       as="image"
-      href="https://sswebimages.mo.cloudinary.net/lrg_komatsu-earth-moving-machinery.jpg?v=1"
+      href="https://sswebimages.mo.cloudinary.net/xl_komatsu-earth-moving-machinery.jpg"
+      media="(min-width: 992px)"
+    />
+    <link
+      rel="preload"
+      as="image"
+      href="https://sswebimages.mo.cloudinary.net/med_komatsu-earth-moving-machinery.jpeg?v=1"
       imagesrcset="
         https://sswebimages.mo.cloudinary.net/sml_komatsu-earth-moving-machinery.jpeg?v=1 500w,
         https://sswebimages.mo.cloudinary.net/med_komatsu-earth-moving-machinery.jpeg?v=1 1000w,
         https://sswebimages.mo.cloudinary.net/lrg_komatsu-earth-moving-machinery.jpg?v=1 1600w
       "
-      imagesizes="(min-width: 992px) 1600px, (min-width: 480px) 1000px, 500px"
+      imagesizes="(max-width: 991px) 100vw"
+      media="(max-width: 991px)"
     />
     <script src="/js/hero-parallax.js" defer></script>
     <%- include('includes/recaptcha-script') %>
