@@ -264,48 +264,31 @@
       </section>
       <section id="our-work-list" class="section">
         <div class="container">
-          <h2>Our Work</h2>
-          <% if (repairs.length === 0){ %>
+          <h2>Proven Repairs. Real Results.</h2>
           <p>
-            We thank you for your patience while we update this section of our
-            site and invite you to view the many examples of our work displayed
-            on our social media pages.
+            We love showing off current examples of our hydraulic repair work. Our team repairs hydraulic components to OEM specification
+            across mining, agriculture, and automotive sectors, and we also offer
+            service exchange on selected components to reduce downtime.
           </p>
-          <p>
-            Click
+          <div class="button_container">
+            <a href="/gallery" class="button w-button">View Our Gallery</a>
             <a
-              rel="noopener"
-              target="_blank"
               href="https://www.instagram.com/specialised_steering/?igshid=YmMyMTA2M2Y="
-              ><strong> here for Instagram </strong></a
-            >
-            and
-            <a
-              rel="noopener"
               target="_blank"
+              rel="noopener"
+              class="button w-button"
+            >
+              Instagram
+            </a>
+            <a
               href="https://www.linkedin.com/in/devon-abbot-6989aa108"
-              ><strong>here for LinkedIn </strong></a
-            >.
-          </p>
-          <% } else { %>
-          <p>
-            We are proud to showcase some examples of our extensive experience
-            in repairs to hydraulic componentry as just some of the repairs we
-            assist our customers with.
-          </p>
-          <p>
-            We share many more examples of repairs we have completed on our
-            social media pages. Feel free to
-            <a href="../#social"><strong>connect with us</strong></a> using the
-            icons at the bottom of our site.
-          </p>
-          <div id="repairs">
-            <div id="featured-list" class="api-data">
-              <% for (const repair of repairs) {%> <%-
-              include('includes/work/our-work-item', {repair:repair})%> <% } %>
-            </div>
+              target="_blank"
+              rel="noopener"
+              class="button w-button"
+            >
+              LinkedIn
+            </a>
           </div>
-          <% } %>
         </div>
       </section>
     </main>

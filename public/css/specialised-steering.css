@@ -256,17 +256,115 @@ li {
   display: none;
 }
 
+/* Switch to mobile nav when menu wraps */
+html.nav-wrap .navbar_menu {
+  position: absolute;
+  left: 0%;
+  top: 0%;
+  right: 0%;
+  bottom: auto;
+  z-index: -10;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  overflow: hidden;
+  height: 0vh;
+  padding-right: 10rem;
+  padding-left: 10rem;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  background-color: var(--color-light);
+  font-family: Montserrat, sans-serif;
+}
+
+html.nav-wrap .navbar_menu-link {
+  width: 100vw;
+  margin-right: 0;
+  margin-bottom: 0;
+  padding: 1.2rem 1.5rem;
+  border-bottom: 0.3em solid var(--color-secondary);
+  color: var(--color-button);
+  border-radius: 0;
+  background-color: transparent;
+  box-shadow: none;
+  font-weight: 600;
+}
+
+html.nav-wrap .navbar_menu-link:hover {
+  background-color: transparent;
+  -webkit-transform: none;
+  -ms-transform: none;
+  transform: none;
+  color: var(--color-secondary);
+  font-weight: 600;
+}
+
+html.nav-wrap .navbar_menu-link.w--current,
+html.nav-wrap .navbar_menu-link.w--current:hover {
+  background-color: transparent;
+  color: var(--color-secondary);
+}
+
+html.nav-wrap .navbar_menu-link.contact {
+  margin-top: 1rem;
+  border-bottom-style: none;
+}
+
+html.nav-wrap .navbar_menu-link.contact:hover {
+  margin-top: 1rem;
+  background-color: var(--color-secondary);
+  color: var(--color-button);
+}
+
+html.nav-wrap .navbar_menu-link.contact.w--current {
+  background-color: var(--color-button);
+}
+
+html.nav-wrap .navbar_menu-link.contact.w--current:hover {
+  color: var(--color-secondary);
+}
+
+html.nav-wrap .navbar_menu-icon {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 2rem;
+  height: 2rem;
+  background-color: var(--color-secondary);
+}
+
+html.nav-wrap .navbar_bbbee-badge-desktop {
+  display: none !important;
+}
+
+html.nav-wrap .navbar_bbbee-badge-mobile {
+  display: block !important;
+}
+
 /* Main content spacing - ensure h1 is not obscured by fixed navbar */
 /* Home page uses #header.section with margin-top: calc(6rem + 2em + 0.25rem) */
 /* Other pages need sufficient main padding-top to account for fixed navbar */
 main {
-  padding-top: 3rem;
+  padding-top: 4rem;
 }
 
 /* Increase spacing on mobile due to larger logo - but keep it reasonable */
 @media screen and (max-width: 991px) {
   main {
-    padding-top: 4rem;
+    padding-top: 5rem;
   }
 }
 
@@ -948,6 +1046,18 @@ img {
 }
 
 @media screen and (min-width: 992px) {
+  .parallax-1 {
+    background-image: url("https://sswebimages.mo.cloudinary.net/xl_komatsu-earth-moving-machinery.jpg");
+    background-position: 50% 50%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  .parallax-1 .hero-background {
+    display: none;
+  }
+
   .footer-link-mobile {
     display: none;
   }
@@ -1376,11 +1486,6 @@ img {
     display: -ms-flexbox;
     display: flex;
     background-color: var(--color-primary);
-    background-image: url("https://sswebimages.mo.cloudinary.net/xl_komatsu-earth-moving-machinery.jpg");
-    background-position: 50% 50%;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
   }
 
   .parallax-2 {

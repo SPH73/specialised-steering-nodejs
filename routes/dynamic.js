@@ -60,13 +60,7 @@ router.get("/", (req, res) => {
     description:
       "We repair and source hydraulic components for a wide range of industries and applications. We also service, test and repair components to OEM specification. View our range and examples of client work.",
   };
-  // Repairs not currently displayed - pass empty array to avoid Airtable API call
-  const repairs = [];
-
-  res.render("index", {
-    meta: meta,
-    repairs: repairs,
-  });
+  res.render("index", { meta: meta });
 });
 
 // ___ OUR WORK ___
@@ -80,61 +74,6 @@ router.get("/our-work", (req, res) => {
   console.log("Our work Cookies: ", req.cookies);
 
   res.render("our-work", { meta: meta });
-});
-
-router.get("/our-work/:id", async (req, res) => {
-  const meta = {
-    title: "HYDRAULIC COMPONENT SERVICE EXCHANGE & REAIRS TO OEM SPEC",
-    description:
-      "We offer service exchange on some hydraulic components and repair all components to OEM specification on machinery and trucks for the mining and agricultural industries.",
-  };
-  const repairId = req.params.id;
-  const table = base("repairsWork");
-  let error = null;
-  const repairImages = [];
-  let img = {};
-  let repair = {};
-
-  try {
-    trackAirtableCall("our-work-detail", "find", { repairId });
-    const repairDetail = await table.find(repairId);
-    if (!repairDetail) {
-      throw Error("Unable to find this repair");
-    }
-    let imagesGallery = repairDetail.fields.imagesGallery;
-    imagesGallery.forEach(image => {
-      let URL = image.url.slice(37);
-      let imgString = URL.indexOf("?");
-      URL = URL.slice(0, imgString);
-      URL = `https://res.cloudinary.com/ss-uploads/image/upload/q_auto:good,f_webp/remote_media/${URL}`;
-      img = {
-        id: image.id,
-        url: URL,
-        filename: image.filename,
-        width: image.width,
-        height: image.height,
-        size: image.size,
-        type: image.type,
-      };
-      repairImages.push(img);
-    });
-    repair = {
-      repairName: repairDetail.fields.repairName,
-      repairDescription: repairDetail.fields.repairDescription,
-      componentName: repairDetail.fields.componentName,
-      componentDescription: repairDetail.fields.componentDescription,
-    };
-  } catch (err) {
-    error = err.message;
-    console.log(error);
-  }
-  console.log("Our work detail Cookies: ", req.cookies);
-  res.render("our-work-detail", {
-    meta: meta,
-    repair: repair,
-    repairImages: repairImages,
-    repairId: repairId,
-  });
 });
 
 // ----ENQUIRY

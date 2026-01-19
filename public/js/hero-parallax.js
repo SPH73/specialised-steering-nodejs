@@ -18,10 +18,9 @@
       return;
     }
 
-    const rect = heroSection.getBoundingClientRect();
     const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-    const elementTop = scrollY + rect.top;
-    const offset = (scrollY - elementTop) * parallaxSpeed;
+    const elementTop = heroSection.offsetTop;
+    const offset = Math.max(0, scrollY - elementTop) * parallaxSpeed;
 
     heroImage.style.transform = `translate3d(0, ${offset.toFixed(2)}px, 0)`;
     ticking = false;
