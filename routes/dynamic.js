@@ -58,7 +58,7 @@ router.get("/", (req, res) => {
     title:
       "Hydraulic Repairs and Component Sourcing | Germiston, Gauteng, ZA - Service Worldwide",
     description:
-      "We repair and source hydraulic components for a wide range of industries and applications. We also service, test and repair components to OEM specification. View our range and examples of client work.",
+      "Hydraulic repairs near me in Germiston, Gauteng for mining, agriculture, and automotive equipment. We repair and source hydraulic components to OEM specification and service exchange standards.",
   };
   res.render("index", { meta: meta });
 });
@@ -83,7 +83,7 @@ router.get("/enquiry", (req, res) => {
     title:
       "HYDRAULIC COMPONENTS FOR MINING AND AGRICULTURAL MACHINERY AND TRUCKS",
     description:
-      "We supply a wide range of industries with replacement hydraulic components from leading manufacturers. Fill out an enquiry form for the part you require and we will do our best to get you up and running again as soon as possible.",
+      "Hydraulic component sourcing near me from Germiston, Gauteng. We supply OEM and selected aftermarket components for mining, agriculture, and automotive equipment.",
   };
   res.render("enquiry", {
     meta: meta,
@@ -400,7 +400,7 @@ router.get("/contact", (req, res) => {
     title:
       "CONTACT US FOR ALL YOUR HYDRAULIC REPAIRS AND PART SERVICE EXCHANGE",
     description:
-      "With our combined 40 years of experience, we offer an expert and professional service for all your hydraulic component requirements. Please contact us today to let us know how we can help get you back up and running.",
+      "Hydraulic repairs near me in Germiston, Gauteng. Contact Specialised Steering for OEM-spec repairs, service exchange options, and component sourcing support.",
   };
   res.render("contact", {
     meta: meta,

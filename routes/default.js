@@ -9,7 +9,7 @@ router.get("/about", (req, res) => {
     title:
       "Hydraulic Repairs to OEM Specification and Component Sourcing Service - Germiston, Gauteng",
     description:
-      "Specialised Steering CC offer hydraulic repairs services and a service exchange on some hydraulic components from our Germiston OEM repair workshop as well as on-site in underground and open pit mines.",
+      "Hydraulic repairs near me in Germiston, Gauteng. Specialised Steering offers OEM-spec repairs, service exchange on selected components, and nationwide component sourcing.",
   };
   res.render("about", { meta: meta });
 });
