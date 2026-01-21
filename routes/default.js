@@ -1,6 +1,11 @@
 const express = require("express");
 const router = express.Router();
 
+const pickVariant = (req, variants) => {
+  const variant = req && req.abVariant === "B" ? "B" : "A";
+  return variants[variant] || variants.A;
+};
+
 // Import gallery database utilities
 const { getAllGalleryItems } = require("../utils/gallery-db");
 
@@ -8,8 +13,10 @@ router.get("/about", (req, res) => {
   const meta = {
     title:
       "Hydraulic Repairs to OEM Specification and Component Sourcing Service - Germiston, Gauteng",
-    description:
-      "Hydraulic repairs near me in Germiston, Gauteng. Specialised Steering offers OEM-spec repairs, service exchange on selected components, and nationwide component sourcing.",
+    description: pickVariant(req, {
+      A: "Hydraulic repairs near me in Germiston, Gauteng. Specialised Steering offers OEM-spec repairs, service exchange on selected components, and nationwide component sourcing.",
+      B: "Specialised Steering CC offer hydraulic repairs services and a service exchange on some hydraulic components from our Germiston OEM repair workshop as well as on-site in underground and open pit mines.",
+    }),
   };
   res.render("about", { meta: meta });
 });

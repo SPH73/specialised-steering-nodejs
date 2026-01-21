@@ -23,6 +23,11 @@ const base = Airtable.base(process.env.BASE);
 
 const router = express.Router();
 
+const pickVariant = (req, variants) => {
+  const variant = req && req.abVariant === "B" ? "B" : "A";
+  return variants[variant] || variants.A;
+};
+
 // Rate limiting for form submissions
 // Allow 5 submissions per 15 minutes per IP
 const formRateLimit = rateLimit({
@@ -57,8 +62,10 @@ router.get("/", (req, res) => {
   const meta = {
     title:
       "Hydraulic Repairs and Component Sourcing | Germiston, Gauteng, ZA - Service Worldwide",
-    description:
-      "Hydraulic repairs near me in Germiston, Gauteng for mining, agriculture, and automotive equipment. We repair and source hydraulic components to OEM specification and service exchange standards.",
+    description: pickVariant(req, {
+      A: "Hydraulic repairs near me in Germiston, Gauteng for mining, agriculture, and automotive equipment. We repair and source hydraulic components to OEM specification and service exchange standards.",
+      B: "We repair and source hydraulic components for a wide range of industries and applications. We also service, test and repair components to OEM specification. View our range and examples of client work.",
+    }),
   };
   res.render("index", { meta: meta });
 });
@@ -82,8 +89,10 @@ router.get("/enquiry", (req, res) => {
   const meta = {
     title:
       "HYDRAULIC COMPONENTS FOR MINING AND AGRICULTURAL MACHINERY AND TRUCKS",
-    description:
-      "Hydraulic component sourcing near me from Germiston, Gauteng. We supply OEM and selected aftermarket components for mining, agriculture, and automotive equipment.",
+    description: pickVariant(req, {
+      A: "Hydraulic component sourcing near me from Germiston, Gauteng. We supply OEM and selected aftermarket components for mining, agriculture, and automotive equipment.",
+      B: "We supply a wide range of industries with replacement hydraulic components from leading manufacturers. Fill out an enquiry form for the part you require and we will do our best to get you up and running again as soon as possible.",
+    }),
   };
   res.render("enquiry", {
     meta: meta,
@@ -399,8 +408,10 @@ router.get("/contact", (req, res) => {
   const meta = {
     title:
       "CONTACT US FOR ALL YOUR HYDRAULIC REPAIRS AND PART SERVICE EXCHANGE",
-    description:
-      "Hydraulic repairs near me in Germiston, Gauteng. Contact Specialised Steering for OEM-spec repairs, service exchange options, and component sourcing support.",
+    description: pickVariant(req, {
+      A: "Hydraulic repairs near me in Germiston, Gauteng. Contact Specialised Steering for OEM-spec repairs, service exchange options, and component sourcing support.",
+      B: "With our combined 40 years of experience, we offer an expert and professional service for all your hydraulic component requirements. Please contact us today to let us know how we can help get you back up and running.",
+    }),
   };
   res.render("contact", {
     meta: meta,

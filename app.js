@@ -55,6 +55,38 @@ app.use((req, res, next) => {
 
 app.use(cookieParser());
 
+// Assign A/B variant for metadata testing (A = near-me, B = baseline)
+app.use((req, res, next) => {
+  if (req.path.startsWith("/admin") || req.path.startsWith("/auth")) {
+    return next();
+  }
+
+  const forced = typeof req.query.ab === "string" ? req.query.ab.toUpperCase() : null;
+  const isValidForced = forced === "A" || forced === "B";
+  const existing = req.cookies.ab_variant;
+  const isValidExisting = existing === "A" || existing === "B";
+  const variant = isValidForced
+    ? forced
+    : isValidExisting
+      ? existing
+      : Math.random() < 0.5
+        ? "A"
+        : "B";
+
+  req.abVariant = variant;
+  res.locals.abVariant = variant;
+  res.setHeader("X-AB-Variant", variant);
+
+  if (!isValidExisting || isValidForced) {
+    res.cookie("ab_variant", variant, {
+      maxAge: 1000 * 60 * 60 * 24 * 90,
+      sameSite: "Lax",
+    });
+  }
+
+  next();
+});
+
 app.use(compression());
 
 app.use(
