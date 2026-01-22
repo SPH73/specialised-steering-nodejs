@@ -24,6 +24,7 @@ const favicon = require("serve-favicon");
 const cookieParser = require("cookie-parser");
 
 const errorsHandlerMiddleware = require("./middleware/error-handler");
+const { logAbView } = require("./utils/ab-test-logger");
 
 const dynamicRoutes = require("./routes/dynamic");
 const defaultRoutes = require("./routes/default");
@@ -88,6 +89,29 @@ app.use((req, res, next) => {
 });
 
 app.use(compression());
+
+// Log A/B page views for HTML responses
+app.use((req, res, next) => {
+  if (!req.abVariant || req.method !== "GET") {
+    return next();
+  }
+
+  res.on("finish", () => {
+    const contentType = res.getHeader("content-type") || "";
+    if (!contentType.includes("text/html")) {
+      return;
+    }
+
+    logAbView({
+      ts: Date.now(),
+      path: req.path,
+      variant: req.abVariant,
+      status: res.statusCode,
+    });
+  });
+
+  next();
+});
 
 app.use(
   express.static("public", {

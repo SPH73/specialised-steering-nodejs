@@ -19,6 +19,7 @@ const {
   logRateLimit,
 } = require("../utils/security-logger");
 const { trackAirtableCall } = require("../utils/airtable-monitor");
+const { logAbConversion } = require("../utils/ab-test-logger");
 const base = Airtable.base(process.env.BASE);
 
 const router = express.Router();
@@ -346,6 +347,13 @@ router.post(
           hasMessage: !!messageData,
           messageKeys: Object.keys(messageData),
         });
+        logAbConversion({
+          ts: Date.now(),
+          form: "enquiry",
+          path: req.path,
+          variant: req.abVariant || "unknown",
+          status: "ok",
+        });
         return res.render("confirm", {
           message: messageData,
           ref: null,
@@ -368,6 +376,13 @@ router.post(
         ref: refValue,
       });
 
+      logAbConversion({
+        ts: Date.now(),
+        form: "enquiry",
+        path: req.path,
+        variant: req.abVariant || "unknown",
+        status: "ok",
+      });
       res.render("confirm", { message: messageData, ref: refValue });
     } catch (error) {
       console.error(
@@ -544,6 +559,13 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
       console.error("Error creating Airtable record:", error.message);
       // Still show success page even if Airtable fails - form was submitted
       const messageData = data && typeof data === "object" ? data : {};
+      logAbConversion({
+        ts: Date.now(),
+        form: "contact",
+        path: req.path,
+        variant: req.abVariant || "unknown",
+        status: "ok",
+      });
       return res.render("confirm", {
         message: messageData,
         ref: null,
@@ -554,6 +576,13 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
     const messageData = data && typeof data === "object" ? data : {};
     const refValue = reference || null;
 
+    logAbConversion({
+      ts: Date.now(),
+      form: "contact",
+      path: req.path,
+      variant: req.abVariant || "unknown",
+      status: "ok",
+    });
     res.render("confirm", { message: messageData, ref: refValue });
   } catch (error) {
     console.error("Unexpected error in contact form handler:", error.message);

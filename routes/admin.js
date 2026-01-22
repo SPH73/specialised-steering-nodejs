@@ -17,6 +17,7 @@ const {
   getGalleryItemBySourceId,
   deleteAllGalleryItems,
 } = require("../utils/gallery-db");
+const { getAbReport } = require("../utils/ab-test-logger");
 
 /**
  * GET /admin/gallery
@@ -30,6 +31,23 @@ router.get("/gallery", (req, res) => {
       description: "Manage gallery items from Google Photos",
     },
   });
+});
+
+/**
+ * GET /admin/ab-report
+ * Return A/B test report JSON (last 30 days by default)
+ */
+router.get("/ab-report", async (req, res) => {
+  const days = Number.parseInt(req.query.days, 10);
+  const windowDays = Number.isFinite(days) && days > 0 ? days : 30;
+
+  try {
+    const report = await getAbReport({ days: windowDays });
+    res.json(report);
+  } catch (error) {
+    console.error("Error building A/B report:", error.message);
+    res.status(500).json({ error: "Failed to build A/B report" });
+  }
 });
 
 /**
