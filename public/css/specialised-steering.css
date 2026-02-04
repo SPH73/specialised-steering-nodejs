@@ -71,6 +71,46 @@ textarea:focus-visible {
   border-color: var(--color-secondary);
 }
 
+/* Accessibility: Minimum touch target sizes (44x44px WCAG 2.1 AA) */
+/* Using padding approach to avoid layout conflicts */
+button:not(.navbar_menu-icon),
+.button:not(.navbar_menu-icon),
+a[role="button"]:not(.navbar_menu-icon),
+input[type="submit"],
+input[type="button"],
+input[type="reset"] {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+}
+
+/* Ensure checkboxes and radio buttons have adequate touch targets */
+input[type="checkbox"],
+input[type="radio"] {
+  min-width: 20px;
+  min-height: 20px;
+  margin: 4px; /* Adds padding area for easier tapping */
+}
+
+/* Mobile-specific touch target enhancements */
+@media (max-width: 991px) {
+  .navbar_menu-link {
+    min-height: 44px;
+    padding: 12px 16px;
+  }
+
+  .social-icons {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 10px;
+  }
+
+  .footer-link {
+    min-height: 44px;
+    padding: 10px 0;
+  }
+}
+
 * {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
