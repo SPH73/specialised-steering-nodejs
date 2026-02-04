@@ -9,7 +9,7 @@ router.get("/about", (req, res) => {
     title:
       "Hydraulic Repairs to OEM Specification and Component Sourcing Service - Germiston, Gauteng",
     description:
-      "Specialised Steering CC offer hydraulic repairs services and a service exchange on some hydraulic components from our Germiston OEM repair workshop as well as on-site in underground and open pit mines.",
+      "Specialised Steering (Pty) Ltd offer hydraulic repairs services and a service exchange on some hydraulic components from our Germiston OEM repair workshop as well as on-site in underground and open pit mines.",
   };
   res.render("about", { meta: meta });
 });
@@ -103,7 +103,7 @@ router.get("/sitemap", (req, res) => {
 
 router.get("/disclaimer", (req, res) => {
   const meta = {
-    title: "SPECIALISED STEERING CC",
+    title: "SPECIALISED Steering (Pty) Ltd",
   };
   res.render("disclaimer", { meta: meta });
 });
@@ -117,16 +117,16 @@ router.get("/cookie-policy", (req, res) => {
 
 router.get("/privacy-policy", (req, res) => {
   const meta = {
-    title: "Privacy Policy | Specialised Steering CC",
-    description: "Privacy Policy for Specialised Steering CC. Learn how we collect, use, and protect your personal information.",
+    title: "Privacy Policy | Specialised Steering (Pty) Ltd",
+    description: "Privacy Policy for Specialised Steering (Pty) Ltd. Learn how we collect, use, and protect your personal information.",
   };
   res.render("privacy-policy", { meta: meta });
 });
 
 router.get("/terms-of-sale", (req, res) => {
   const meta = {
-    title: "Terms of Sale | Specialised Steering CC",
-    description: "Terms of Sale for Specialised Steering CC. Review our terms and conditions for purchasing goods and services.",
+    title: "Terms of Sale | Specialised Steering (Pty) Ltd",
+    description: "Terms of Sale for Specialised Steering (Pty) Ltd. Review our terms and conditions for purchasing goods and services.",
   };
   res.render("terms-of-sale", { meta: meta });
 });
