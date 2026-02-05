@@ -8,6 +8,12 @@
   class="form"
   enctype="multipart/form-data"
 >
+  <!-- Validation error messages -->
+  <div id="form-errors" class="form-error-container" role="alert" aria-live="polite">
+    <p class="form-error-title">Please fix the following errors:</p>
+    <ul id="form-error-list" class="form-error-list"></ul>
+  </div>
+  
   <input type="hidden" id="day" name="postDate" value="CurrentDate" />
   <input type="hidden" id="time" name="postTime" value="CurrentTime" />
   <!-- Honeypot field (hidden from users, bots will fill it) -->

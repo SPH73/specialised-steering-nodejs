@@ -27,17 +27,125 @@
     <script src="/js/hero-parallax.js" defer></script>
     <%- include('includes/recaptcha-script') %>
     <script>
+      function validateContactForm() {
+        const errors = [];
+
+        // Clear previous error states
+        document
+          .querySelectorAll(".input-error")
+          .forEach(el => el.classList.remove("input-error"));
+
+        // Validate required fields
+        const name = document.getElementById("enquiryName");
+        if (name && !name.value.trim()) {
+          errors.push("Please enter your full name");
+          name.classList.add("input-error");
+        }
+
+        const email = document.getElementById("enquiryEmail");
+        if (email && !email.value.trim()) {
+          errors.push("Please enter your email address");
+          email.classList.add("input-error");
+        } else if (email && !email.validity.valid) {
+          errors.push("Please enter a valid email address");
+          email.classList.add("input-error");
+        }
+
+        const phone = document.getElementById("enquiryNumber");
+        if (phone && !phone.value.trim()) {
+          errors.push("Please enter your contact number");
+          phone.classList.add("input-error");
+        }
+
+        const country = document.getElementById("contactCountry");
+        if (country && !country.value) {
+          errors.push("Please select your country");
+          country.classList.add("input-error");
+        }
+
+        const message = document.getElementById("enquiryMessage");
+        if (message && !message.value.trim()) {
+          errors.push("Please tell us how we can help");
+          message.classList.add("input-error");
+        }
+
+        const terms = document.getElementById("accept-terms");
+        if (terms && !terms.checked) {
+          errors.push("Please accept the Terms & Conditions");
+        }
+
+        return errors;
+      }
+
+      function showErrors(errors) {
+        const errorContainer = document.getElementById("form-errors");
+        const errorList = document.getElementById("form-error-list");
+
+        if (!errorContainer || !errorList) return false;
+
+        if (errors.length > 0) {
+          errorList.innerHTML = errors.map(err => `<li>${err}</li>`).join("");
+          errorContainer.classList.add("visible");
+          errorContainer.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+          });
+          return false;
+        } else {
+          errorContainer.classList.remove("visible");
+          return true;
+        }
+      }
+
       function onSubmit(token) {
-        // Validate Terms & Conditions checkbox before submitting
-        const termsCheckbox = document.getElementById("accept-terms");
-        if (termsCheckbox && !termsCheckbox.checked) {
-          alert("Please accept the Terms & Conditions before submitting.");
+        // Validate form
+        const errors = validateContactForm();
+
+        if (errors.length > 0) {
+          showErrors(errors);
           grecaptcha.reset(); // Reset reCAPTCHA so user can try again
           return false;
         }
 
+        // All validation passed - submit form
         document.getElementById("contactForm").submit();
       }
+
+      // Add real-time validation feedback
+      document.addEventListener("DOMContentLoaded", function () {
+        // Re-validate when Terms checkbox is changed
+        const termsCheckbox = document.getElementById("accept-terms");
+        if (termsCheckbox) {
+          termsCheckbox.addEventListener("change", function () {
+            const errorContainer = document.getElementById("form-errors");
+            if (
+              errorContainer &&
+              errorContainer.classList.contains("visible")
+            ) {
+              const errors = validateContactForm();
+              showErrors(errors);
+            }
+          });
+        }
+
+        // Remove field-specific errors when user starts typing
+        const requiredFields = [
+          "enquiryName",
+          "enquiryEmail",
+          "enquiryNumber",
+          "contactCountry",
+          "enquiryMessage",
+        ];
+        requiredFields.forEach(fieldId => {
+          const field = document.getElementById(fieldId);
+          if (field) {
+            const eventType = field.tagName === "SELECT" ? "change" : "input";
+            field.addEventListener(eventType, function () {
+              this.classList.remove("input-error");
+            });
+          }
+        });
+      });
     </script>
   </head>
   <body>

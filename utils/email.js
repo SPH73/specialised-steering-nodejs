@@ -124,10 +124,16 @@ Received: ${new Date().toLocaleString("en-ZA", {
       "✅ Contact notification email sent successfully! Message ID:",
       info.messageId,
     );
+    console.log("📧 Email info response:", JSON.stringify(info.response));
+    console.log("📧 Email accepted:", info.accepted);
+    console.log("📧 Email rejected:", info.rejected);
+    console.log("📧 Email pending:", info.pending);
     return info;
   } catch (error) {
     console.error("❌ Error sending contact notification:", error.message);
-    console.error("Full error:", error);
+    console.error("❌ Error code:", error.code);
+    console.error("❌ Error response:", error.response);
+    console.error("❌ Full error:", error);
     throw error;
   }
 };
@@ -245,10 +251,16 @@ Received: ${new Date().toLocaleString("en-ZA", {
       "✅ Enquiry notification email sent successfully! Message ID:",
       info.messageId,
     );
+    console.log("📧 Email info response:", JSON.stringify(info.response));
+    console.log("📧 Email accepted:", info.accepted);
+    console.log("📧 Email rejected:", info.rejected);
+    console.log("📧 Email pending:", info.pending);
     return info;
   } catch (error) {
     console.error("❌ Error sending enquiry notification:", error.message);
-    console.error("Full error:", error);
+    console.error("❌ Error code:", error.code);
+    console.error("❌ Error response:", error.response);
+    console.error("❌ Full error:", error);
     throw error;
   }
 };

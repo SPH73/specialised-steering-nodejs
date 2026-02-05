@@ -18,17 +18,168 @@
         }
       });
 
+      function validateEnquiryForm() {
+        const errors = [];
+
+        // Clear previous error states
+        document
+          .querySelectorAll(".input-error")
+          .forEach(el => el.classList.remove("input-error"));
+
+        // Validate contact details
+        const name = document.getElementById("enquiryName");
+        if (!name.value.trim()) {
+          errors.push("Please enter your full name");
+          name.classList.add("input-error");
+        }
+
+        const email = document.getElementById("enquiryEmail");
+        if (!email.value.trim()) {
+          errors.push("Please enter your email address");
+          email.classList.add("input-error");
+        } else if (!email.validity.valid) {
+          errors.push("Please enter a valid email address");
+          email.classList.add("input-error");
+        }
+
+        const phone = document.getElementById("enquiryNumber");
+        if (!phone.value.trim()) {
+          errors.push("Please enter your contact number");
+          phone.classList.add("input-error");
+        }
+
+        const street = document.getElementById("street");
+        if (!street.value.trim()) {
+          errors.push("Please enter your street address");
+          street.classList.add("input-error");
+        }
+
+        const town = document.getElementById("town");
+        if (!town.value.trim()) {
+          errors.push("Please enter your town/suburb");
+          town.classList.add("input-error");
+        }
+
+        const postal = document.getElementById("postal");
+        if (!postal.value.trim()) {
+          errors.push("Please enter your postal code");
+          postal.classList.add("input-error");
+        }
+
+        const province = document.getElementById("province");
+        if (!province.value.trim()) {
+          errors.push("Please enter your region/province/state");
+          province.classList.add("input-error");
+        }
+
+        const country = document.getElementById("country");
+        if (!country.value) {
+          errors.push("Please select your country");
+          country.classList.add("input-error");
+        }
+
+        // Validate part details
+        const brand = document.getElementById("brand");
+        if (!brand.value.trim()) {
+          errors.push("Please enter the equipment brand");
+          brand.classList.add("input-error");
+        }
+
+        const type = document.getElementById("type");
+        if (!type.value.trim()) {
+          errors.push("Please enter the equipment type");
+          type.classList.add("input-error");
+        }
+
+        const partDesc = document.getElementById("partDesc");
+        if (!partDesc.value.trim()) {
+          errors.push("Please enter the part description");
+          partDesc.classList.add("input-error");
+        }
+
+        const terms = document.getElementById("accept-terms");
+        if (!terms.checked) {
+          errors.push("Please accept the Terms & Conditions");
+        }
+
+        return errors;
+      }
+
+      function showErrors(errors) {
+        const errorContainer = document.getElementById("form-errors");
+        const errorList = document.getElementById("form-error-list");
+
+        if (errors.length > 0) {
+          errorList.innerHTML = errors.map(err => `<li>${err}</li>`).join("");
+          errorContainer.classList.add("visible");
+          errorContainer.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+          });
+          return false;
+        } else {
+          errorContainer.classList.remove("visible");
+          return true;
+        }
+      }
+
       function onSubmit(token) {
-        // Validate Terms & Conditions checkbox before submitting
-        const termsCheckbox = document.getElementById("accept-terms");
-        if (!termsCheckbox.checked) {
-          alert("Please accept the Terms & Conditions before submitting.");
+        // Validate form
+        const errors = validateEnquiryForm();
+
+        if (errors.length > 0) {
+          showErrors(errors);
           grecaptcha.reset(); // Reset reCAPTCHA so user can try again
           return false;
         }
 
+        // All validation passed - submit form
         document.getElementById("enquiryForm").submit();
       }
+
+      // Add real-time validation feedback
+      document.addEventListener("DOMContentLoaded", function () {
+        // Re-validate when Terms checkbox is changed
+        const termsCheckbox = document.getElementById("accept-terms");
+        if (termsCheckbox) {
+          termsCheckbox.addEventListener("change", function () {
+            const errorContainer = document.getElementById("form-errors");
+            if (
+              errorContainer &&
+              errorContainer.classList.contains("visible")
+            ) {
+              // Re-run validation to update error list
+              const errors = validateEnquiryForm();
+              showErrors(errors);
+            }
+          });
+        }
+
+        // Remove field-specific errors when user starts typing
+        const requiredFields = [
+          "enquiryName",
+          "enquiryEmail",
+          "enquiryNumber",
+          "street",
+          "town",
+          "postal",
+          "province",
+          "country",
+          "brand",
+          "type",
+          "partDesc",
+        ];
+        requiredFields.forEach(fieldId => {
+          const field = document.getElementById(fieldId);
+          if (field) {
+            const eventType = field.tagName === "SELECT" ? "change" : "input";
+            field.addEventListener(eventType, function () {
+              // Remove red highlight when user starts fixing the field
+              this.classList.remove("input-error");
+            });
+          }
+        });
+      });
     </script>
   </head>
   <body>

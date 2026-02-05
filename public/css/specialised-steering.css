@@ -125,6 +125,50 @@ input[type="radio"] {
   border: 0 !important;
 }
 
+/* Form validation error messages */
+.form-error-container {
+  background-color: #fff3cd;
+  border: 2px solid #ff6b6b;
+  border-radius: 4px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  display: none;
+}
+
+.form-error-container.visible {
+  display: block;
+}
+
+.form-error-title {
+  color: #d32f2f;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.form-error-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.form-error-list li {
+  color: #333;
+  padding: 0.25rem 0;
+  font-size: 0.95rem;
+}
+
+.form-error-list li::before {
+  content: "⚠️ ";
+  margin-right: 0.5rem;
+}
+
+/* Highlight invalid fields */
+.input-error {
+  border-color: #ff6b6b !important;
+  background-color: #fff5f5 !important;
+}
+
 * {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
