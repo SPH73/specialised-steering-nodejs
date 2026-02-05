@@ -111,6 +111,20 @@ input[type="radio"] {
   }
 }
 
+/* Accessibility: Visually hidden labels for screen readers */
+/* Hides content visually while keeping it accessible to assistive technology */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
 * {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;

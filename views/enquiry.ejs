@@ -19,13 +19,20 @@
       });
 
       function onSubmit(token) {
+        // Validate Terms & Conditions checkbox before submitting
+        const termsCheckbox = document.getElementById("accept-terms");
+        if (!termsCheckbox.checked) {
+          alert("Please accept the Terms & Conditions before submitting.");
+          grecaptcha.reset(); // Reset reCAPTCHA so user can try again
+          return false;
+        }
+
         document.getElementById("enquiryForm").submit();
       }
     </script>
   </head>
   <body>
-    <%- include('includes/analytics') %>
-    <%- include('includes/nav') %>
+    <%- include('includes/analytics') %> <%- include('includes/nav') %>
     <main>
       <section id="parts-enquiry" class="section main">
         <div class="container">

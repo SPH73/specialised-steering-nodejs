@@ -28,23 +28,30 @@
     <%- include('includes/recaptcha-script') %>
     <script>
       function onSubmit(token) {
+        // Validate Terms & Conditions checkbox before submitting
+        const termsCheckbox = document.getElementById("accept-terms");
+        if (termsCheckbox && !termsCheckbox.checked) {
+          alert("Please accept the Terms & Conditions before submitting.");
+          grecaptcha.reset(); // Reset reCAPTCHA so user can try again
+          return false;
+        }
+
         document.getElementById("contactForm").submit();
       }
     </script>
   </head>
   <body>
-    <%- include('includes/analytics') %>
-
-    <%- include('includes/nav') %> <%- include('includes/header') %>
+    <%- include('includes/analytics') %> <%- include('includes/nav') %> <%-
+    include('includes/header') %>
     <main>
       <div class="parallax-1">
         <img
           class="hero-background"
           src="https://sswebimages.mo.cloudinary.net/lrg_komatsu-earth-moving-machinery.jpg?v=1"
           srcset="
-            https://sswebimages.mo.cloudinary.net/sml_komatsu-earth-moving-machinery.jpeg?v=1 500w,
+            https://sswebimages.mo.cloudinary.net/sml_komatsu-earth-moving-machinery.jpeg?v=1  500w,
             https://sswebimages.mo.cloudinary.net/med_komatsu-earth-moving-machinery.jpeg?v=1 1000w,
-            https://sswebimages.mo.cloudinary.net/lrg_komatsu-earth-moving-machinery.jpg?v=1 1600w
+            https://sswebimages.mo.cloudinary.net/lrg_komatsu-earth-moving-machinery.jpg?v=1  1600w
           "
           sizes="(min-width: 992px) 1600px, (min-width: 480px) 1000px, 500px"
           alt="Earth moving machinery in operation"
@@ -270,10 +277,14 @@
       </section>
       <section id="our-work-list" class="section">
         <div class="container">
-          <h2>OEM-Standard Hydraulic Repairs for Mining, Agriculture & Automotive Equipment</h2>
+          <h2>
+            OEM-Standard Hydraulic Repairs for Mining, Agriculture & Automotive
+            Equipment
+          </h2>
           <h3>Hydraulic Component Repairs to OEM Specification</h3>
           <p>
-            OEM-standard hydraulic repairs that keep your machinery moving. We restore components for mining, agriculture, and automotive
+            OEM-standard hydraulic repairs that keep your machinery moving. We
+            restore components for mining, agriculture, and automotive
             operations, with service exchange options available to cut downtime.
           </p>
           <p>

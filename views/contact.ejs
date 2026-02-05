@@ -17,6 +17,14 @@
       });
 
       function onSubmit(token) {
+        // Validate Terms & Conditions checkbox before submitting
+        const termsCheckbox = document.getElementById("accept-terms");
+        if (!termsCheckbox.checked) {
+          alert("Please accept the Terms & Conditions before submitting.");
+          grecaptcha.reset(); // Reset reCAPTCHA so user can try again
+          return false;
+        }
+
         // reCAPTCHA automatically adds the token to the form, so we don't need to add it manually
         // Just submit the form - the token is already included by reCAPTCHA
         const form = document.getElementById("contactForm");
@@ -25,8 +33,7 @@
     </script>
   </head>
   <body>
-    <%- include('includes/analytics') %>
-    <%- include('includes/nav') %>
+    <%- include('includes/analytics') %> <%- include('includes/nav') %>
     <main>
       <section id="contact-us" class="section main">
         <div class="container">
