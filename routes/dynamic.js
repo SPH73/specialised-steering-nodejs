@@ -65,7 +65,7 @@ router.get("/", async (req, res) => {
 
   // Log exposure event (non-blocking)
   if (variants.near_me_meta) {
-    logExposure(req, "near_me_meta", variants.near_me_meta, "/").catch((err) =>
+    logExposure(req, "near_me_meta", variants.near_me_meta, "/").catch(err =>
       console.error("Failed to log A/B exposure:", err),
     );
   }
@@ -84,8 +84,8 @@ router.get("/our-work", async (req, res) => {
 
   // Log exposure event (non-blocking)
   if (variants.near_me_meta) {
-    logExposure(req, "near_me_meta", variants.near_me_meta, "/our-work").catch((err) =>
-      console.error("Failed to log A/B exposure:", err),
+    logExposure(req, "near_me_meta", variants.near_me_meta, "/our-work").catch(
+      err => console.error("Failed to log A/B exposure:", err),
     );
   }
 
@@ -103,8 +103,8 @@ router.get("/enquiry", async (req, res) => {
 
   // Log exposure event (non-blocking)
   if (variants.near_me_meta) {
-    logExposure(req, "near_me_meta", variants.near_me_meta, "/enquiry").catch((err) =>
-      console.error("Failed to log A/B exposure:", err),
+    logExposure(req, "near_me_meta", variants.near_me_meta, "/enquiry").catch(
+      err => console.error("Failed to log A/B exposure:", err),
     );
   }
 
@@ -386,20 +386,26 @@ router.post(
         enquiryEmail: messageData.enquiryEmail,
         postDate: messageData.postDate,
         postTime: messageData.postTime,
-      hasRef: !!refValue,
-      ref: refValue,
-    });
+        hasRef: !!refValue,
+        ref: refValue,
+      });
 
-    // Log A/B test conversion (non-blocking)
-    const enquiryVariant = req.cookies["ab_near_me_meta"];
-    if (enquiryVariant) {
-      logConversion(req, "near_me_meta", enquiryVariant, "enquiry_form_submit", {
-        formType: "parts",
-        reference: refValue,
-      }).catch((err) => console.error("Failed to log A/B conversion:", err));
-    }
+      // Log A/B test conversion (non-blocking)
+      const enquiryVariant = req.cookies["ab_near_me_meta"];
+      if (enquiryVariant) {
+        logConversion(
+          req,
+          "near_me_meta",
+          enquiryVariant,
+          "enquiry_form_submit",
+          {
+            formType: "parts",
+            reference: refValue,
+          },
+        ).catch(err => console.error("Failed to log A/B conversion:", err));
+      }
 
-    res.render("confirm", { message: messageData, ref: refValue });
+      res.render("confirm", { message: messageData, ref: refValue });
     } catch (error) {
       console.error(
         "Unexpected error in parts enquiry handler:",
@@ -444,8 +450,8 @@ router.get("/contact", async (req, res) => {
 
   // Log exposure event (non-blocking)
   if (variants.near_me_meta) {
-    logExposure(req, "near_me_meta", variants.near_me_meta, "/contact").catch((err) =>
-      console.error("Failed to log A/B exposure:", err),
+    logExposure(req, "near_me_meta", variants.near_me_meta, "/contact").catch(
+      err => console.error("Failed to log A/B exposure:", err),
     );
   }
 
@@ -601,10 +607,16 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
     // Log A/B test conversion (non-blocking)
     const contactVariant = req.cookies["ab_near_me_meta"];
     if (contactVariant) {
-      logConversion(req, "near_me_meta", contactVariant, "contact_form_submit", {
-        formType: "contact",
-        reference: refValue,
-      }).catch((err) => console.error("Failed to log A/B conversion:", err));
+      logConversion(
+        req,
+        "near_me_meta",
+        contactVariant,
+        "contact_form_submit",
+        {
+          formType: "contact",
+          reference: refValue,
+        },
+      ).catch(err => console.error("Failed to log A/B conversion:", err));
     }
 
     res.render("confirm", { message: messageData, ref: refValue });
