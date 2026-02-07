@@ -2,7 +2,7 @@
 
 ## Project Description
 
-Specialised Steering Web Application is a Node.js/Express-based web application for **Specialised Steering CC**, a hydraulic component repair and sourcing business based in Germiston, Gauteng, South Africa. The application serves as a business website showcasing hydraulic repair services, component sourcing, and service exchange programs for mining, agricultural, and automotive industries.
+Specialised Steering Web Application is a Node.js/Express-based web application for **Specialised Steering (Pty) Ltd**, a hydraulic component repair and sourcing business based in Germiston, Gauteng, South Africa. The application serves as a business website showcasing hydraulic repair services, component sourcing, and service exchange programs for mining, agricultural, and automotive industries.
 
 ## Technology Stack
 

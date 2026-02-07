@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prestart": "node -e \"if(process.version!=='v20.19.0'){console.error('❌ Error: Node.js v20.19.0 required, but found '+process.version);console.error('   Run: nvm use 20');process.exit(1);}\"",
-    "start": "node app.js"
+    "start": "node app.js",
+    "check:google-picker": "node scripts/check-google-picker-token.js"
   },
   "keywords": [
     "specialised steering",

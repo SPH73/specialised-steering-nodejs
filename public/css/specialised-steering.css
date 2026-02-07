@@ -33,6 +33,142 @@
   --color-button: #404040;
 }
 
+/* Accessibility: Enhanced focus indicators for keyboard navigation */
+*:focus-visible {
+  outline: 3px solid var(--color-secondary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Remove outline for mouse users */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Enhanced focus for interactive elements */
+button:focus-visible,
+.button:focus-visible,
+input[type="submit"]:focus-visible,
+a[role="button"]:focus-visible {
+  outline: 3px solid var(--color-secondary);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px rgba(249, 177, 1, 0.2);
+}
+
+/* Enhanced focus for links */
+a:focus-visible {
+  outline: 3px solid var(--color-secondary);
+  outline-offset: 2px;
+  background-color: rgba(249, 177, 1, 0.1);
+}
+
+/* Enhanced focus for form inputs */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--color-secondary);
+  outline-offset: 0;
+  border-color: var(--color-secondary);
+}
+
+/* Accessibility: Minimum touch target sizes (44x44px WCAG 2.1 AA) */
+/* Using padding approach to avoid layout conflicts */
+button:not(.navbar_menu-icon),
+.button:not(.navbar_menu-icon),
+a[role="button"]:not(.navbar_menu-icon),
+input[type="submit"],
+input[type="button"],
+input[type="reset"] {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+}
+
+/* Ensure checkboxes and radio buttons have adequate touch targets */
+input[type="checkbox"],
+input[type="radio"] {
+  min-width: 20px;
+  min-height: 20px;
+  margin: 4px; /* Adds padding area for easier tapping */
+}
+
+/* Mobile-specific touch target enhancements */
+@media (max-width: 991px) {
+  .navbar_menu-link {
+    min-height: 44px;
+    padding: 12px 16px;
+  }
+
+  .social-icons {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 10px;
+  }
+
+  .footer-link {
+    min-height: 44px;
+    padding: 10px 0;
+  }
+}
+
+/* Accessibility: Visually hidden labels for screen readers */
+/* Hides content visually while keeping it accessible to assistive technology */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Form validation error messages */
+.form-error-container {
+  background-color: #fff3cd;
+  border: 2px solid #ff6b6b;
+  border-radius: 4px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  display: none;
+}
+
+.form-error-container.visible {
+  display: block;
+}
+
+.form-error-title {
+  color: #d32f2f;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.form-error-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.form-error-list li {
+  color: #333;
+  padding: 0.25rem 0;
+  font-size: 0.95rem;
+}
+
+.form-error-list li::before {
+  content: "⚠️ ";
+  margin-right: 0.5rem;
+}
+
+/* Highlight invalid fields */
+.input-error {
+  border-color: #ff6b6b !important;
+  background-color: #fff5f5 !important;
+}
+
 * {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -3114,3 +3250,16 @@ img {
   }
 }
 */
+
+/* Accessibility: Reduced motion support for users with motion sensitivity */
+/* Only affects users who enable "Reduce Motion" in OS settings (WCAG 2.1 Level AAA) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

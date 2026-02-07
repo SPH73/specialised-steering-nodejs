@@ -8,6 +8,12 @@
   class="form"
   enctype="multipart/form-data"
 >
+  <!-- Validation error messages -->
+  <div id="form-errors" class="form-error-container" role="alert" aria-live="polite">
+    <p class="form-error-title">Please fix the following errors:</p>
+    <ul id="form-error-list" class="form-error-list"></ul>
+  </div>
+  
   <input type="hidden" id="day" name="postDate" value="CurrentDate" />
   <input type="hidden" id="time" name="postTime" value="CurrentTime" />
   <!-- Honeypot field (hidden from users, bots will fill it) -->
@@ -15,16 +21,27 @@
     type="text"
     name="website"
     id="website"
-    style="position: absolute; left: -9999px; opacity: 0; pointer-events: none"
+    style="
+      position: absolute;
+      left: -9999px;
+      opacity: 0;
+      pointer-events: none;
+      height: 0;
+      width: 0;
+    "
     tabindex="-1"
-    autocomplete="off"
+    autocomplete="nope"
     aria-hidden="true"
+    value=""
   />
   <!-- Time tracking: when form was loaded -->
   <input type="hidden" name="formLoadTime" id="formLoadTime" value="" />
   <h3>Contact details</h3>
   <div class="w-layout-grid contact-info">
     <div>
+      <label for="enquiryName" class="visually-hidden"
+        >Full Name (required)</label
+      >
       <input
         type="text"
         class="input-field w-input"
@@ -35,10 +52,12 @@
         placeholder="Full name"
         id="enquiryName"
         autocomplete="name"
+        aria-required="true"
         required
       />
     </div>
     <div>
+      <label for="company" class="visually-hidden">Company (optional)</label>
       <input
         type="text"
         class="input-field w-input"
@@ -50,6 +69,9 @@
       />
     </div>
     <div>
+      <label for="enquiryEmail" class="visually-hidden"
+        >Email Address (required)</label
+      >
       <input
         type="email"
         class="input-field w-input"
@@ -60,10 +82,14 @@
         placeholder="Email address"
         id="enquiryEmail"
         autocomplete="email"
+        aria-required="true"
         required
       />
     </div>
     <div>
+      <label for="enquiryNumber" class="visually-hidden"
+        >Contact Number (required)</label
+      >
       <input
         type="tel"
         class="input-field w-input"
@@ -74,10 +100,14 @@
         placeholder="Contact number"
         id="enquiryNumber"
         autocomplete="tel"
+        aria-required="true"
         required
       />
     </div>
     <div>
+      <label for="street" class="visually-hidden"
+        >Street Address (required)</label
+      >
       <input
         type="text"
         class="input-field w-input"
@@ -87,10 +117,12 @@
         placeholder="Street address"
         id="street"
         autocomplete="street-address"
+        aria-required="true"
         required
       />
     </div>
     <div>
+      <label for="town" class="visually-hidden">Town/Suburb (required)</label>
       <input
         type="text"
         class="input-field w-input"
@@ -100,10 +132,12 @@
         placeholder="Town/Suburb"
         autocomplete="on"
         id="town"
+        aria-required="true"
         required
       />
     </div>
     <div>
+      <label for="postal" class="visually-hidden">Postal Code (required)</label>
       <input
         type="text"
         class="input-field w-input"
@@ -113,10 +147,14 @@
         placeholder="Postal code"
         id="postal"
         autocomplete="postal-code"
+        aria-required="true"
         required
       />
     </div>
     <div>
+      <label for="province" class="visually-hidden"
+        >Region/Province/State (required)</label
+      >
       <input
         type="text"
         class="input-field w-input"
@@ -126,15 +164,18 @@
         placeholder="Region/Province/State"
         id="province"
         autocomplete="on"
+        aria-required="true"
         required
       />
     </div>
     <div>
+      <label for="country" class="visually-hidden">Country (required)</label>
       <select
         id="country"
         name="country"
         data-name="country"
         autocomplete="country"
+        aria-required="true"
         required
         class="select-field w-select"
       >
@@ -438,6 +479,7 @@
         data-name="brand"
         placeholder="e.g. Komatsu"
         id="brand"
+        aria-required="true"
         required
       />
     </div>
@@ -451,6 +493,7 @@
         data-name="type"
         placeholder="e.g. bulldozer"
         id="type"
+        aria-required="true"
         required
       />
     </div>
@@ -488,6 +531,7 @@
         data-name="partDesc"
         placeholder="e.g. Main pump"
         id="partDesc"
+        aria-required="true"
         required
       />
     </div>
@@ -506,9 +550,17 @@
       id="img-preview"
       class="w-node-_9c0d6004-cd35-ebd8-6b73-be422e6528fd-8a7c4380"
     >
-      <img src="" alt="Chosen image" id="image-preview" />
+      <img
+        src=""
+        alt="Image preview will appear here after selection"
+        id="image-preview"
+        aria-live="polite"
+      />
     </div>
   </div>
+  <label for="enquiryMessage" class="visually-hidden"
+    >Additional Details (optional)</label
+  >
   <textarea
     data-name="enquiryMessage"
     maxlength="5000"
@@ -523,9 +575,10 @@
       name="accept-terms"
       id="accept-terms"
       data-name="accept-terms"
+      aria-required="true"
       required=""
       class="w-checkbox-input checkbox"
-    /><span class="field-label accept-terms w-form-label" for="accept-terms"
+    /><span class="field-label accept-terms w-form-label"
       >Accept T&#x27;s &amp; C&#x27;s</span
     ></label
   >
@@ -533,9 +586,7 @@
     By submitting this form, you agree to us storing your information for the
     purpose of responding to your query. Please read our
     <strong
-      ><a
-        href="/privacy-policy"
-        rel="noreferrer nofollow"
+      ><a href="/privacy-policy" rel="noreferrer nofollow"
         >privacy policy</a
       ></strong
     >

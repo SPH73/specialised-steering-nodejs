@@ -7,6 +7,12 @@
   data-redirect="/confirm"
   class="form"
 >
+  <!-- Validation error messages -->
+  <div id="form-errors" class="form-error-container" role="alert" aria-live="polite">
+    <p class="form-error-title">Please fix the following errors:</p>
+    <ul id="form-error-list" class="form-error-list"></ul>
+  </div>
+  
   <input type="hidden" id="day" name="postDate" value="CurrentDate" />
   <input type="hidden" id="time" name="postTime" value="CurrentTime" />
   <!-- Honeypot field (hidden from users, bots will fill it) -->
@@ -14,15 +20,26 @@
     type="text"
     name="website"
     id="website"
-    style="position: absolute; left: -9999px; opacity: 0; pointer-events: none"
+    style="
+      position: absolute;
+      left: -9999px;
+      opacity: 0;
+      pointer-events: none;
+      height: 0;
+      width: 0;
+    "
     tabindex="-1"
-    autocomplete="off"
+    autocomplete="nope"
     aria-hidden="true"
+    value=""
   />
   <!-- Time tracking: when form was loaded -->
   <input type="hidden" name="formLoadTime" id="formLoadTime" value="" />
   <div class="w-layout-grid contact-info">
     <div>
+      <label for="enquiryName" class="visually-hidden"
+        >Full Name (required)</label
+      >
       <input
         type="text"
         class="input-field w-input"
@@ -32,10 +49,14 @@
         placeholder="Your full name"
         id="enquiryName"
         autocomplete="name"
+        aria-required="true"
         required
       />
     </div>
     <div>
+      <label for="enquiryCompany" class="visually-hidden"
+        >Company/Organisation (optional)</label
+      >
       <input
         type="text"
         class="input-field w-input"
@@ -48,6 +69,9 @@
       />
     </div>
     <div>
+      <label for="enquiryEmail" class="visually-hidden"
+        >Email Address (required)</label
+      >
       <input
         type="email"
         class="input-field w-input"
@@ -57,10 +81,14 @@
         placeholder="Your best email"
         id="enquiryEmail"
         autocomplete="email"
+        aria-required="true"
         required
       />
     </div>
     <div>
+      <label for="enquiryNumber" class="visually-hidden"
+        >Contact Number (required)</label
+      >
       <input
         type="tel"
         class="input-field w-input"
@@ -70,14 +98,19 @@
         placeholder="Your best contact number"
         id="enquiryNumber"
         autocomplete="tel"
+        aria-required="true"
         required
       />
     </div>
     <div>
+      <label for="contactCountry" class="visually-hidden"
+        >Country (required)</label
+      >
       <select
         id="contactCountry"
         name="contactCountry"
         data-name="contactCountry"
+        aria-required="true"
         required
         autocomplete="country"
         class="input-field w-select"
@@ -370,12 +403,14 @@
       </select>
     </div>
   </div>
+  <label for="enquiryMessage" class="visually-hidden">Message (required)</label>
   <textarea
     data-name="enquiryMessage"
     maxlength="5000"
     id="enquiryMessage"
     name="enquiryMessage"
     placeholder="Tell us how we can help"
+    aria-required="true"
     required
     class="textarea w-input"
   ></textarea
@@ -385,9 +420,10 @@
       name="accept-terms"
       id="accept-terms"
       data-name="accept-terms"
+      aria-required="true"
       required
       class="w-checkbox-input checkbox"
-    /><span class="field-label accept-terms w-form-label" for="accept-terms"
+    /><span class="field-label accept-terms w-form-label"
       >Accept T&#x27;s &amp; C&#x27;s</span
     ></label
   >
@@ -395,9 +431,7 @@
     By submitting this form, you agree to us storing your information for the
     purpose of responding to your query. Please read our
     <strong
-      ><a
-        href="/privacy-policy"
-        rel="noreferrer nofollow"
+      ><a href="/privacy-policy" rel="noreferrer nofollow"
         >privacy policy</a
       ></strong
     >

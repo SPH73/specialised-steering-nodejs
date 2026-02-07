@@ -124,10 +124,16 @@ Received: ${new Date().toLocaleString("en-ZA", {
       "✅ Contact notification email sent successfully! Message ID:",
       info.messageId,
     );
+    console.log("📧 Email info response:", JSON.stringify(info.response));
+    console.log("📧 Email accepted:", info.accepted);
+    console.log("📧 Email rejected:", info.rejected);
+    console.log("📧 Email pending:", info.pending);
     return info;
   } catch (error) {
     console.error("❌ Error sending contact notification:", error.message);
-    console.error("Full error:", error);
+    console.error("❌ Error code:", error.code);
+    console.error("❌ Error response:", error.response);
+    console.error("❌ Full error:", error);
     throw error;
   }
 };
@@ -245,10 +251,16 @@ Received: ${new Date().toLocaleString("en-ZA", {
       "✅ Enquiry notification email sent successfully! Message ID:",
       info.messageId,
     );
+    console.log("📧 Email info response:", JSON.stringify(info.response));
+    console.log("📧 Email accepted:", info.accepted);
+    console.log("📧 Email rejected:", info.rejected);
+    console.log("📧 Email pending:", info.pending);
     return info;
   } catch (error) {
     console.error("❌ Error sending enquiry notification:", error.message);
-    console.error("Full error:", error);
+    console.error("❌ Error code:", error.code);
+    console.error("❌ Error response:", error.response);
+    console.error("❌ Full error:", error);
     throw error;
   }
 };
@@ -327,10 +339,63 @@ Sent: ${new Date().toLocaleString("en-ZA", {
   }
 };
 
+/**
+ * Send a system notification email (e.g. health checks)
+ * @param {Object} options
+ * @param {string} options.subject
+ * @param {string} options.html
+ * @param {string} options.text
+ * @returns {Promise} - Nodemailer result
+ */
+const sendSystemNotification = async ({ subject, html, text }) => {
+  console.log("📧 Attempting to send system notification...");
+  const transporter = createTransporter();
+  if (!transporter) {
+    console.warn(
+      "⚠️ Email transporter not available. Skipping system notification.",
+    );
+    return { success: false, error: "Email not configured" };
+  }
+
+  const recipient =
+    process.env.HEALTHCHECK_EMAIL || process.env.NOTIFICATION_EMAIL;
+  if (!recipient) {
+    console.warn(
+      "⚠️ HEALTHCHECK_EMAIL/NOTIFICATION_EMAIL not set. Skipping notification.",
+    );
+    return { success: false, error: "Notification email not configured" };
+  }
+
+  const mailOptions = {
+    from: `"${process.env.SITE_NAME || "Specialised Steering"}" <${
+      process.env.EMAIL_USER || process.env.SMTP_FROM || process.env.SMTP_USER
+    }>`,
+    to: recipient,
+    subject: subject,
+    html: html,
+    text: text,
+  };
+
+  try {
+    console.log("📤 Sending system notification to:", recipient);
+    const info = await transporter.sendMail(mailOptions);
+    console.log(
+      "✅ System notification sent successfully! Message ID:",
+      info.messageId,
+    );
+    return info;
+  } catch (error) {
+    console.error("❌ Error sending system notification:", error.message);
+    console.error("Full error:", error);
+    throw error;
+  }
+};
+
 module.exports = {
   sendContactNotification,
   sendEnquiryNotification,
   sendContactFormNotification: sendContactNotification,
   sendEnquiryFormNotification: sendEnquiryNotification,
   sendPasswordResetEmail,
+  sendSystemNotification,
 };
