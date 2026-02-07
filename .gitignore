@@ -37,6 +37,12 @@ data/*.db
 data/gallery.json
 data/password-reset-tokens.json
 
+# Log files - runtime data, should not be committed
+logs/*.log
+logs/ab-tests.log
+logs/ab-views.log
+logs/airtable-calls.log
+
 # Google Search Console coverage reports
 *Coverage*.zip
 *Coverage*.csv
