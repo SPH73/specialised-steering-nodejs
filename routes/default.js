@@ -1,28 +1,35 @@
 const express = require("express");
 const router = express.Router();
 
-const pickVariant = (req, variants) => {
-  const variant = req && req.abVariant === "B" ? "B" : "A";
-  return variants[variant] || variants.A;
-};
-
 // Import gallery database utilities
 const { getAllGalleryItems } = require("../utils/gallery-db");
+const { getVariantsForRoute } = require("../utils/ab-testing");
+const { getMetaForPage } = require("../utils/ab-copy-variants");
+const { logExposure } = require("../utils/ab-logger");
 
-router.get("/about", (req, res) => {
-  const meta = {
-    title:
-      "Hydraulic Repairs to OEM Specification and Component Sourcing Service - Germiston, Gauteng",
-    description: pickVariant(req, {
-      A: "Hydraulic repairs near me in Germiston, Gauteng. Specialised Steering offers OEM-spec repairs, service exchange on selected components, and nationwide component sourcing.",
-      B: "Specialised Steering (Pty) Ltd offer hydraulic repairs services and a service exchange on some hydraulic components from our Germiston OEM repair workshop as well as on-site in underground and open pit mines.",
-    }),
-  };
-  res.render("about", { meta: meta });
+router.get("/about", async (req, res) => {
+  // Get A/B test variants for this route
+  const variants = getVariantsForRoute(req, res, "/about");
+
+  // Get meta copy based on variant assignment
+  const meta = getMetaForPage("about", variants);
+
+  // Log exposure event (non-blocking)
+  if (variants.near_me_meta) {
+    logExposure(req, "near_me_meta", variants.near_me_meta, "/about").catch((err) =>
+      console.error("Failed to log A/B exposure:", err),
+    );
+  }
+
+  res.render("about", { meta: meta, abVariants: variants });
 });
 
 router.get("/gallery", async (req, res) => {
-  const meta = {
+  // Get A/B test variants for this route (Medium priority - not yet active)
+  const variants = getVariantsForRoute(req, res, "/gallery");
+
+  // Get meta copy - will use control until gallery test is activated
+  const meta = getMetaForPage("gallery", variants) || {
     title: "Completed Jobs Photo Gallery | Specialised Steering",
     description:
       "Explore our hydraulic component completed repairs gallery showcasing our expertise in servicing the mining, agricultural, and automotive industries. View completed projects and see the quality of our work firsthand. Trust Specialised Steering for reliable hydraulic repairs tailored to your industry needs.",
@@ -59,6 +66,7 @@ router.get("/gallery", async (req, res) => {
 
   res.render("gallery", {
     meta: meta,
+    abVariants: variants,
     photos: photos,
     error: error,
     hasPhotos: photos.length > 0,

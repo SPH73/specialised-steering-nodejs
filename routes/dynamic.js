@@ -19,15 +19,12 @@ const {
   logRateLimit,
 } = require("../utils/security-logger");
 const { trackAirtableCall } = require("../utils/airtable-monitor");
-const { logAbConversion } = require("../utils/ab-test-logger");
+const { getVariantsForRoute } = require("../utils/ab-testing");
+const { getMetaForPage } = require("../utils/ab-copy-variants");
+const { logExposure, logConversion } = require("../utils/ab-logger");
 const base = Airtable.base(process.env.BASE);
 
 const router = express.Router();
-
-const pickVariant = (req, variants) => {
-  const variant = req && req.abVariant === "B" ? "B" : "A";
-  return variants[variant] || variants.A;
-};
 
 // Rate limiting for form submissions
 // Allow 5 submissions per 15 minutes per IP
@@ -59,44 +56,61 @@ const formRateLimit = rateLimit({
 });
 
 // ----HOME
-router.get("/", (req, res) => {
-  const meta = {
-    title:
-      "Hydraulic Repairs and Component Sourcing | Germiston, Gauteng, ZA - Service Worldwide",
-    description: pickVariant(req, {
-      A: "Hydraulic repairs near me in Germiston, Gauteng for mining, agriculture, and automotive equipment. We repair and source hydraulic components to OEM specification and service exchange standards.",
-      B: "We repair and source hydraulic components for a wide range of industries and applications. We also service, test and repair components to OEM specification. View our range and examples of client work.",
-    }),
-  };
-  res.render("index", { meta: meta });
+router.get("/", async (req, res) => {
+  // Get A/B test variants for this route
+  const variants = getVariantsForRoute(req, res, "/");
+
+  // Get meta copy based on variant assignment
+  const meta = getMetaForPage("home", variants);
+
+  // Log exposure event (non-blocking)
+  if (variants.near_me_meta) {
+    logExposure(req, "near_me_meta", variants.near_me_meta, "/").catch((err) =>
+      console.error("Failed to log A/B exposure:", err),
+    );
+  }
+
+  res.render("index", { meta: meta, abVariants: variants });
 });
 
 // ___ OUR WORK ___
 
-router.get("/our-work", (req, res) => {
-  const meta = {
-    title: "HYDRAULIC COMPONENT SERVICE EXCHANGE & REAIRS TO OEM SPEC",
-    description:
-      "We offer service exchange on some hydraulic components and repair all components to OEM specification on machinery and trucks for the mining and agricultural industries.",
-  };
-  console.log("Our work Cookies: ", req.cookies);
+router.get("/our-work", async (req, res) => {
+  // Get A/B test variants for this route
+  const variants = getVariantsForRoute(req, res, "/our-work");
 
-  res.render("our-work", { meta: meta });
+  // Get meta copy based on variant assignment
+  const meta = getMetaForPage("ourWork", variants);
+
+  // Log exposure event (non-blocking)
+  if (variants.near_me_meta) {
+    logExposure(req, "near_me_meta", variants.near_me_meta, "/our-work").catch((err) =>
+      console.error("Failed to log A/B exposure:", err),
+    );
+  }
+
+  res.render("our-work", { meta: meta, abVariants: variants });
 });
 
 // ----ENQUIRY
 
-router.get("/enquiry", (req, res) => {
-  const meta = {
-    title:
-      "HYDRAULIC COMPONENTS FOR MINING AND AGRICULTURAL MACHINERY AND TRUCKS",
-    description: pickVariant(req, {
-      A: "Hydraulic component sourcing near me from Germiston, Gauteng. We supply OEM and selected aftermarket components for mining, agriculture, and automotive equipment.",
-      B: "We supply a wide range of industries with replacement hydraulic components from leading manufacturers. Fill out an enquiry form for the part you require and we will do our best to get you up and running again as soon as possible.",
-    }),
-  };
+router.get("/enquiry", async (req, res) => {
+  // Get A/B test variants for this route
+  const variants = getVariantsForRoute(req, res, "/enquiry");
+
+  // Get meta copy based on variant assignment
+  const meta = getMetaForPage("enquiry", variants);
+
+  // Log exposure event (non-blocking)
+  if (variants.near_me_meta) {
+    logExposure(req, "near_me_meta", variants.near_me_meta, "/enquiry").catch((err) =>
+      console.error("Failed to log A/B exposure:", err),
+    );
+  }
+
   res.render("enquiry", {
     meta: meta,
+    abVariants: variants,
     recaptchaSiteKey:
       process.env.reCAPTCHA_v2_SITE_KEY || process.env.RECAPTCHA_SITE_KEY,
   });
@@ -372,18 +386,20 @@ router.post(
         enquiryEmail: messageData.enquiryEmail,
         postDate: messageData.postDate,
         postTime: messageData.postTime,
-        hasRef: !!refValue,
-        ref: refValue,
-      });
+      hasRef: !!refValue,
+      ref: refValue,
+    });
 
-      logAbConversion({
-        ts: Date.now(),
-        form: "enquiry",
-        path: req.path,
-        variant: req.abVariant || "unknown",
-        status: "ok",
-      });
-      res.render("confirm", { message: messageData, ref: refValue });
+    // Log A/B test conversion (non-blocking)
+    const enquiryVariant = req.cookies["ab_near_me_meta"];
+    if (enquiryVariant) {
+      logConversion(req, "near_me_meta", enquiryVariant, "enquiry_form_submit", {
+        formType: "parts",
+        reference: refValue,
+      }).catch((err) => console.error("Failed to log A/B conversion:", err));
+    }
+
+    res.render("confirm", { message: messageData, ref: refValue });
     } catch (error) {
       console.error(
         "Unexpected error in parts enquiry handler:",
@@ -419,17 +435,23 @@ router.post(
 
 // ----CONTACT
 
-router.get("/contact", (req, res) => {
-  const meta = {
-    title:
-      "CONTACT US FOR ALL YOUR HYDRAULIC REPAIRS AND PART SERVICE EXCHANGE",
-    description: pickVariant(req, {
-      A: "Hydraulic repairs near me in Germiston, Gauteng. Contact Specialised Steering for OEM-spec repairs, service exchange options, and component sourcing support.",
-      B: "With our combined 40 years of experience, we offer an expert and professional service for all your hydraulic component requirements. Please contact us today to let us know how we can help get you back up and running.",
-    }),
-  };
+router.get("/contact", async (req, res) => {
+  // Get A/B test variants for this route
+  const variants = getVariantsForRoute(req, res, "/contact");
+
+  // Get meta copy based on variant assignment
+  const meta = getMetaForPage("contact", variants);
+
+  // Log exposure event (non-blocking)
+  if (variants.near_me_meta) {
+    logExposure(req, "near_me_meta", variants.near_me_meta, "/contact").catch((err) =>
+      console.error("Failed to log A/B exposure:", err),
+    );
+  }
+
   res.render("contact", {
     meta: meta,
+    abVariants: variants,
     recaptchaSiteKey:
       process.env.reCAPTCHA_v2_SITE_KEY || process.env.RECAPTCHA_SITE_KEY,
   });
@@ -576,13 +598,15 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
     const messageData = data && typeof data === "object" ? data : {};
     const refValue = reference || null;
 
-    logAbConversion({
-      ts: Date.now(),
-      form: "contact",
-      path: req.path,
-      variant: req.abVariant || "unknown",
-      status: "ok",
-    });
+    // Log A/B test conversion (non-blocking)
+    const contactVariant = req.cookies["ab_near_me_meta"];
+    if (contactVariant) {
+      logConversion(req, "near_me_meta", contactVariant, "contact_form_submit", {
+        formType: "contact",
+        reference: refValue,
+      }).catch((err) => console.error("Failed to log A/B conversion:", err));
+    }
+
     res.render("confirm", { message: messageData, ref: refValue });
   } catch (error) {
     console.error("Unexpected error in contact form handler:", error.message);
