@@ -1,20 +1,40 @@
-# AEO Page Content Changes - For Future Implementation
+# 🔍 AEO Page Content Changes - STAGING REVIEW
 
-**Branch:** `feature/aeo-full-content-test`
-**Status:** Preserved for later testing/approval
+> **🟢 FOR DEVON'S REVIEW:** Compare staging vs production and choose your preferred option
+
+**Current Branch:** `feature/aeo-copy-refresh`  
+**Backup Branch:** `feature/aeo-full-content-test` (identical copy preserved)  
+**Status:** ✅ Deployed to staging - awaiting client decision  
 **Date:** February 7, 2026
 
 ---
 
 ## Overview
 
-This document lists all the page content (visible copy) changes made for AEO optimization. These changes are **NOT** part of the current meta description A/B test and are saved in a separate branch for future consideration.
+This document shows all the visible page content changes currently deployed on **staging.specialisedsteering.com** for your review.
+
+These AEO-optimized content changes are designed to improve search visibility and conversion rates through more specific, action-oriented copy.
 
 **Current Status:**
 
-- ❌ NOT deployed to production
-- ✅ Saved in `feature/aeo-full-content-test` branch
-- ⏳ Awaiting client review and approval
+- ✅ **Deployed to STAGING:** https://staging.specialisedsteering.com
+- ❌ **NOT on production:** Your live site unchanged
+- ⏳ **Awaiting your decision:** Choose Option 1 (meta-only) or Option 2 (full AEO)
+- 🔄 **Reversible:** Easy to revert any/all changes based on your feedback
+
+---
+
+## Quick Summary
+
+**What's happening:** I've created AEO-optimized copy for your website, focusing on location (Germiston), specific services (pumps, motors, orbitrols), and action-oriented language.
+
+**Where to see it:** All changes are live on **staging** (not production) for you to review.
+
+**What I need:** Your feedback on whether you want:
+- **Option 1:** Meta descriptions only (safest - Google sees changes, visitors don't)
+- **Option 2:** Full content changes (what's on staging - visitors see new copy)
+
+**What's below:** Side-by-side comparison of EVERY content change (production vs staging).
 
 ---
 
@@ -22,7 +42,7 @@ This document lists all the page content (visible copy) changes made for AEO opt
 
 ### Hero Section (Header)
 
-**Current (Client's Copy):**
+**🔴 PRODUCTION (Live - Your Current Copy):**
 
 ```
 H1: We do Hydraulics Best
@@ -31,7 +51,7 @@ P: We pride ourselves in customer satisfaction and will do our utmost to
    ensure we get you back up and running with minimal down time.
 ```
 
-**Proposed (AEO Copy):**
+**🟢 STAGING (Proposed - What You're Reviewing):**
 
 ```
 H1: Hydraulic Component Repairs & Service Exchange
@@ -48,12 +68,13 @@ P: Specialised Steering is an OEM repair workshop for pumps, motors,
 - SEO keywords: "repairs", "service exchange", location
 - Specificity: Lists actual services and location
 - Search intent: Matches what customers search for
+- More Google-friendly: Shows what you do + where you are
 
 ---
 
 ### Professional Section
 
-**Current (Client's Copy):**
+**🔴 PRODUCTION (Live):**
 
 ```
 H2: Professional Hydraulic Engineers
@@ -63,7 +84,7 @@ P: We use our extensive technical knowledge with earth-moving and mining
    in the shortest time frames.
 ```
 
-**Proposed (AEO Copy):**
+**🟢 STAGING (Proposed):**
 
 ```
 H2: OEM Hydraulic Engineers & Component Sourcing
@@ -78,12 +99,13 @@ P: We repair and source hydraulic components for earth-moving and mining
 - Keywords: "OEM", "sourcing", "service exchange"
 - Action-oriented: "repair and source" vs "procure"
 - Benefit-focused: "reduce downtime"
+- Clearer: Tells customers exactly what you offer
 
 ---
 
 ### Customer Centric Section
 
-**Current (Client's Copy):**
+**🔴 PRODUCTION (Live):**
 
 ```
 H2: Customer centric
@@ -95,7 +117,7 @@ P: We pride ourselves in customer satisfaction and will do our utmost to
    We aim to be your preferred partner in hydraulics repairs and components.
 ```
 
-**Proposed (AEO Copy):**
+**🟢 STAGING (Proposed):**
 
 ```
 H2: Customer focused, downtime aware
@@ -110,12 +132,13 @@ P: We focus on practical solutions that get your equipment back to work
 - Concise: Removed redundant statements
 - Specific: "practical solutions", "documented assessments"
 - Action-focused: Less aspirational, more concrete
+- Direct: Tells customers what they'll get (not what you aim for)
 
 ---
 
 ### Repair Process Section
 
-**Current (Client's Copy):**
+**🟢 BOTH PRODUCTION & STAGING (Same - No Change):**
 
 ```
 Step 1: Strip & Assess
@@ -128,35 +151,25 @@ you a visual of the finds of inspection.
 
 Step 3: Assemble & Test
 Our team will assemble and test unit to OEM specifications.
-```
 
-**Proposed (AEO Copy):**
-
-```
-Once booked in, we strip and inspect the unit, documenting findings
-with images.
-
-You receive a report covering wear, failure causes, and a repair
-quotation.
-
-We then repair, reassemble, and test the unit to OEM specification.
-
+ADDED ON STAGING: Drop-off/shipping details
 Customers are welcome to drop off and collect their components at our
 Germiston repair shop. We accept couriered shipments if sent with a
 works order.
 ```
 
-**Why Changed:**
+**What Changed on Staging:**
 
-- Format: Paragraph vs numbered steps (more conversational)
-- Added: Drop-off/shipping details (practical information)
-- Simplified: Clearer, more direct language
+- ✅ **Kept:** Step 1, 2, 3 format (your preferred layout)
+- ✅ **Added:** Drop-off/shipping details (practical information customers ask about)
+- ✅ **Added:** "Germiston" location keyword for SEO
+- ❌ **NOT changed:** The numbered step format remains
 
 ---
 
 ### Our Work Section
 
-**Current (Client's Copy):**
+**🔴 PRODUCTION (Live):**
 
 ```
 H2: OEM-Standard Hydraulic Repairs for Mining, Agriculture &
@@ -167,7 +180,7 @@ P: OEM-standard hydraulic repairs that keep your machinery moving. We
    operations, with service exchange options available to cut downtime.
 ```
 
-**Proposed (AEO Copy):**
+**🟢 STAGING (Proposed):**
 
 ```
 H2: OEM-Standard Hydraulic Repairs & Service Exchange
@@ -180,9 +193,10 @@ P: We restore pumps, motors, orbitrols/HMUs, valve banks, brakes, and
 
 **Why Changed:**
 
-- Specific components: Lists actual parts serviced
-- Keywords: "Service Exchange", "fleets"
-- Process emphasis: "inspected, documented, repaired, tested"
+- Specific components: Lists actual parts serviced (helps Google understand what you do)
+- Keywords: "Service Exchange", "fleets" (what customers search for)
+- Process emphasis: "inspected, documented, repaired, tested" (builds trust)
+- SEO: Component names are search terms people use
 
 ---
 
@@ -198,78 +212,111 @@ Similar AEO-optimized changes were made to:
 
 ---
 
-## Recommendation
+## What You're Reviewing
 
-### Phase 1: Meta Description Test (Current)
+**Compare these two versions:**
 
-- Test ONLY meta descriptions
-- Keep client's page content
-- Clean A/B test with single variable
+1. **Production (Live):** https://www.specialisedsteering.com
+   - Your current approved copy
+   - What customers see now
 
-### Phase 2: Content Approval (Next)
+2. **Staging (Proposed):** https://staging.specialisedsteering.com
+   - AEO-optimized copy shown above
+   - What it could be
 
-- Present both versions to client
-- Show screenshots side-by-side
-- Let client choose which changes to implement
-- Could become Phase 2 A/B test
+**All changes shown in this document are LIVE on staging right now.**
 
-### Phase 3: Implementation
+---
 
-- Deploy approved content changes
-- Monitor engagement metrics
-- Measure impact on conversions
+## Two Options for You
+
+### Option 1: Meta Description Test ONLY (Recommended)
+
+**What changes:**
+- ONLY meta descriptions (hidden from visitors)
+- What shows in Google search results
+
+**What stays the same:**
+- ALL visible page content (your current copy)
+- Hero: "We do Hydraulics Best"
+- All sections: Your exact wording
+
+**Pros:**
+- ✅ Safest approach - minimal change
+- ✅ Your brand voice unchanged
+- ✅ Clean test results
+
+### Option 2: Full AEO Content (Staging Version)
+
+**What changes:**
+- Everything you see on staging
+- Visible page content throughout site
+- More location-focused, specific copy
+
+**Pros:**
+- ✅ Comprehensive optimization
+- ✅ SEO-focused language
+- ✅ More specific service descriptions
+
+**Your Choice:**
+After reviewing staging, let me know which approach you prefer, or if you want a mix (some changes yes, others no).
 
 ---
 
 ## Technical Details
 
-**Preserved Branch:** `feature/aeo-full-content-test`
+**Current Deployment:**
+- Staging: `feature/aeo-copy-refresh` (what you're reviewing)
+- Production: `main` (unchanged)
+- Backup: `feature/aeo-full-content-test` (identical to staging)
 
-**To Review AEO Changes:**
+**To Review Staging:**
+Visit: https://staging.specialisedsteering.com
 
-```bash
-git checkout feature/aeo-full-content-test
-npm start
-# Visit http://localhost:3300
-```
+**To Compare:**
+Open both sites side-by-side:
+- Left: https://www.specialisedsteering.com (production)
+- Right: https://staging.specialisedsteering.com (proposed)
 
-**To Compare with Production:**
-
-```bash
-git diff origin/main feature/aeo-full-content-test -- views/
-```
-
-**To Deploy AEO Content (After Approval):**
-
-```bash
-git checkout feature/aeo-full-content-test
-# Test thoroughly
-git push origin feature/aeo-full-content-test
-# Deploy to staging/production
-```
+**After Your Decision:**
+- Option 1 chosen → I'll create clean meta-only version
+- Option 2 chosen → Deploy staging to production as-is
+- Mixed → I'll keep changes you like, revert others
 
 ---
 
-## Questions for Client:
+## What Happens Next
 
-1. **Which changes resonate with your brand voice?**
+**Your Review Tasks:**
 
-   - More technical/specific vs aspirational?
-   - Paragraph format vs numbered steps?
+1. **Visit staging:** https://staging.specialisedsteering.com
+2. **Click through ALL pages:** Home, About, Contact, Our Work, Gallery
+3. **Compare with live:** https://www.specialisedsteering.com (open side-by-side)
+4. **Note your reactions:**
+   - Which sections do you like?
+   - Which feel "off" or too different?
+   - Any specific phrases that work/don't work?
 
-2. **Priority changes?**
+**Then Tell Me:**
 
-   - Hero section (most visible)
-   - Service descriptions
-   - Process explanation
+- **Option 1 (Meta-Only):** "Keep my copy, just change meta descriptions"
+- **Option 2 (Full AEO):** "I like it, deploy staging to production"
+- **Option 3 (Mixed):** "Keep sections X, Y, Z - revert the rest"
 
-3. **Testing approach?**
-   - Implement all at once?
-   - A/B test content changes separately?
-   - Phase in gradually?
+**What I'll Do:**
+
+- Option 1 chosen → Create clean meta-only branch, deploy immediately
+- Option 2 chosen → Deploy current staging to production (no changes needed)
+- Option 3 chosen → Revert specific sections you don't want, keep the rest
+
+**Timeline:** Once you confirm, I can deploy same-day (takes ~10 minutes).
 
 ---
 
-**Sue Holder**
-sue@designdevelophost.co.uk
-February 7, 2026
+## Document Details
+
+**Prepared by:** Sue Holder  
+**Email:** sue@designdevelophost.co.uk  
+**Date:** February 7, 2026  
+**For:** Devon Abbott | Specialised Steering  
+**Status:** Awaiting client review
