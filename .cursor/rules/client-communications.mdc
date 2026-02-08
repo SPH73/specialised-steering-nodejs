@@ -1,0 +1,84 @@
+---
+description: Client communication files should never be committed to git
+alwaysApply: true
+---
+
+# Client Communication Files
+
+## Rule: Never Commit Client Communications
+
+**All client-facing communication markdown files must be stored in the `MD/` folder**, which is git-ignored.
+
+## What Goes in MD/ Folder:
+
+- ✅ Email drafts to clients
+- ✅ Client meeting notes
+- ✅ Proposal documents
+- ✅ Explanation documents for non-technical stakeholders
+- ✅ Project planning notes for client review
+- ✅ Client feedback summaries
+
+## What Gets Committed to Git:
+
+- ✅ Technical documentation (`docs/` folder)
+- ✅ API documentation
+- ✅ Setup guides
+- ✅ Architecture decisions
+- ✅ README files
+- ✅ Developer-focused documentation
+
+## Examples:
+
+```markdown
+❌ BAD - Committed to Git:
+/docs/EMAIL-TO-DEVON.md
+/docs/CLIENT-AB-TEST-OPTIONS.md
+/PROPOSAL-FOR-CLIENT.md
+
+✅ GOOD - Stored in MD/ (ignored):
+/MD/EMAIL-TO-DEVON.md
+/MD/CLIENT-AB-TEST-OPTIONS.md
+/MD/PROPOSAL-FOR-CLIENT.md
+```
+
+## Why This Matters:
+
+1. **Clean Repository:** Code docs separate from client communications
+2. **Context Clarity:** Developers vs client-facing documents are distinct
+3. **Temporary Nature:** Client communications are often outdated after decisions made
+4. **Professional Boundary:** Internal git history doesn't need client negotiations
+
+## Current .gitignore Configuration:
+
+```
+MD/              ← All files in this folder are git-ignored
+*-todo.md        ← Any -todo.md files ignored
+```
+
+## Checking Before Commit:
+
+Before committing markdown files, ask:
+- **Is this for developers or clients?**
+  - Developers → `docs/` or root
+  - Clients → `MD/`
+  
+- **Is this temporary or permanent?**
+  - Temporary → `MD/`
+  - Permanent → commit to git
+
+- **Does this explain code or explain decisions to stakeholders?**
+  - Code → commit to git
+  - Stakeholders → `MD/`
+
+## If You Accidentally Commit:
+
+```bash
+# Remove from git but keep local file
+git rm --cached path/to/client-doc.md
+
+# Move to correct location
+mv path/to/client-doc.md MD/
+
+# Commit the removal
+git commit -m "Move client communication to MD/ folder (git-ignored)"
+```
