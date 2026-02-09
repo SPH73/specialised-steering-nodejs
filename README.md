@@ -6,23 +6,28 @@ A Node.js/Express web application for **Specialised Steering (Pty) Ltd**, a hydr
 
 - 🏠 **Dynamic Homepage** - Featured repair work displayed from Airtable database
 - 🔧 **Our Work Gallery** - Showcase of service exchange and OEM repair services
-- 📧 **Contact Form** - Customer inquiry form with spam protection
+- 📧 **Contact Form** - Customer inquiry form with spam protection and email notifications
 - 🔍 **Parts Enquiry** - Specialised form for hydraulic component sourcing with image uploads
 - 📸 **Photo Gallery** - Display of completed jobs powered by Google Photos Picker API and Cloudinary
 - 🖼️ **Image Optimization** - Automatic WebP conversion and quality optimization via Cloudinary
 - 📬 **Email Notifications** - Automatic email alerts for all form submissions with full details (✅ Production ready)
-- 🛡️ **Security** - reCAPTCHA v2, rate limiting, honeypot fields, IP blacklist, CSP headers, and file upload validation
+- 🧪 **A/B Testing System** - Cookie-based variant assignment with server-side and GA4 tracking
+- 🔐 **Admin Panel** - Gallery management, A/B test reporting, and password reset functionality
+- 🛡️ **Security** - reCAPTCHA v2, rate limiting, honeypot fields, spam detection, CSP headers, and comprehensive security logging
 - 🚀 **Performance** - Response compression, static file caching, and optimized image delivery
 
 ## Technology Stack
 
-- **Runtime**: Node.js
+- **Runtime**: Node.js v20.19.0 (required)
 - **Framework**: Express.js 4.18.3
 - **Template Engine**: EJS 3.1.9
-- **Database**: Airtable
+- **Database**: Airtable (form submissions, security logs)
+- **Data Storage**: JSON files (gallery metadata, password reset tokens)
 - **Image Hosting**: Cloudinary
-- **Authentication**: Passport.js with Google OAuth 2.0
-- **Security**: reCAPTCHA v2, Content Security Policy, Rate Limiting
+- **Email**: Nodemailer (supports Gmail, Microsoft 365, SendGrid, any SMTP)
+- **Authentication**: Google OAuth 2.0 (Google Photos Picker API), Basic Auth (admin panel)
+- **Security**: reCAPTCHA v2, Content Security Policy, Rate Limiting, Spam Detection
+- **Analytics**: Google Analytics 4 (GA4) with custom A/B testing events
 
 ## Prerequisites
 
@@ -79,9 +84,9 @@ EMAIL_PASSWORD=your-app-specific-password
 NOTIFICATION_EMAIL=admin@ssteering.co.za
 ```
 
-**Note**: See `EMAIL_SETUP.md` for detailed email configuration instructions.
+**Note**: Email configuration supports both modern (`EMAIL_*`) and legacy (`SMTP_*`) variable names for backward compatibility.
 
-**Additional environment variables for Google Photos Picker API and admin gallery:**
+**Additional environment variables for Google Photos Picker API and admin features:**
 
 ```env
 # Google Photos Picker API OAuth Configuration
@@ -89,13 +94,20 @@ GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 GOOGLE_REDIRECT_URI=https://www.specialisedsteering.com/oauth2callback
 
-# Admin Authentication (for gallery management)
+# Admin Authentication (for gallery management and A/B reports)
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=your_secure_password
+ADMIN_EMAIL=admin@ssteering.co.za  # For password reset emails
 
 # Gallery Configuration
 GALLERY_REPLACE_MODE=false  # Set to true to replace all items, false to append
 CLOUDINARY_FOLDER=gallery/google-photos  # Optional: Cloudinary folder for gallery images
+
+# Health Check Configuration (Optional)
+HEALTHCHECK_EMAIL=monitoring@ssteering.co.za  # For system health notifications
+
+# Environment
+NODE_ENV=production  # Set to "production" for production deployments (affects cookie security)
 ```
 
 Alternatively, you can copy `.env.example` to `.env` and fill in your values.
@@ -327,7 +339,7 @@ specialised/
 
 ## Airtable Schema
 
-The application uses two main Airtable tables:
+The application uses three main Airtable tables:
 
 ### `repairsWork` Table
 
@@ -355,6 +367,18 @@ Stores form submissions from contact and enquiry forms.
 
 **Automatic Email Notifications**: When a form is submitted, an email notification is automatically sent to the configured email address with all submission details.
 
+### `securityLogs` Table
+
+Stores security events for monitoring and analysis.
+
+- `timestamp` (Date/Time) - When the event occurred
+- `eventType` (Single Select) - Type of security event (reCAPTCHA failure, spam attempt, CSP violation, rate limit)
+- `ip` (Text) - IP address of the request
+- `userAgent` (Long Text) - Browser user agent
+- `formType` (Single Select) - Form type if applicable (contact/enquiry)
+- `details` (Long Text) - Additional event details
+- `referrer` (Text) - HTTP referrer
+
 ## API Integrations
 
 ### Cloudinary
@@ -364,32 +388,102 @@ Images are automatically optimized and served via Cloudinary CDN with:
 - WebP format conversion
 - Quality optimization (`q_auto:good`)
 - Organized folder structure: `Specialised/public/uploads/{customerName}/`
+- Gallery images: `gallery/google-photos/`
+- Streaming uploads from URLs (for Google Photos integration)
 
 ### Google Services
 
-- **Google Analytics** - Website traffic analytics (G-V4W8VP4GL8)
-- **reCAPTCHA v2** - Spam protection on forms
+- **Google Analytics 4** (G-V4W8VP4GL8) - Website traffic analytics and A/B testing event tracking
+- **reCAPTCHA v2** - Server-side spam protection on forms
 - **Google Photos Picker API** - Photo selection for gallery (replaces deprecated Library API)
 - **Google OAuth 2.0** - Authentication for Google Photos Picker API
+  - Scope: `https://www.googleapis.com/auth/photospicker.mediaitems.readonly`
+  - Token stored in `token.json` with automatic refresh
 
-### Email Services
+### Email Services (Nodemailer)
 
-- **Nodemailer** - Email notification system for form submissions
-- **Supports multiple providers** - Gmail, Microsoft 365, SendGrid, or any SMTP server
-- **See EMAIL_SETUP.md** for configuration instructions
+- **SMTP Support** - Works with Gmail, Microsoft 365, SendGrid, or any SMTP server
+- **Email Types:**
+  - Contact form notifications
+  - Parts enquiry notifications
+  - Password reset emails
+  - System health check notifications
+- **Features:**
+  - HTML and plain text formats
+  - Timezone-aware timestamps (Africa/Johannesburg)
+  - Non-blocking async operation (form submissions succeed even if email fails)
+  - TLS configuration support
+  - Custom TLS servername for certificate mismatches
+- **Configuration:** See environment variables section below
 
-## Admin Gallery Management
+## A/B Testing System
 
-The gallery is managed through an admin interface:
+The application includes a comprehensive A/B testing system for optimizing meta descriptions and content:
+
+### Features
+
+- **Cookie-based Variant Assignment** - 90-day persistence for consistent user experience
+- **Server-Side Logging** - File-based logging to `logs/ab-tests.log` for detailed analysis
+- **GA4 Event Tracking** - Client-side tracking of exposures and conversions
+- **Reporting Tools** - CLI tool for generating statistical reports
+- **Multiple Test Support** - Configurable test registry with traffic split control
+
+### Current Active Tests
+
+- **Near-me Meta Description Test** (`near_me_meta`)
+  - Routes: `/`, `/our-work`, `/about`, `/contact`
+  - Variants: A (control), B (near-me optimized)
+  - Traffic Split: 50/50
+  - Start Date: January 26, 2026
+
+### Usage
+
+**View A/B Test Report:**
+```bash
+# All tests, last 7 days
+node scripts/ab-test-report.js
+
+# Specific test, last 30 days
+node scripts/ab-test-report.js near_me_meta 30
+```
+
+**Access A/B Report API:**
+- Navigate to `/admin/ab-report` (requires basic auth)
+- Returns JSON with exposure and conversion stats
+
+**For detailed documentation, see:**
+- [A/B Testing Master Guide](./docs/README-AB-TESTING.md)
+- [A/B Testing Overview](./docs/ab-testing-overview.md)
+- [Deployment Guide](./docs/ab-testing-deployment-guide.md)
+- [Technical Project Overview](./docs/PROJECT-OVERVIEW.md)
+
+## Admin Panel
+
+The admin panel provides management tools for gallery and testing:
+
+### Gallery Management (`/admin/gallery`)
 
 1. **Access Admin UI:** Navigate to `/admin/gallery` (requires basic auth)
 2. **Update Gallery:**
    - Click "Update Gallery from Google Photos"
    - Select photos in the Google Photos Picker (search for album name)
    - Choose replace mode (replace all) or append mode (add to existing)
-   - Photos are automatically uploaded to Cloudinary and stored in JSON file (data/gallery.json)
+   - Photos are automatically uploaded to Cloudinary and stored in JSON file (`data/gallery.json`)
 
 **Note:** The Google Photos Picker API has a 30-second timeout. You must complete photo selection within this time limit (this is a Google API limitation, not an application limitation).
+
+### A/B Test Reporting (`/admin/ab-report`)
+
+- View exposure and conversion statistics
+- JSON API endpoint for integration with dashboards
+- Configurable time range (default: last 30 days)
+
+### Password Reset (`/auth/forgot-password`)
+
+- Token-based password reset system
+- Email notifications with reset links
+- 1-hour token expiration
+- Automatic server restart after password change (Passenger)
 
 ### Setting Admin Credentials
 
@@ -401,17 +495,26 @@ node scripts/set-admin-credentials.js
 
 Or set `ADMIN_USERNAME` and `ADMIN_PASSWORD` environment variables manually.
 
+**Password Reset:**
+- Navigate to `/auth/forgot-password` to request a password reset
+- Email will be sent with a reset link valid for 1 hour
+- No basic auth required for password reset flow
+
 ## Security Features
 
-- **Content Security Policy** - Report-only mode configured
-- **reCAPTCHA v2** - Spam protection on all forms
+- **Content Security Policy** - Report-only mode with violation reporting to Airtable
+- **reCAPTCHA v2** - Server-side verification for all form submissions
 - **Rate Limiting** - 5 form submissions per 15 minutes per IP
 - **Honeypot Fields** - Hidden form fields to catch bots
 - **Time-to-Submit Validation** - Minimum 3 seconds before form can be submitted
-- **IP Blacklist** - Basic IP filtering capability
-- **File Upload Validation** - Restricted to image files only (10MB max)
+- **Spam Detection** - Keyword filtering, suspicious email domain detection
+- **Security Logging** - All security events logged to Airtable (reCAPTCHA failures, spam attempts, CSP violations)
+- **File Upload Validation** - Restricted to image files only (10MB max) with MIME type validation
 - **Request Size Limits** - 10MB maximum payload
+- **WordPress Parameter Blocking** - Returns 410 Gone for WordPress/Elementor artifacts
 - **Trust Proxy** - Accurate IP detection behind reverse proxies
+- **Cookie Security** - httpOnly, secure (production), sameSite: lax
+- **Admin Security** - Basic Auth for admin routes, token-based password reset
 
 ## Contributing
 
@@ -423,15 +526,25 @@ This is a private client project. For any issues or enhancement requests, please
 - **Version**: 1.0.1
 - **License**: ISC
 
+## Recent Enhancements (2026)
+
+- [x] **A/B Testing System** - Complete infrastructure with server-side and GA4 tracking (January 2026)
+- [x] **Security Logging** - Comprehensive security event logging to Airtable (January 2026)
+- [x] **Password Reset System** - Token-based admin password reset with email notifications (January 2026)
+- [x] **Google Photos Picker API** - Migration from deprecated Library API to Photos Picker API (December 2025)
+- [x] **Email Notifications** - Multi-provider SMTP support with HTML/text formats (December 2025)
+- [x] **Rate Limiting** - Form submission rate limiting per IP (December 2025)
+- [x] **Spam Detection** - Enhanced spam detection with keyword and email domain filtering (December 2025)
+
 ## Future Enhancements
 
-- [x] Complete Google Photos gallery integration
 - [ ] Implement admin dashboard for managing Airtable records
-- [x] Add email notifications for form submissions
-- [x] Add rate limiting for form submissions
 - [ ] Enhance IP blacklist with database storage
-- [ ] Implement comprehensive logging system
+- [ ] Multi-armed bandit for A/B testing (automatic traffic adjustment to winning variant)
+- [ ] Real-time A/B testing dashboard with live stats
 - [ ] Enforce CSP (currently report-only mode)
+- [ ] Implement comprehensive application logging system
+- [ ] Add user segmentation for A/B tests (mobile vs. desktop, new vs. returning)
 
 ## License
 
