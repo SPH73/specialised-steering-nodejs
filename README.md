@@ -4,17 +4,18 @@ A Node.js/Express web application for **Specialised Steering (Pty) Ltd**, a hydr
 
 ## Features
 
-- 🏠 **Dynamic Homepage** - Featured repair work displayed from Airtable database
-- 🔧 **Our Work Gallery** - Showcase of service exchange and OEM repair services
+- 🏠 **Dynamic Homepage** - Professional hydraulic engineering services showcase with integrated contact form
+- 🔧 **Our Work Page** - Detailed information about service exchange and OEM repair services, with links to photo gallery and social media (Instagram, LinkedIn)
 - 📧 **Contact Form** - Customer inquiry form with spam protection and email notifications
 - 🔍 **Parts Enquiry** - Specialised form for hydraulic component sourcing with image uploads
-- 📸 **Photo Gallery** - Display of completed jobs powered by Google Photos Picker API and Cloudinary
+- 📸 **Photo Gallery** - Display of completed repair jobs powered by Google Photos Picker API and Cloudinary
 - 🖼️ **Image Optimization** - Automatic WebP conversion and quality optimization via Cloudinary
 - 📬 **Email Notifications** - Automatic email alerts for all form submissions with full details (✅ Production ready)
 - 🧪 **A/B Testing System** - Cookie-based variant assignment with server-side and GA4 tracking
 - 🔐 **Admin Panel** - Gallery management, A/B test reporting, and password reset functionality
 - 🛡️ **Security** - reCAPTCHA v2, rate limiting, honeypot fields, spam detection, CSP headers, and comprehensive security logging
 - 🚀 **Performance** - Response compression, static file caching, and optimized image delivery
+- 🔗 **Social Media Integration** - Links to Instagram and LinkedIn for recent work updates
 
 ## Technology Stack
 
@@ -339,19 +340,7 @@ specialised/
 
 ## Airtable Schema
 
-The application uses three main Airtable tables:
-
-### `repairsWork` Table
-
-Stores repair work information for display on the website.
-
-- `repairName` (Text) - Name of the repair work
-- `repairDescription` (Long Text) - Detailed description
-- `mainImage` (Attachment) - Primary image
-- `componentName` (Text) - Name of the component
-- `componentDescription` (Long Text) - Component details
-- `imagesGallery` (Attachment) - Additional images
-- `featured` (Checkbox) - Display on homepage
+The application uses two main Airtable tables:
 
 ### `webForms` Table
 
