@@ -118,19 +118,20 @@ specialised/
 
 ### 1. Homepage (`/`)
 
-- Displays featured repair work from Airtable
-- Shows repair images optimized via Cloudinary
-- Dynamic content pulled from Airtable `repairsWork` table
-- Features professional hydraulic engineering services
-- Links to parts enquiry and repair work sections
+- Professional hydraulic engineering services showcase
+- Highlights service exchange and OEM repair capabilities
+- Integrated contact form at bottom of page
+- Links to gallery, Instagram, and LinkedIn for completed work examples
+- "Our Work" section with call-to-action buttons to gallery and social media
 - **A/B Testing**: Meta descriptions vary based on assigned variant
 
-### 2. Our Work Section (`/our-work`)
+### 2. Our Work Page (`/our-work`)
 
-- Overview page showcasing service exchange and OEM repair services
-- Individual repair detail pages (`/our-work/:id`)
-- Displays repair images, descriptions, and component information
-- Images are processed through Cloudinary with WebP format and quality optimization
+- Informational page describing service exchange programme and OEM repair services
+- Details the step-by-step repair process (initial assessment, strip & inspect, comprehensive report, repair & testing, quality assurance)
+- Lists industries served (mining, agriculture, automotive)
+- Comprehensive list of components serviced (pumps, motors, orbitrols, valves, brakes, cylinders)
+- Call-to-action buttons linking to: Contact form, Parts enquiry form, and Gallery
 - **A/B Testing**: Meta descriptions vary based on assigned variant
 
 ### 3. Contact Form (`/contact`)
@@ -155,16 +156,23 @@ specialised/
 - **Email Notifications**: Automatic email with part details and image link
 - **A/B Testing**: Conversion tracking for enquiry submissions
 
-### 5. Gallery Page (`/gallery`)
+### 5. Photo Gallery (`/gallery`)
 
-- Photo gallery for completed jobs
-- Powered by Google Photos Picker API for photo selection
-- Images stored in Cloudinary and metadata in JSON file (`data/gallery.json`)
+- Display of completed repair work and jobs
+- Powered by Google Photos Picker API for photo selection (admin)
+- Images stored in Cloudinary with metadata in JSON file (`data/gallery.json`)
 - Admin interface at `/admin/gallery` for managing gallery items
 - Supports replace mode (replace all items) or append mode (add to existing)
+- Linked from homepage "Our Work" section and `/our-work` page
 - **Note**: Google Photos Picker API has 30-second timeout for photo selection
 
-### 6. A/B Testing System
+### 6. Social Media Integration
+
+- Links to Instagram (@specialised_steering) for recent work updates
+- Links to LinkedIn (Devon Abbot) for professional updates
+- Integrated throughout site (homepage, Our Work page, footer)
+
+### 7. A/B Testing System
 
 - **Cookie-based Variant Assignment**: 90-day persistence, 50/50 traffic split
 - **Server-side Logging**: File-based logging to `logs/ab-tests.log`
@@ -173,7 +181,7 @@ specialised/
 - **Admin API**: JSON endpoint at `/admin/ab-report` for integration
 - **Current Test**: Near-me meta description test on 4 pages (/, /our-work, /about, /contact)
 
-### 7. Admin Panel
+### 8. Admin Panel
 
 - **Gallery Management** (`/admin/gallery`) - Google Photos integration, Cloudinary upload
 - **A/B Test Reporting** (`/admin/ab-report`) - JSON API with exposure/conversion stats
@@ -181,7 +189,7 @@ specialised/
 - **Basic Auth Protection**: All admin routes require authentication
 - **Scripts**: `set-admin-credentials.js`, `test-admin-routes.js`
 
-### 8. Additional Pages
+### 9. Additional Pages
 
 - **About** (`/about`) - Company information and services (A/B tested)
 - **Sitemap** (`/sitemap`, `/sitemap.xml`) - Site navigation map
@@ -195,22 +203,19 @@ specialised/
 
 ### Airtable Integration
 
-The application uses Airtable as a backend database with three main tables:
+The application uses Airtable as a backend database with two main tables:
 
-1. **`repairsWork`** - Stores repair work information
-
-   - Fields: `repairName`, `repairDescription`, `mainImage`, `componentName`, `componentDescription`, `imagesGallery`, `featured`
-   - View: "Featured Repairs" for homepage display
-
-2. **`webForms`** - Stores form submissions
+1. **`webForms`** - Stores form submissions
    - Fields: `name`, `email`, `company`, `phone`, `message`, `status`, `form` (contact/enquiry), `ip`, `imageUploads`
    - Additional fields for enquiry form: `brand`, `type`, `partNo`, `partDesc`, `serialNo`, `street`, `town`, `postal`, `region`, `country`
    - Includes timestamp and reference number for tracking
+   - Used for contact form and parts enquiry form submissions
 
-3. **`securityLogs`** - Stores security events
+2. **`securityLogs`** - Stores security events
    - Fields: `timestamp`, `eventType`, `ip`, `userAgent`, `formType`, `details`, `referrer`
    - Event types: reCAPTCHA failure, spam attempt, CSP violation, rate limit hit
    - Used for security monitoring and analysis
+   - All security events logged automatically for compliance and investigation
 
 ### JSON File Storage
 
