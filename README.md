@@ -9,12 +9,12 @@ A Node.js/Express web application for **Specialised Steering (Pty) Ltd**, a hydr
 - 📧 **Contact Form** - Customer inquiry form with spam protection and email notifications
 - 🔍 **Parts Enquiry** - Specialised form for hydraulic component sourcing with image uploads
 - 📸 **Photo Gallery** - Display of completed repair jobs powered by Google Photos Picker API and Cloudinary
-- 🖼️ **Image Optimization** - Automatic WebP conversion and quality optimization via Cloudinary
+- 🖼️ **Image Optimisation** - Automatic WebP conversion and quality optimisation via Cloudinary
 - 📬 **Email Notifications** - Automatic email alerts for all form submissions with full details (✅ Production ready)
 - 🧪 **A/B Testing System** - Cookie-based variant assignment with server-side and GA4 tracking
 - 🔐 **Admin Panel** - Gallery management, A/B test reporting, and password reset functionality
 - 🛡️ **Security** - reCAPTCHA v2, rate limiting, honeypot fields, spam detection, CSP headers, and comprehensive security logging
-- 🚀 **Performance** - Response compression, static file caching, and optimized image delivery
+- 🚀 **Performance** - Response compression, static file caching, and optimised image delivery
 - 🔗 **Social Media Integration** - Links to Instagram and LinkedIn for recent work updates
 
 ## Technology Stack
@@ -372,11 +372,11 @@ Stores security events for monitoring and analysis.
 
 ### Cloudinary
 
-Images are automatically optimized and served via Cloudinary CDN with:
+Images are automatically optimised and served via Cloudinary CDN with:
 
 - WebP format conversion
-- Quality optimization (`q_auto:good`)
-- Organized folder structure: `Specialised/public/uploads/{customerName}/`
+- Quality optimisation (`q_auto:good`)
+- Organised folder structure: `Specialised/public/uploads/{customerName}/`
 - Gallery images: `gallery/google-photos/`
 - Streaming uploads from URLs (for Google Photos integration)
 
@@ -407,7 +407,7 @@ Images are automatically optimized and served via Cloudinary CDN with:
 
 ## A/B Testing System
 
-The application includes a comprehensive A/B testing system for optimizing meta descriptions and content:
+The application includes a comprehensive A/B testing system for optimising meta descriptions and content:
 
 ### Features
 
@@ -421,7 +421,7 @@ The application includes a comprehensive A/B testing system for optimizing meta 
 
 - **Near-me Meta Description Test** (`near_me_meta`)
   - Routes: `/`, `/our-work`, `/about`, `/contact`
-  - Variants: A (control), B (near-me optimized)
+  - Variants: A (control), B (near-me optimised)
   - Traffic Split: 50/50
   - Start Date: January 26, 2026
 

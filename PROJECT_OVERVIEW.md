@@ -16,7 +16,7 @@ Specialised Steering Web Application is a Node.js/Express-based web application 
 ### Key Dependencies
 
 - **Airtable** (^0.11.1) - Database/CRM integration for storing form submissions and security logs
-- **Cloudinary** (^1.27.1) - Image hosting and optimization service
+- **Cloudinary** (^1.27.1) - Image hosting and optimisation service
 - **Multer** (^1.4.3) - File upload handling middleware
 - **Multer Storage Cloudinary** (^4.0.0) - Direct Cloudinary upload support
 - **Google APIs** (^169.0.0) - Google OAuth 2.0 and Photos Picker API integration
@@ -147,9 +147,9 @@ specialised/
 
 ### 4. Parts Enquiry Form (`/enquiry`)
 
-- Specialized form for hydraulic component sourcing requests
+- Specialised form for hydraulic component sourcing requests
 - Supports image uploads via Multer (10MB max, images only)
-- Images uploaded to Cloudinary with organized folder structure
+- Images uploaded to Cloudinary with organised folder structure
 - Stores comprehensive part information (brand, type, part number, serial number, etc.)
 - Includes customer address and contact details
 - **Security**: Same security features as contact form
@@ -243,10 +243,10 @@ The application uses JSON file storage for simple data:
 
 ### Cloudinary Integration
 
-- Image hosting and optimization
+- Image hosting and optimisation
 - Automatic WebP format conversion
-- Quality optimization (`q_auto:good`)
-- Organized folder structure: `Specialised/public/uploads/{customerName}/`
+- Quality optimisation (`q_auto:good`)
+- Organised folder structure: `Specialised/public/uploads/{customerName}/`
 - Remote media proxy for Airtable images
 
 ## Security Features
@@ -299,9 +299,9 @@ The application uses JSON file storage for simple data:
 
 ### Cloudinary
 
-- Image hosting and optimization
+- Image hosting and optimisation
 - Automatic WebP conversion
-- Quality optimization (`q_auto:good`)
+- Quality optimisation (`q_auto:good`)
 - Folder structure: `Specialised/public/uploads/{customerName}/`
 - Gallery folder: `gallery/google-photos/`
 - Streaming uploads from URLs (for Google Photos)
@@ -319,11 +319,11 @@ The application uses JSON file storage for simple data:
 - Cookie consent banner and management
 - Functional cookies for A/B testing (90-day persistence)
 
-## Performance Optimizations
+## Performance Optimisations
 
 1. **Response Compression** - Gzip compression enabled
 2. **Static File Caching** - Long cache headers (31536000000ms) for static assets
-3. **Image Optimization** - Cloudinary automatic format conversion and quality optimization
+3. **Image Optimisation** - Cloudinary automatic format conversion and quality optimisation
 4. **ETag Support** - Enabled for static files
 5. **Lazy Loading** - Images use `loading="eager"` or `loading="lazy"` attributes
 
@@ -388,7 +388,7 @@ Required environment variables (configured via `.env` file):
 
 2. **File Uploads**: Temporary files are stored in `./public/uploads` before being uploaded to Cloudinary.
 
-3. **Image Processing**: Airtable images are proxied through Cloudinary with URL manipulation to optimize delivery.
+3. **Image Processing**: Airtable images are proxied through Cloudinary with URL manipulation to optimise delivery.
 
 ## Running the Application
 
