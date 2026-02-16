@@ -8,13 +8,31 @@
     <link rel="stylesheet" href="../css/specialised-steering.css" />
     <link rel="stylesheet" href="../css/gallery.css" />
     <script src="../js/gallery.js" defer></script>
+    <% const galleryImages = Array.isArray(photos)
+      ? photos
+          .slice(0, 12)
+          .map(photo => photo.url || photo.thumbnailUrl)
+          .filter(Boolean)
+      : [];
+    const gallerySchema = {
+      "@context": "https://schema.org",
+      "@type": "ImageGallery",
+      name: meta && meta.title ? meta.title : "Completed Repairs Photo Gallery",
+      description: meta && meta.description ? meta.description : undefined,
+      url: "https://www.specialisedsteering.com/gallery",
+      image: galleryImages,
+    };
+    %>
+    <script type="application/ld+json">
+      <%- JSON.stringify(gallerySchema) %>
+    </script>
   </head>
   <body>
     <%- include('includes/nav') %>
     <main>
       <section class="section main">
         <div class="container">
-          <h1>Gallery: OEM-Standard Hydraulic Repairs</h1>
+          <h1>Completed Repairs Photo Gallery: OEM-Standard Hydraulic Repairs</h1>
           <p>
             This gallery shows completed hydraulic component repairs and service
             exchange units across mining, agriculture, and automotive

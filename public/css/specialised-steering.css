@@ -243,6 +243,25 @@ a {
   text-decoration: none;
 }
 
+/* External link indicator */
+.external-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+}
+
+.external-link-icon {
+  width: 0.75em;
+  height: 0.75em;
+  display: inline-block;
+}
+
+.external-link-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
 /* Style links in "Our Range" section to be obviously clickable */
 #products.container p a,
 #products .container p a,
@@ -289,6 +308,13 @@ li {
 
 .doc-link {
   color: var(--color-primary);
+}
+
+/* Legal pages: slightly larger readable body text */
+.legal-content p,
+.legal-content li {
+  font-size: 1.25rem;
+  line-height: 1.6;
 }
 
 /* Navbar */

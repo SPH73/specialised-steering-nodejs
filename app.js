@@ -62,7 +62,8 @@ app.use((req, res, next) => {
     return next();
   }
 
-  const forced = typeof req.query.ab === "string" ? req.query.ab.toUpperCase() : null;
+  const forced =
+    typeof req.query.ab === "string" ? req.query.ab.toUpperCase() : null;
   const isValidForced = forced === "A" || forced === "B";
   const existing = req.cookies.ab_variant;
   const isValidExisting = existing === "A" || existing === "B";
@@ -113,6 +114,17 @@ app.use((req, res, next) => {
   next();
 });
 
+// Staging: block indexing (hostname-based so production is unaffected)
+const isStaging = req =>
+  /^staging\.specialisedsteering\.com$/i.test(req.hostname || "");
+app.get("/robots.txt", (req, res, next) => {
+  if (!isStaging(req)) {
+    return next();
+  }
+  res.type("text/plain");
+  res.send("User-agent: *\nDisallow: /\n");
+});
+
 app.use(
   express.static("public", {
     etag: true,
@@ -129,6 +141,15 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use((req, res, next) => {
   res.locals.notificationEmail =
     process.env.NOTIFICATION_EMAIL || "admin@ssteering.co.za";
+  next();
+});
+
+// Prevent search engines from indexing staging (noindex meta + X-Robots-Tag)
+app.use((req, res, next) => {
+  if (isStaging(req)) {
+    res.locals.noindex = true;
+    res.setHeader("X-Robots-Tag", "noindex, nofollow");
+  }
   next();
 });
 
