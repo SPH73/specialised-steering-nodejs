@@ -43,6 +43,9 @@ logs/ab-tests.log
 logs/ab-views.log
 logs/airtable-calls.log
 
+# GSC guide - local reference only, not for repo
+docs/gsc-sitemap-and-indexing.md
+
 # Google Search Console coverage reports
 *Coverage*.zip
 *Coverage*.csv
