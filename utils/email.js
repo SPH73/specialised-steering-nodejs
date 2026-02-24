@@ -126,7 +126,9 @@ Received: ${new Date().toLocaleString("en-ZA", {
     );
     console.log("📧 Email info response:", JSON.stringify(info.response));
     console.log("📧 Email accepted:", info.accepted);
-    console.log("📧 Email rejected:", info.rejected);
+    if (info.rejected && info.rejected.length > 0) {
+      console.log("📧 Email rejected:", info.rejected);
+    }
     if (info.pending !== undefined) {
       console.log("📧 Email pending:", info.pending);
     }
@@ -255,7 +257,9 @@ Received: ${new Date().toLocaleString("en-ZA", {
     );
     console.log("📧 Email info response:", JSON.stringify(info.response));
     console.log("📧 Email accepted:", info.accepted);
-    console.log("📧 Email rejected:", info.rejected);
+    if (info.rejected && info.rejected.length > 0) {
+      console.log("📧 Email rejected:", info.rejected);
+    }
     if (info.pending !== undefined) {
       console.log("📧 Email pending:", info.pending);
     }

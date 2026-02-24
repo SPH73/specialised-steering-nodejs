@@ -371,12 +371,15 @@ router.post(
         return res.render("confirm", {
           message: messageData,
           ref: null,
+          imageFilename: image && image.originalname ? image.originalname : null,
+          imageUrl: null,
         });
       }
 
       // Ensure data is an object (defensive check)
       const messageData = data && typeof data === "object" ? data : {};
       const refValue = reference || null;
+      const imageFilename = image && image.originalname ? image.originalname : null;
 
       // Log what we're passing to the template
       console.log("✅ Rendering confirm page with data:", {
@@ -388,6 +391,7 @@ router.post(
         postTime: messageData.postTime,
         hasRef: !!refValue,
         ref: refValue,
+        imageFilename,
       });
 
       // Log A/B test conversion (non-blocking)
@@ -405,7 +409,12 @@ router.post(
         ).catch(err => console.error("Failed to log A/B conversion:", err));
       }
 
-      res.render("confirm", { message: messageData, ref: refValue });
+      res.render("confirm", {
+        message: messageData,
+        ref: refValue,
+        imageFilename,
+        imageUrl: imageUrl || null,
+      });
     } catch (error) {
       console.error(
         "Unexpected error in parts enquiry handler:",
