@@ -1,0 +1,15 @@
+---
+description: Update TODO.md completed list for invoicing and reporting
+alwaysApply: true
+---
+
+# TODO Completed List
+
+When completing a discrete piece of work (feature, fix, upgrade, or change set that has been committed or delivered), **update the "Completed" section in `TODO.md`** so the client can use it for invoicing and reporting.
+
+Add an entry with:
+- **Title:** Short descriptive name (e.g. "Multer upgrade (dicer CVE)")
+- **Completed:** Date
+- **What was done:** Brief summary of changes and outcome
+
+Keep the same format as existing completed entries in `TODO.md`.
