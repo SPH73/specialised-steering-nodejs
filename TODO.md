@@ -66,6 +66,11 @@ _Update this section when completing work so it can be used for invoicing and re
 - **Completed:** 24 Feb 2026
 - **What was done:** Upgraded `request-ip` from ^2.1.3 to ^3.3.0. Version 3.x has no dependency on `is_js`, so the transitive ReDoS vulnerability (Dependabot alert #18) is resolved. Confirmed `is_js` no longer appears in `package-lock.json`; `getClientIp(req)` usage in `ab-logger`, `security-logger`, and routes unchanged.
 
+### Lodash and qs overrides (Dependabot #53, #54)
+
+- **Completed:** 24 Feb 2026
+- **What was done:** Added npm overrides so all transitive uses of `lodash` use 4.17.23 (fixes prototype pollution in `_.unset`/`_.omit`, Dependabot #53) and all uses of `qs` use 6.14.2 (fixes arrayLimit bypass DoS, Dependabot #54). Transitive via airtable/cloudinary (lodash) and express/googleapis (qs). `npm audit` reports 0 vulnerabilities after install.
+
 ---
 
 ## Client report
@@ -77,7 +82,7 @@ _Use this section for the report attached to the invoice._
 - **Search and legal pages (AEO):** Schema and legal pages updated (Privacy Policy, Terms of Sale, Cookie Policy, Disclaimer); gallery structured data added; section and link names tidied for clarity.
 - **Homepage UX:** Button labels and links clarified (e.g. “Repairs”, “Repair enquiry”); button text alignment fixed; section id updated from “our-work-list” to “our-repairs”.
 - **Enquiry and success page:** Success page now shows the filename when a user attaches an image to the parts enquiry form; email notifications unchanged and tested.
-- **Security upgrades:** Dependencies upgraded to address known vulnerabilities: multer (dicer), Cloudinary (argument injection), minimatch (ReDoS), and request-ip (is_js ReDoS – Dependabot #18). Image upload and email flows tested after each change.
+- **Security upgrades:** Dependencies upgraded or overridden to address known vulnerabilities: multer (dicer), Cloudinary (argument injection), minimatch (ReDoS), request-ip (is_js ReDoS), lodash (prototype pollution), and qs (arrayLimit DoS). `npm audit` reports 0 vulnerabilities. Image upload and email flows tested after earlier changes.
 - **Documentation and process:** README updated (install steps, Cursor IDE and agent rules); TODO completed list maintained for reporting; Cursor rules added (e.g. merge workflow, completed-list updates).
 
 ### Upgrades and caveat
