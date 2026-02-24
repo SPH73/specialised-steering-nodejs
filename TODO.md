@@ -71,6 +71,11 @@ _Update this section when completing work so it can be used for invoicing and re
 - **Completed:** 24 Feb 2026
 - **What was done:** Added npm overrides so all transitive uses of `lodash` use 4.17.23 (fixes prototype pollution in `_.unset`/`_.omit`, Dependabot #53) and all uses of `qs` use 6.14.2 (fixes arrayLimit bypass DoS, Dependabot #54). Transitive via airtable/cloudinary (lodash) and express/googleapis (qs). `npm audit` reports 0 vulnerabilities after install.
 
+### Multer upgrade to 2.0.2 (Dependabot #37, #40, #45, #46)
+
+- **Completed:** 24 Feb 2026
+- **What was done:** Upgraded `multer` from 1.4.5-lts.2 to ^2.0.2. Fixes four High-severity DoS issues: unhandled exception, memory leaks from unclosed streams, malformed request DoS, and maliciously crafted request DoS (CVE-2025-47944, CVE-2025-47935; 2.0.1/2.0.2 address additional CVEs). No code changes required; existing `diskStorage`, `fileFilter`, `limits`, and `upload.single('image')` usage remains compatible. Enquiry form upload should be retested after deploy.
+
 ---
 
 ## Client report
@@ -82,7 +87,7 @@ _Use this section for the report attached to the invoice._
 - **Search and legal pages (AEO):** Schema and legal pages updated (Privacy Policy, Terms of Sale, Cookie Policy, Disclaimer); gallery structured data added; section and link names tidied for clarity.
 - **Homepage UX:** Button labels and links clarified (e.g. “Repairs”, “Repair enquiry”); button text alignment fixed; section id updated from “our-work-list” to “our-repairs”.
 - **Enquiry and success page:** Success page now shows the filename when a user attaches an image to the parts enquiry form; email notifications unchanged and tested.
-- **Security upgrades:** Dependencies upgraded or overridden to address known vulnerabilities: multer (dicer), Cloudinary (argument injection), minimatch (ReDoS), request-ip (is_js ReDoS), lodash (prototype pollution), and qs (arrayLimit DoS). `npm audit` reports 0 vulnerabilities. Image upload and email flows tested after earlier changes.
+- **Security upgrades:** Dependencies upgraded or overridden to address known vulnerabilities: multer (dicer, then full upgrade to 2.0.2 for four DoS fixes), Cloudinary (argument injection), minimatch (ReDoS), request-ip (is_js ReDoS), lodash (prototype pollution), and qs (arrayLimit DoS). `npm audit` reports 0 vulnerabilities. Enquiry image upload should be retested after multer 2.x upgrade.
 - **Documentation and process:** README updated (install steps, Cursor IDE and agent rules); TODO completed list maintained for reporting; Cursor rules added (e.g. merge workflow, completed-list updates).
 
 ### Upgrades and caveat
