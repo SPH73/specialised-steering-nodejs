@@ -87,8 +87,21 @@ _Use this section for the report attached to the invoice._
 - **Search and legal pages (AEO):** Schema and legal pages updated (Privacy Policy, Terms of Sale, Cookie Policy, Disclaimer); gallery structured data added; section and link names tidied for clarity.
 - **Homepage UX:** Button labels and links clarified (e.g. “Repairs”, “Repair enquiry”); button text alignment fixed; section id updated from “our-work-list” to “our-repairs”.
 - **Enquiry and success page:** Success page now shows the filename when a user attaches an image to the parts enquiry form; email notifications unchanged and tested.
-- **Security upgrades:** Dependencies upgraded or overridden to address known vulnerabilities: multer (dicer, then full upgrade to 2.0.2 for four DoS fixes), Cloudinary (argument injection), minimatch (ReDoS), request-ip (is_js ReDoS), lodash (prototype pollution), and qs (arrayLimit DoS). `npm audit` reports 0 vulnerabilities. Enquiry image upload should be retested after multer 2.x upgrade.
+- **Security upgrades:** Dependencies upgraded or overridden to address known vulnerabilities (including new Snyk reports): multer (dicer, then full upgrade to 2.0.2 for four DoS fixes), Cloudinary (argument injection), minimatch (ReDoS), request-ip (is_js ReDoS), lodash (prototype pollution), and qs (arrayLimit DoS). We were able to address the new vulnerabilities and, as a result, **all vulnerabilities are now resolved** (`npm audit` reports 0). Enquiry image upload should be retested after multer 2.x upgrade.
 - **Documentation and process:** README updated (install steps, Cursor IDE and agent rules); TODO completed list maintained for reporting; Cursor rules added (e.g. merge workflow, completed-list updates).
+
+### New Snyk alerts (addressed)
+
+New vulnerability alerts from Snyk were received for this project. We addressed both; dates and issues are below (screenshots of the alerts are included for reference).
+
+| Date | Issue | Package | Our fix |
+|------|--------|---------|---------|
+| **29 Jan 2026** | Prototype Pollution | lodash 4.17.21 | Override to lodash 4.17.23 |
+| **19 Feb 2026** | ReDoS | minimatch 9.0.5 | Override to minimatch 10.2.1 |
+
+![Snyk alert – lodash Prototype Pollution (29 Jan 2026)](docs/client-report/snyk-alert-lodash-2026-01-29.png)
+
+![Snyk alert – minimatch ReDoS (19 Feb 2026)](docs/client-report/snyk-alert-minimatch-2026-02-19.png)
 
 ### Upgrades and caveat
 
