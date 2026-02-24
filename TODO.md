@@ -76,6 +76,11 @@ _Update this section when completing work so it can be used for invoicing and re
 - **Completed:** 24 Feb 2026
 - **What was done:** Upgraded `multer` from 1.4.5-lts.2 to ^2.0.2. Fixes four High-severity DoS issues: unhandled exception, memory leaks from unclosed streams, malformed request DoS, and maliciously crafted request DoS (CVE-2025-47944, CVE-2025-47935; 2.0.1/2.0.2 address additional CVEs). No code changes required; existing `diskStorage`, `fileFilter`, `limits`, and `upload.single('image')` usage remains compatible. Enquiry form upload should be retested after deploy.
 
+### Analytics partial: defensive check for excludeFromAnalytics
+
+- **Completed:** 24 Feb 2026
+- **What was done:** Fixed `ReferenceError: excludeFromAnalytics is not defined` in `views/includes/analytics.ejs`. The partial now uses `typeof excludeFromAnalytics === 'undefined' || !excludeFromAnalytics` so it safely shows the GA snippet when the variable is not in scope (e.g. some error-handler renders). No change to IP-exclusion behaviour when the middleware has set the flag.
+
 ---
 
 ## Client report

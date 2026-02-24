@@ -1,4 +1,4 @@
-<% if (!excludeFromAnalytics) { %>
+<% if (typeof excludeFromAnalytics === 'undefined' || !excludeFromAnalytics) { %>
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script
   async
