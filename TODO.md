@@ -81,6 +81,11 @@ _Update this section when completing work so it can be used for invoicing and re
 - **Completed:** 24 Feb 2026
 - **What was done:** Fixed `ReferenceError: excludeFromAnalytics is not defined` in `views/includes/analytics.ejs`. The partial now uses `typeof excludeFromAnalytics === 'undefined' || !excludeFromAnalytics` so it safely shows the GA snippet when the variable is not in scope (e.g. some error-handler renders). No change to IP-exclusion behaviour when the middleware has set the flag.
 
+### CSP violation: framing www.google.com (frame-ancestors)
+
+- **Completed:** 24 Feb 2026
+- **What was done:** Resolved report-only CSP violation “Framing 'https://www.google.com/' violates frame-ancestors 'self'”. Switched reCAPTCHA to load from `www.recaptcha.net/recaptcha/api.js` (so the widget iframe uses recaptcha.net instead of www.google.com) and removed `https://www.google.com` from `frame-src` in app.js. reCAPTCHA behaviour unchanged; contact/enquiry forms should be retested on staging.
+
 ---
 
 ## Client report
