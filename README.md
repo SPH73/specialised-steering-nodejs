@@ -51,10 +51,10 @@ cd specialised
 2. **Install dependencies**
 
 ```bash
-npm install --legacy-peer-deps
+npm install
 ```
 
-> **Note:** Use `--legacy-peer-deps` because `multer-storage-cloudinary` declares a peer dependency on Cloudinary 1.x while the project uses Cloudinary 2.x for security. The package is unused at runtime; this only affects install resolution. You can also run `npm run install:legacy` to install with this flag.
+(On servers where npm is not in PATH, use cPanel Node.js Setup → Run NPM Install, or run `npm install` in an environment where Node is available.)
 
 3. **Configure environment variables**
 

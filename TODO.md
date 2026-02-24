@@ -126,4 +126,4 @@ We have set up **IP-based exclusion** for Google Analytics so that company and i
 
 ### Upgrades and caveat
 
-All security upgrades have been applied and tested. **One caveat:** when installing or updating dependencies in future, use **`npm run install:legacy`** (or `npm install --legacy-peer-deps`). This is required because one listed package is unused at runtime but still declares an older peer dependency; using the flag avoids install conflicts and has no effect on how the site runs. The README and a convenience script are in place so this is documented and easy to follow.
+All security upgrades have been applied and tested. Dependencies can be installed with **`npm install`** (e.g. in cPanel Node.js Setup → Run NPM Install, or via SSH where Node is in PATH). The previous peer-dependency caveat (multer-storage-cloudinary) was removed by dropping that unused package, so plain installs now succeed.
