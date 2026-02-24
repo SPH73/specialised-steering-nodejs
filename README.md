@@ -84,7 +84,7 @@ EMAIL_PORT=587
 EMAIL_SECURE=false
 EMAIL_USER=your-email@gmail.com
 EMAIL_PASSWORD=your-app-specific-password
-NOTIFICATION_EMAIL=admin@ssteering.co.za
+NOTIFICATION_EMAIL=email@example.com
 ```
 
 **Note**: Email configuration supports both modern (`EMAIL_*`) and legacy (`SMTP_*`) variable names for backward compatibility.
@@ -100,14 +100,14 @@ GOOGLE_REDIRECT_URI=https://www.specialisedsteering.com/oauth2callback
 # Admin Authentication (for gallery management and A/B reports)
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=your_secure_password
-ADMIN_EMAIL=admin@ssteering.co.za  # For password reset emails
+ADMIN_EMAIL=admin@example.com  # For password reset emails
 
 # Gallery Configuration
 GALLERY_REPLACE_MODE=false  # Set to true to replace all items, false to append
 CLOUDINARY_FOLDER=gallery/google-photos  # Optional: Cloudinary folder for gallery images
 
 # Health Check Configuration (Optional)
-HEALTHCHECK_EMAIL=monitoring@ssteering.co.za  # For system health notifications
+HEALTHCHECK_EMAIL=email@example.com  # For system health notifications
 
 # Environment
 NODE_ENV=production  # Set to "production" for production deployments (affects cookie security)

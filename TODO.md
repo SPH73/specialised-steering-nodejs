@@ -86,6 +86,11 @@ _Update this section when completing work so it can be used for invoicing and re
 - **Completed:** 24 Feb 2026
 - **What was done:** Resolved report-only CSP violation “Framing 'https://www.google.com/' violates frame-ancestors 'self'”. Switched reCAPTCHA to load from `www.recaptcha.net/recaptcha/api.js` (so the widget iframe uses recaptcha.net instead of www.google.com) and removed `https://www.google.com` from `frame-src` in app.js. reCAPTCHA behaviour unchanged; contact/enquiry forms should be retested on staging.
 
+### GSC: sitemap and indexing for JSON-LD
+
+- **Completed:** Feb 2026
+- **What was done:** Confirmed XML sitemap at `https://www.specialisedsteering.com/sitemap.xml` includes all indexable pages (homepage, our-work, about, gallery, legal pages, HTML sitemap). Sitemap can be submitted in GSC; URL Inspection used to request indexing for key URLs (homepage, gallery, our-work, about) so JSON-LD (LocalBusiness, ImageGallery) is recrawled.
+
 ---
 
 ## Client report
