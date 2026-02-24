@@ -61,6 +61,11 @@ _Update this section when completing work so it can be used for invoicing and re
 - **Completed:** 24 Feb 2026
 - **What was done:** Added npm override so all transitive uses of `minimatch` use patched version 10.2.1 (fixes ReDoS, CVE-2026-26996). README and `npm run install:legacy` script added so future installs use `--legacy-peer-deps` where needed (see Client report caveat).
 
+### request-ip upgrade (is_js ReDoS – Dependabot #18)
+
+- **Completed:** 24 Feb 2026
+- **What was done:** Upgraded `request-ip` from ^2.1.3 to ^3.3.0. Version 3.x has no dependency on `is_js`, so the transitive ReDoS vulnerability (Dependabot alert #18) is resolved. Confirmed `is_js` no longer appears in `package-lock.json`; `getClientIp(req)` usage in `ab-logger`, `security-logger`, and routes unchanged.
+
 ---
 
 ## Client report
@@ -72,7 +77,7 @@ _Use this section for the report attached to the invoice._
 - **Search and legal pages (AEO):** Schema and legal pages updated (Privacy Policy, Terms of Sale, Cookie Policy, Disclaimer); gallery structured data added; section and link names tidied for clarity.
 - **Homepage UX:** Button labels and links clarified (e.g. “Repairs”, “Repair enquiry”); button text alignment fixed; section id updated from “our-work-list” to “our-repairs”.
 - **Enquiry and success page:** Success page now shows the filename when a user attaches an image to the parts enquiry form; email notifications unchanged and tested.
-- **Security upgrades:** Dependencies upgraded to address known vulnerabilities: multer (dicer), Cloudinary (argument injection), and minimatch (ReDoS). Image upload and email flows tested after each change.
+- **Security upgrades:** Dependencies upgraded to address known vulnerabilities: multer (dicer), Cloudinary (argument injection), minimatch (ReDoS), and request-ip (is_js ReDoS – Dependabot #18). Image upload and email flows tested after each change.
 - **Documentation and process:** README updated (install steps, Cursor IDE and agent rules); TODO completed list maintained for reporting; Cursor rules added (e.g. merge workflow, completed-list updates).
 
 ### Upgrades and caveat
