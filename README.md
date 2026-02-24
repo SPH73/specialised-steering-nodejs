@@ -48,13 +48,15 @@ git clone <repository-url>
 cd specialised
 ```
 
-2.**Install dependencies**
+2. **Install dependencies**
 
 ```bash
-npm install
+npm install --legacy-peer-deps
 ```
 
-3.**Configure environment variables**
+> **Note:** Use `--legacy-peer-deps` because `multer-storage-cloudinary` declares a peer dependency on Cloudinary 1.x while the project uses Cloudinary 2.x for security. The package is unused at runtime; this only affects install resolution. You can also run `npm run install:legacy` to install with this flag.
+
+3. **Configure environment variables**
 
 Create a `.env` file in the root directory with the following variables:
 
@@ -175,6 +177,10 @@ Run `nvm use 20` or `nvm use 20.19.0` to switch to the correct version.
 - **fnm**: `fnm use` (reads `.nvmrc`)
 - **asdf**: `asdf install nodejs 20.19.0 && asdf local nodejs 20.19.0`
 - **n**: `n 20.19.0`
+
+### Cursor IDE and agent rules
+
+This project is developed using **Cursor IDE**. Agent rules are defined in `.cursor/rules/` (`.mdc` files) and provide consistent guidance for AI-assisted editing—for example, checking the git reflog before merging into a parent branch, keeping client communications in the git-ignored `MD/` folder, and updating the completed list in `TODO.md` for invoicing and reporting. These rules apply when working in Cursor and help keep contributions aligned with project conventions.
 
 ### Upgrading Node.js Version (Local Development)
 
