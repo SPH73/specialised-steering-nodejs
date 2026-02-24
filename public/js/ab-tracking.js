@@ -8,7 +8,13 @@
 
   // Check if gtag is available (Google Analytics loaded)
   if (typeof gtag === "undefined") {
-    console.warn("Google Analytics (gtag) not loaded - A/B tracking disabled");
+    // Only warn on production; on staging GA may not be loaded (expected)
+    var isStaging = /^staging\.specialisedsteering\.com$/i.test(
+      window.location.hostname
+    );
+    if (!isStaging) {
+      console.warn("Google Analytics (gtag) not loaded - A/B tracking disabled");
+    }
     return;
   }
 

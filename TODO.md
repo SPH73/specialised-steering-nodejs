@@ -89,6 +89,7 @@ _Use this section for the report attached to the invoice._
 - **Enquiry and success page:** Success page now shows the filename when a user attaches an image to the parts enquiry form; email notifications unchanged and tested.
 - **Security upgrades:** Dependencies upgraded or overridden to address known vulnerabilities (including new Snyk reports): multer (dicer, then full upgrade to 2.0.2 for four DoS fixes), Cloudinary (argument injection), minimatch (ReDoS), request-ip (is_js ReDoS), lodash (prototype pollution), and qs (arrayLimit DoS). We were able to address the new vulnerabilities and, as a result, **all vulnerabilities are now resolved** (`npm audit` reports 0). Enquiry image upload should be retested after multer 2.x upgrade.
 - **Documentation and process:** README updated (install steps, Cursor IDE and agent rules); TODO completed list maintained for reporting; Cursor rules added (e.g. merge workflow, completed-list updates).
+- **Analytics:** Full-site Google Analytics tracking is in place (all pages except the success screen). IP exclusion for internal/company traffic is configured; we await the IP list to add to the server so GA reports reflect real visitor behaviour only (see “Google Analytics: IP exclusion” below).
 
 ### New Snyk alerts (addressed)
 
@@ -102,6 +103,16 @@ New vulnerability alerts from Snyk were received for this project. We addressed 
 ![Snyk alert – lodash Prototype Pollution (29 Jan 2026)](docs/client-report/snyk-alert-lodash-2026-01-29.png)
 
 ![Snyk alert – minimatch ReDoS (19 Feb 2026)](docs/client-report/snyk-alert-minimatch-2026-02-19.png)
+
+### Google Analytics: IP exclusion (internal traffic)
+
+We have set up **IP-based exclusion** for Google Analytics so that company and internal traffic is not sent to GA. We await the specific IP addresses (company and key user) to add to the server configuration; once provided, they will be added to the environment variable and no code change is required.
+
+**What the exclusion means:** Visits from the excluded IPs are not tracked at all. The Google Analytics script (gtag) is not loaded for those visitors, so no page views, events, or bounces from them are recorded in GA. Reports therefore reflect only **real customer and prospect traffic**.
+
+**How we enforce it:** The server reads the visitor’s IP on each request and compares it to a configured list (stored in the environment, not in code). If the IP matches, we set a flag and the analytics snippet is omitted from the page HTML. Enforcement is **server-side**: excluded users never receive the tracking script, so there is no dependency on cookie consent or client-side logic.
+
+**Why we do it:** Internal and company traffic (e.g. staff checking the site, testing forms, or reviewing content) would otherwise inflate page views and distort bounce rates and behaviour. Excluding it keeps GA data meaningful for marketing and conversion decisions.
 
 ### Upgrades and caveat
 

@@ -111,6 +111,9 @@ HEALTHCHECK_EMAIL=monitoring@ssteering.co.za  # For system health notifications
 
 # Environment
 NODE_ENV=production  # Set to "production" for production deployments (affects cookie security)
+
+# Google Analytics: optional comma-separated IPs to exclude (company/home); no gtag loaded for these
+# ANALYTICS_EXCLUDE_IPS=1.2.3.4,5.6.7.8
 ```
 
 Alternatively, you can copy `.env.example` to `.env` and fill in your values.

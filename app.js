@@ -22,6 +22,7 @@ const express = require("express");
 const compression = require("compression");
 const favicon = require("serve-favicon");
 const cookieParser = require("cookie-parser");
+const requestIp = require("request-ip");
 
 const errorsHandlerMiddleware = require("./middleware/error-handler");
 const { logAbView } = require("./utils/ab-test-logger");
@@ -55,6 +56,18 @@ app.use((req, res, next) => {
 });
 
 app.use(cookieParser());
+
+// Exclude company/internal IPs from Google Analytics (no gtag loaded for these)
+app.use((req, res, next) => {
+  const excludeIps = (process.env.ANALYTICS_EXCLUDE_IPS || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const clientIp = requestIp.getClientIp(req) || "";
+  res.locals.excludeFromAnalytics =
+    excludeIps.length > 0 && excludeIps.includes(clientIp);
+  next();
+});
 
 // Assign A/B variant for metadata testing (A = near-me, B = baseline)
 app.use((req, res, next) => {
