@@ -162,6 +162,15 @@ app.use((req, res, next) => {
   next();
 });
 
+// Base URL and canonical URL for absolute links (og:image, og:url, etc.) – always production (staging is noindex so crawlers don’t use it)
+app.use((req, res, next) => {
+  const base = "https://www.specialisedsteering.com";
+  res.locals.siteBaseUrl = base;
+  res.locals.canonicalUrl = base + (req.path === "/" ? "" : req.path || "");
+  res.locals.fbAppId = process.env.FB_APP_ID || null;
+  next();
+});
+
 // Prevent search engines from indexing staging (noindex meta + X-Robots-Tag)
 app.use((req, res, next) => {
   if (isStaging(req)) {

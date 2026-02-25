@@ -12,6 +12,23 @@
 
 _Update this section when completing work so it can be used for invoicing and reporting._
 
+### OG always production + fb:app_id (Facebook/Instagram link previews)
+
+- **Completed:** 24 Feb 2026
+- **What was done:** OG and canonical URLs now always use production (`https://www.specialisedsteering.com`); staging stays noindex so crawlers don’t use it. Added optional `fb:app_id` from env (`FB_APP_ID`) so the client can plug in their Meta app for better link previews when sharing the site on Facebook and Instagram. Client comms (WhatsApp) sent to Amy with setup steps.
+
+### Our Work page: unique content (reduce duplication with homepage)
+
+- **Completed:** 26 Feb 2026
+- **Time:** ~25 min
+- **What was done:** Rewrote Our Work page so it no longer repeats homepage copy. Removed duplicate lines (“Every job is different”, “Restored to OEM spec. Documented. Tested.”) and the repeated component list. **New angle:** “How we work” — page now focuses on unique content: (1) **Service exchange** — when it helps, how it works, how to request it, lead times; (2) **Repair process** — full 5-step flow (booking/receipt, strip and inspect, report and quote, repair and reassembly, collection/delivery) with detail on documentation and approval; (3) **Industries we serve** — distinct paragraphs for mining (open pit and underground), agricultural, off-highway/construction, industrial with sector-specific context; (4) **What we repair** — single paragraph with link to gallery and socials instead of repeating the homepage list. Intro directs users to homepage for a quick overview. Aligns with CT Hydraulics–style unique content per page and reduces duplicate-content risk.
+
+### SERP / sitelink improvements – Phase 1 (Contact as Head Office, Our Work in nav)
+
+- **Completed:** 25 Feb 2026
+- **Time:** ~30 min (incl. planning)
+- **What was done:** **Contact page:** Added visible “Head Office – Germiston” NAP block (address, landline +27 11 828 3224, cell, email, hours, Find us map link) above the form so crawlers and users see full contact details. **Contact meta:** Updated title to “Contact & Head Office – Germiston | Specialised Steering” and descriptions (A/B) to include Head Office location and landline for better SERP/sitelink snippets. **Nav:** Added “Our work” link to main navigation (between About and Components enquiry) so Our Work is a stronger sitelink candidate. Aligns with phased plan to improve Google sitelinks vs CT Hydraulics (Head Office with phone in SERP). Last updated comment set on contact.ejs.
+
 ### Default OG image
 
 - **Completed:** 24 Feb 2026
