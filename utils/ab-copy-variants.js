@@ -7,18 +7,24 @@ const COPY_VARIANTS = {
   // Homepage variants
   home: {
     A: {
-      // Control - current copy
+      // Control – kept under 158 chars for snippet
       title:
         "Hydraulic Repairs and Component Sourcing | Germiston, Gauteng, ZA - Service Worldwide",
       description:
-        "We repair and source hydraulic components for a wide range of industries and applications. We also service, test and repair components to OEM specification. View our range and examples of client work.",
+        "We repair and source hydraulic components for industrial, mining, agricultural and off-highway. OEM service exchange from Germiston. View our range and client work.",
     },
     B: {
-      // Near-me variant with locality emphasis
+      // Near-me variant – locality in first ~120 chars, total ≤158
       title:
         "Hydraulic Repairs and Component Sourcing | Germiston, Gauteng, ZA - Service Worldwide",
       description:
-        "Expert hydraulic repairs near Germiston for mining, agriculture & trucks. OEM-certified service exchange & component sourcing. 40+ years combined experience. Get a quote today.",
+        "Expert hydraulic repairs near Germiston for industrial, mining, agricultural and off-highway. OEM service exchange & sourcing. 40+ years experience. Get a quote today.",
+    },
+    C: {
+      // Nationwide emphasis – location + SA in first ~120 chars
+      title: "Hydraulic Repair Shop | Germiston, Gauteng – Serving South Africa",
+      description:
+        "Based in Germiston – hydraulic repairs and service exchange across South Africa. OEM spec for industrial, mining, agricultural and off-highway. Nationwide service. Get a quote.",
     },
   },
 
@@ -26,15 +32,15 @@ const COPY_VARIANTS = {
   ourWork: {
     A: {
       // Control - current copy
-      title: "HYDRAULIC COMPONENT SERVICE EXCHANGE & REAIRS TO OEM SPEC",
+      title: "HYDRAULIC COMPONENT RESTORATION, SERVICE EXCHANGE & REPAIRS TO OEM SPEC",
       description:
-        "We offer service exchange on some hydraulic components and repair all components to OEM specification on machinery and trucks for the mining and agricultural industries.",
+        "Hydraulic component restoration and service exchange. We repair all components to OEM specification for industrial, mining, agricultural and off-highway sectors.",
     },
     B: {
       // Near-me variant with proof points
-      title: "HYDRAULIC COMPONENT SERVICE EXCHANGE & REPAIRS TO OEM SPEC",
+      title: "HYDRAULIC COMPONENT RESTORATION, SERVICE EXCHANGE & REPAIRS TO OEM SPEC",
       description:
-        "View our completed hydraulic repairs for mining & agricultural machinery. OEM-specification service exchange from Germiston. Underground & open pit mine experience. See our work.",
+        "Hydraulic component restoration from Germiston. Completed repairs for industrial, mining, agricultural and off-highway. OEM-specification service exchange. Underground & open pit experience. See our work.",
     },
   },
 
@@ -52,7 +58,7 @@ const COPY_VARIANTS = {
       title:
         "Hydraulic Repairs to OEM Specification and Component Sourcing Service - Germiston, Gauteng",
       description:
-        "About Specialised Steering: Germiston's OEM-certified hydraulic repair specialists. Workshop & on-site service for underground mines, open pits & agriculture. 40+ years combined expertise.",
+        "About Specialised Steering: Germiston's OEM-certified hydraulic repair specialists. Workshop & on-site service for industrial, mining, agricultural and off-highway. 40+ years combined expertise.",
     },
   },
 
@@ -70,7 +76,7 @@ const COPY_VARIANTS = {
       title:
         "CONTACT US FOR ALL YOUR HYDRAULIC REPAIRS AND PART SERVICE EXCHANGE",
       description:
-        "Contact Germiston's hydraulic repair experts. 40+ years experience servicing mining, agriculture & trucks worldwide. Call, email or visit us. Emergency repairs available.",
+        "Contact Germiston's hydraulic repair experts. 40+ years experience servicing industrial, mining, agricultural and off-highway. Call, email or visit us. Emergency repairs available.",
     },
   },
 
@@ -79,16 +85,16 @@ const COPY_VARIANTS = {
     A: {
       // Control - current copy
       title:
-        "HYDRAULIC COMPONENTS FOR MINING AND AGRICULTURAL MACHINERY AND TRUCKS",
+        "HYDRAULIC COMPONENTS FOR INDUSTRIAL, MINING, AGRICULTURAL AND OFF-HIGHWAY",
       description:
-        "We supply a wide range of industries with replacement hydraulic components from leading manufacturers. Fill out an enquiry form for the part you require and we will do our best to get you up and running again as soon as possible.",
+        "We supply industrial, mining, agricultural and off-highway sectors with replacement hydraulic components from leading manufacturers. Fill out an enquiry form for the part you require and we will do our best to get you up and running again as soon as possible.",
     },
     B: {
       // Action-oriented CTA variant
       title:
-        "HYDRAULIC COMPONENTS FOR MINING AND AGRICULTURAL MACHINERY AND TRUCKS",
+        "HYDRAULIC COMPONENTS FOR INDUSTRIAL, MINING, AGRICULTURAL AND OFF-HIGHWAY",
       description:
-        "Source hydraulic components fast. Simple enquiry form for mining, agriculture & truck parts from leading manufacturers. Expert guidance, competitive pricing. Get your quote today.",
+        "Source hydraulic components fast. Simple enquiry form for industrial, mining, agricultural and off-highway parts from leading manufacturers. Expert guidance, competitive pricing. Get your quote today.",
     },
   },
 
@@ -98,13 +104,13 @@ const COPY_VARIANTS = {
       // Control - current copy
       title: "Completed Jobs Photo Gallery | Specialised Steering",
       description:
-        "Explore our hydraulic component completed repairs gallery showcasing our expertise in servicing the mining, agricultural, and automotive industries. View completed projects and see the quality of our work firsthand. Trust Specialised Steering for reliable hydraulic repairs tailored to your industry needs.",
+        "Explore our hydraulic component completed repairs gallery showcasing our expertise in servicing industrial, mining, agricultural and off-highway sectors. View completed projects and see the quality of our work firsthand. Trust Specialised Steering for reliable hydraulic repairs tailored to your industry needs.",
     },
     B: {
       // Near-me with visual emphasis
       title: "Completed Jobs Photo Gallery | Specialised Steering",
       description:
-        "Photo gallery of completed hydraulic repairs - Germiston workshop. Real projects from mining, agriculture & trucks. See OEM-quality work before/after. Browse our portfolio.",
+        "Photo gallery of completed hydraulic repairs - Germiston workshop. Real projects from industrial, mining, agricultural and off-highway. See OEM-quality work before/after. Browse our portfolio.",
     },
   },
 };
@@ -139,8 +145,8 @@ function getCopyVariant(page, variant) {
  * @returns {Object} - Meta object with title and description
  */
 function getMetaForPage(page, variants) {
-  // For now, we only have the near_me_meta test active
-  const variant = variants.near_me_meta || "A";
+  // Homepage uses variant C (location + South Africa in snippet); other pages use A/B test or default A
+  const variant = page === "home" ? "C" : (variants.near_me_meta || "A");
   return getCopyVariant(page, variant);
 }
 

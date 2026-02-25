@@ -2,8 +2,7 @@
 
 ## Planned / Backlog
 
-- **HTML sitemap** – Update `views/sitemap.ejs`: make “Last Updated” and “Total pages” dynamic (or align with XML sitemap, e.g. 10 pages); fix typo “REAIRS” → “REPAIRS” in Our Work link title.
-- **Default OG image** – Add a default `og:image` (and `twitter:image`) in `meta.ejs` or `head.ejs` so shared links get a consistent image (e.g. logo or hero).
+- **HTML sitemap** – Update `views/sitemap.ejs`: make “Last Updated” and “Total pages” dynamic (or align with XML sitemap, e.g. 10 pages). _(REAIRS→REPAIRS typo and sitemap meta/structure fixes done in fix/seo-specialised-steering.)_
 - **Package.json** – Fix description typo: “Sepecialised” → “Specialised”.
 - **AEO copy** – Use or A/B test meta description variants from `docs/aeo-opportunities-inventory.md` for homepage, our-work, about, contact, enquiry (where not already applied).
 - **Accessibility** – Add skip link to main content; quick pass on focus styles and aria-labels for nav/footer.
@@ -13,13 +12,27 @@
 
 _Update this section when completing work so it can be used for invoicing and reporting._
 
+### Default OG image
+
+- **Completed:** 24 Feb 2026
+- **What was done:** Added default Open Graph and Twitter Card image for link previews. PNG at `public/images/og-image.png` (2x brand banner: logo left, service/region copy right). In `views/includes/meta.ejs`: `og:image`, `twitter:image` (absolute URL), and `twitter:card` set to `summary_large_image`.
+
+### SEO fixes (Specialised Steering vs CT Hydraulics comparison)
+
+- **Completed:** 25 Feb 2026
+- **What was done:** Addressed all Specialised Steering issues from the SEO checker comparison with CT Hydraulics (branch `fix/seo-specialised-steering`). Meta: added descriptions for sitemap, disclaimer, cookie-policy; sitemap template now uses meta title/description. Enquiry: removed stray `>` after `<html>`, removed duplicate `autocomplete` on three inputs, set image-preview `img` to valid data URI (was empty `src`), removed invalid `autocomplete="true"` from wrapper div. Contact: removed stray `>`. Disclaimer: duplicate `id="terms"` resolved (link in body now `id="disclaimer-terms-link"`). Sitemap page: fixed unpaired `<strong>`, escaped `&` in “Terms & Conditions” and Our Work link text. Homepage: added on-page location line (“Based in Germiston, Gauteng — hydraulic repairs and service exchange across South Africa”). Our Work variant A title typo REAIRS→REPAIRS (ab-copy-variants, sitemap) was already fixed. **robots.txt:** was 404 on production (route only served staging); now production serves `text/plain` with `Allow: /` and `Sitemap: https://www.specialisedsteering.com/sitemap.xml`. Recrawl recommended after deployment. See `docs/seo-comparison-specialised-vs-ct-hydraulics.md`.
+
+### Copy: “Hydraulic component restoration” and industry wording (Industrial, Mining, Agricultural, Off-Highway)
+
+- **Completed:** 25 Feb 2026
+- **What was done:** **Restoration:** Added “hydraulic component restoration” across the site: About (“We specialise in hydraulic component restoration and repair”), Our Work (H1 and intro), homepage our-repairs subheading, Gallery (H1 and intro), LocalBusiness schema description, Our Work meta titles/descriptions (ab-copy-variants), and sitemap Our Work link. **Industry wording:** Replaced all references to “automotive” and “mining, agriculture & trucks” with “industrial, mining, agricultural and off-highway” (and “sectors” where appropriate) in views (index, about, our-work, gallery, header), schema, routes/default.js, and all meta variants in ab-copy-variants (home, ourWork, about, contact, enquiry, gallery). Enquiry page meta title updated to “HYDRAULIC COMPONENTS FOR INDUSTRIAL, MINING, AGRICULTURAL AND OFF-HIGHWAY”. Homepage repair/restore line: “Every job is inspected, documented, restored, and tested.” Branch: `fix/seo-specialised-steering`.
+
 ### Staging noindex (prevent search engines from indexing staging)
 
 - **Completed:** 19 Jan 2026
 - **Time:** ~20 min
 - **What was done:** Hostname-based noindex for `staging.specialisedsteering.com`: `X-Robots-Tag: noindex, nofollow` on all responses, `<meta name="robots" content="noindex, nofollow">` in `head.ejs`, and `/robots.txt` served with `Disallow: /` on staging only (route before static). Production and local unchanged.
-- **GSC removal request:** Temporary removal requested in Google Search Console for URLs starting with `https://staging.specialisedsteering.com/`.
-  **Requested:** 16 Feb 2026 (status: Processing request).
+- **GSC removal request:** Temporary removal requested in Google Search Console for URLs starting with `https://staging.specialisedsteering.com/`. **Requested:** 16 Feb 2026. **Status:** Temporarily removed (complete).
 
 ### Search improvements / AEO (legal pages, schema, gallery)
 

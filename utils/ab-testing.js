@@ -12,7 +12,7 @@ const AB_TESTS = {
   nearMeMetaDescription: {
     id: "near_me_meta",
     name: "Near-me Meta Description Test",
-    routes: ["/", "/our-work", "/about", "/contact"],
+    routes: ["/our-work", "/about", "/contact"], // home uses variant C by default, see ab-copy-variants.js
     variants: ["A", "B"],
     trafficSplit: 0.5, // 50/50 split
     active: true,

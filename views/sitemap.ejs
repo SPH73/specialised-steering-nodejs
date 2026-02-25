@@ -4,7 +4,8 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title></title>
+    <title><%= meta.title %></title>
+    <% if (typeof meta.description !== 'undefined' && meta.description) { %><meta name="description" content="<%= meta.description %>" /><% } %>
     <%- include('includes/head') %>
   </head>
   <body>
@@ -26,10 +27,10 @@
                 <ul>
                   <li>https://</li>
                   <ul>
-                    <li ><strong></strong>
-                      <a href="https://www.specialisedsteering.com"
+                    <li>
+                      <a href="https://www.specialisedsteering.com/"
                         >specialisedsteering.com/</a
-                      ></strong>
+                      >
                       <span style="padding: 0 1rem">6 pages</span>
                     </li>
                     <h2>Content pages Level 1 Navigation</h2>
@@ -68,8 +69,8 @@
                         <strong>
                         <a
                           href="https://www.specialisedsteering.com/our-work"
-                          title="HYDRAULIC COMPONENT SERVICE EXCHANGE & REAIRS TO OEM SPEC"
-                          >HYDRAULIC COMPONENT SERVICE EXCHANGE & REAIRS TO OEM SPEC</a
+                          title="HYDRAULIC COMPONENT RESTORATION, SERVICE EXCHANGE &amp; REPAIRS TO OEM SPEC"
+                          >HYDRAULIC COMPONENT RESTORATION, SERVICE EXCHANGE &amp; REPAIRS TO OEM SPEC</a
                         ></strong>
                       </li>
                     </ul>
@@ -79,7 +80,7 @@
                         <a href="https://www.specialisedsteering.com/privacy-policy"><strong>Specialised Steering (Pty) Ltd Privacy Policy</strong></a>
                       </li>
                       <li>
-                        <a href="https://www.specialisedsteering.com/terms-of-sale"><strong>Specialised Steering (Pty) Ltd Terms & Conditions</strong></a>
+                        <a href="https://www.specialisedsteering.com/terms-of-sale"><strong>Specialised Steering (Pty) Ltd Terms &amp; Conditions</strong></a>
                       </li>
                       <li>
                         <a href="https://www.specialisedsteering.com/cookie-policy"><strong>Specialised Steering (Pty) Ltd Cookie Policy</strong></a>

@@ -32,7 +32,7 @@ router.get("/gallery", async (req, res) => {
   const meta = getMetaForPage("gallery", variants) || {
     title: "Completed Jobs Photo Gallery | Specialised Steering",
     description:
-      "Explore our hydraulic component completed repairs gallery showcasing our expertise in servicing the mining, agricultural, and automotive industries. View completed projects and see the quality of our work firsthand. Trust Specialised Steering for reliable hydraulic repairs tailored to your industry needs.",
+      "Explore our hydraulic component completed repairs gallery showcasing our expertise in servicing industrial, mining, agricultural and off-highway sectors. View completed projects and see the quality of our work firsthand. Trust Specialised Steering for reliable hydraulic repairs tailored to your industry needs.",
   };
 
   let photos = [];
@@ -111,21 +111,27 @@ router.get("/sitemap.xml", (req, res) => {
 
 router.get("/sitemap", (req, res) => {
   const meta = {
-    title: "specialisedsteering.com Site Map",
+    title: "Site Map | Specialised Steering (Pty) Ltd",
+    description:
+      "HTML site map for specialisedsteering.com. Browse all pages: hydraulic repairs, our work, gallery, contact, and legal information.",
   };
   res.render("sitemap", { meta: meta });
 });
 
 router.get("/disclaimer", (req, res) => {
   const meta = {
-    title: "SPECIALISED Steering (Pty) Ltd",
+    title: "Disclaimer | Specialised Steering (Pty) Ltd",
+    description:
+      "Legal disclaimer for Specialised Steering (Pty) Ltd. General information, external links, and trademark notices.",
   };
   res.render("disclaimer", { meta: meta });
 });
 
 router.get("/cookie-policy", (req, res) => {
   const meta = {
-    title: "Cookie Policy",
+    title: "Cookie Policy | Specialised Steering (Pty) Ltd",
+    description:
+      "Cookie Policy for Specialised Steering (Pty) Ltd. Learn how we use cookies on this website.",
   };
   res.render("cookie-policy", { meta: meta });
 });

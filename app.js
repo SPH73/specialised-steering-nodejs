@@ -130,12 +130,17 @@ app.use((req, res, next) => {
 // Staging: block indexing (hostname-based so production is unaffected)
 const isStaging = req =>
   /^staging\.specialisedsteering\.com$/i.test(req.hostname || "");
-app.get("/robots.txt", (req, res, next) => {
-  if (!isStaging(req)) {
-    return next();
-  }
+
+app.get("/robots.txt", (req, res) => {
   res.type("text/plain");
-  res.send("User-agent: *\nDisallow: /\n");
+  if (isStaging(req)) {
+    res.send("User-agent: *\nDisallow: /\n");
+  } else {
+    // Production (and local): allow crawling, point to sitemap
+    res.send(
+      "User-agent: *\nAllow: /\n\nSitemap: https://www.specialisedsteering.com/sitemap.xml\n"
+    );
+  }
 });
 
 app.use(
