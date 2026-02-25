@@ -62,21 +62,17 @@ const COPY_VARIANTS = {
     },
   },
 
-  // Contact page variants
+  // Contact page variants (Head Office in title for SERP/sitelink)
   contact: {
     A: {
-      // Control - current copy
-      title:
-        "CONTACT US FOR ALL YOUR HYDRAULIC REPAIRS AND PART SERVICE EXCHANGE",
+      title: "Contact & Head Office – Germiston | Specialised Steering",
       description:
-        "With our combined 40 years of experience, we offer an expert and professional service for all your hydraulic component requirements. Please contact us today to let us know how we can help get you back up and running.",
+        "Head Office: 4 Main road, Fisher's Hill, Germiston. Landline +27 11 828 3224. Repairs and service exchange enquiries – we respond within one business day.",
     },
     B: {
-      // Near-me variant with multi-channel emphasis
-      title:
-        "CONTACT US FOR ALL YOUR HYDRAULIC REPAIRS AND PART SERVICE EXCHANGE",
+      title: "Contact & Head Office – Germiston | Specialised Steering",
       description:
-        "Contact Germiston's hydraulic repair experts. 40+ years experience servicing industrial, mining, agricultural and off-highway. Call, email or visit us. Emergency repairs available.",
+        "Visit or call our Germiston workshop. +27 11 828 3224. Hydraulic repairs, service exchange and parts – industrial, mining, agricultural and off-highway. We respond within one business day.",
     },
   },
 
