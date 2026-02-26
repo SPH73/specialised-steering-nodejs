@@ -1,8 +1,21 @@
-# Audit report comparison
+# Audit Report Comparison
 
-We addressed vulnerabilities from the original **npm-audit-report.txt** and from **new Snyk reports**. The new Snyk findings were also fixed (upgrades and overrides as below). As a result, **all reported vulnerabilities have been resolved**: `npm audit` reports 0 vulnerabilities.
+**Last Updated:** 26 February 2026
 
-Comparison of **npm-audit-report.txt** (earlier dependency state) with the fixes we applied. (Any additional Snyk items will be noted as they are confirmed.)
+We addressed vulnerabilities from the original **npm-audit-report.txt** and from **Snyk reports**. As a result, **npm audit reports 0 vulnerabilities**. However, **Snyk continues to monitor** and has identified 5 new high-severity issues (as of 26 Feb 2026).
+
+## Current Status (26 February 2026)
+
+- **npm audit:** ✅ 0 vulnerabilities
+- **Snyk scan:** ⚠️ 5 high-severity vulnerabilities
+  - 1 fixable (airtable)
+  - 4 no fix available (transitive dependencies in ejs and googleapis)
+
+---
+
+## Historical Fixes
+
+Comparison of **npm-audit-report.txt** (earlier dependency state) with the fixes we applied.
 
 ## Report item → Our fix
 
@@ -37,3 +50,73 @@ Comparison of **npm-audit-report.txt** (earlier dependency state) with the fixes
 - **Deferred (no patch):** ip (#7).
 
 The audit report reflects an **earlier** state (e.g. it suggests “Will install request-ip@3.3.0” for is_js – we did that). Running **`npm audit`** now shows **0 vulnerabilities**, consistent with the fixes above.
+
+---
+
+## New Snyk Findings (26 February 2026)
+
+While npm audit reports 0 vulnerabilities, Snyk's more comprehensive scanning has identified 5 new high-severity issues:
+
+### 1. ejs@3.1.10 (HIGH - Priority Score: 614)
+- **Issues:** 2 transitive issues via minimatch@3.0.5
+- **Vulnerabilities:**
+  - Inefficient Algorithmic Complexity (CWE-407, CVSS 8.7)
+  - Regular Expression Denial of Service - ReDoS (CWE-1333, CVSS 8.7)
+- **Status:** ⚠️ No fix available
+- **Impact:** LOW - Server-side only, controlled input
+- **Action:** Monitor for ejs updates
+
+### 2. googleapis@169.0.0 (HIGH - Priority Score: 614)
+- **Issues:** 2 transitive issues via minimatch@3.0.5
+- **Vulnerabilities:** Same as ejs (Inefficient Algorithmic Complexity, ReDoS)
+- **Status:** ⚠️ No fix available
+- **Impact:** VERY LOW - Admin-only, authenticated usage
+- **Action:** Monitor for googleapis updates
+
+### 3. airtable@0.11.1 (HIGH - Priority Score: 579)
+- **Issues:** 1 direct issue
+- **Status:** ✅ Fix available - upgrade to airtable@0.11.6+
+- **Impact:** MEDIUM - Used throughout application
+- **Action:** 🔧 **UPGRADE REQUIRED**
+
+### Root Cause Analysis
+
+**minimatch@3.0.5** is responsible for 4 out of 5 vulnerabilities:
+- Used transitively by ejs and googleapis
+- Cannot be controlled via overrides (deeper transitive dependency)
+- Must wait for upstream packages to update
+
+### Risk Assessment
+
+**Overall Risk:** LOW-MEDIUM
+
+- ✅ ejs: Server-side only, no direct user input to templates
+- ✅ googleapis: Admin-only, Basic Auth protected
+- ⚠️ airtable: Should be upgraded (fix available)
+
+### Upgrade Instructions
+
+```bash
+# Upgrade airtable
+npm install airtable@latest
+
+# Test locally
+npm start
+# - Test contact form submission
+# - Test enquiry form submission  
+# - Verify security logs write to Airtable
+
+# Deploy
+./deploy-staging.sh && ./deploy-production.sh
+```
+
+---
+
+## Scan History
+
+| Date | Tool | Total | Critical | High | Moderate | Low | Status |
+|------|------|-------|----------|------|----------|-----|--------|
+| 24 Dec 2025 | npm audit | 28 | 1 | 17 | 3 | 7 | All fixed |
+| 6 Jan 2026 | npm audit | 0 | 0 | 0 | 0 | 0 | ✅ Clean |
+| 26 Feb 2026 | npm audit | 0 | 0 | 0 | 0 | 0 | ✅ Clean |
+| 26 Feb 2026 | Snyk | 5 | 0 | 5 | 0 | 0 | ⚠️ Action needed |

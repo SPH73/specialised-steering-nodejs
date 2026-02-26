@@ -516,12 +516,15 @@ Or set `ADMIN_USERNAME` and `ADMIN_PASSWORD` environment variables manually.
 
 ## Security Vulnerabilities
 
-The project tracks known security vulnerabilities and their remediation status. See [SECURITY-VULNERABILITIES.md](./docs/SECURITY-VULNERABILITIES.md) for:
-- Current vulnerability details
-- Risk assessments
+The project tracks known security vulnerabilities and their remediation status. See [audit-report-comparison.md](./docs/audit-report-comparison.md) for:
+- Historical vulnerability fixes (28 vulnerabilities resolved)
+- Current Snyk scan results (5 new issues identified)
+- Risk assessments and impact analysis
 - Upgrade recommendations
-- Mitigation strategies
+- npm audit vs Snyk comparison
 
+**npm audit:** ✅ 0 vulnerabilities  
+**Snyk scan:** ⚠️ 5 high-severity issues (1 fixable, 4 transitive)  
 **Last Scan:** 26 February 2026
 
 ## Contributing
