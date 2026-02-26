@@ -514,6 +514,16 @@ Or set `ADMIN_USERNAME` and `ADMIN_PASSWORD` environment variables manually.
 - **Cookie Security** - httpOnly, secure (production), sameSite: lax
 - **Admin Security** - Basic Auth for admin routes, token-based password reset
 
+## Security Vulnerabilities
+
+The project tracks known security vulnerabilities and their remediation status. See [SECURITY-VULNERABILITIES.md](./docs/SECURITY-VULNERABILITIES.md) for:
+- Current vulnerability details
+- Risk assessments
+- Upgrade recommendations
+- Mitigation strategies
+
+**Last Scan:** 26 February 2026
+
 ## Contributing
 
 This is a private client project. For any issues or enhancement requests, please contact the maintainers.
