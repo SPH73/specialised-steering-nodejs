@@ -1,27 +1,27 @@
 @font-face {
-  font-family: 'Montserrat';
-  src: url('../fonts/Montserrat-Bold.woff') format('woff');
+  font-family: "Montserrat";
+  src: url("../fonts/Montserrat-Bold.woff") format("woff");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'Montserrat';
-  src: url('../fonts/Montserrat-SemiBold.woff') format('woff');
+  font-family: "Montserrat";
+  src: url("../fonts/Montserrat-SemiBold.woff") format("woff");
   font-weight: 600;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'Montserrat';
-  src: url('../fonts/Montserrat-ExtraBold.woff') format('woff');
+  font-family: "Montserrat";
+  src: url("../fonts/Montserrat-ExtraBold.woff") format("woff");
   font-weight: 800;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'Montserrat';
-  src: url('../fonts/Montserrat-Regular.woff') format('woff');
+  font-family: "Montserrat";
+  src: url("../fonts/Montserrat-Regular.woff") format("woff");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -31,6 +31,142 @@
   --color-secondary: #f9b101;
   --color-light: #fff;
   --color-button: #404040;
+}
+
+/* Accessibility: Enhanced focus indicators for keyboard navigation */
+*:focus-visible {
+  outline: 3px solid var(--color-secondary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Remove outline for mouse users */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Enhanced focus for interactive elements */
+button:focus-visible,
+.button:focus-visible,
+input[type="submit"]:focus-visible,
+a[role="button"]:focus-visible {
+  outline: 3px solid var(--color-secondary);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px rgba(249, 177, 1, 0.2);
+}
+
+/* Enhanced focus for links */
+a:focus-visible {
+  outline: 3px solid var(--color-secondary);
+  outline-offset: 2px;
+  background-color: rgba(249, 177, 1, 0.1);
+}
+
+/* Enhanced focus for form inputs */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--color-secondary);
+  outline-offset: 0;
+  border-color: var(--color-secondary);
+}
+
+/* Accessibility: Minimum touch target sizes (44x44px WCAG 2.1 AA) */
+/* Using padding approach to avoid layout conflicts */
+button:not(.navbar_menu-icon),
+.button:not(.navbar_menu-icon),
+a[role="button"]:not(.navbar_menu-icon),
+input[type="submit"],
+input[type="button"],
+input[type="reset"] {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+}
+
+/* Ensure checkboxes and radio buttons have adequate touch targets */
+input[type="checkbox"],
+input[type="radio"] {
+  min-width: 20px;
+  min-height: 20px;
+  margin: 4px; /* Adds padding area for easier tapping */
+}
+
+/* Mobile-specific touch target enhancements */
+@media (max-width: 991px) {
+  .navbar_menu-link {
+    min-height: 44px;
+    padding: 12px 16px;
+  }
+
+  .social-icons {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 10px;
+  }
+
+  .footer-link {
+    min-height: 44px;
+    padding: 10px 0;
+  }
+}
+
+/* Accessibility: Visually hidden labels for screen readers */
+/* Hides content visually while keeping it accessible to assistive technology */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Form validation error messages */
+.form-error-container {
+  background-color: #fff3cd;
+  border: 2px solid #ff6b6b;
+  border-radius: 4px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  display: none;
+}
+
+.form-error-container.visible {
+  display: block;
+}
+
+.form-error-title {
+  color: #d32f2f;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.form-error-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.form-error-list li {
+  color: #333;
+  padding: 0.25rem 0;
+  font-size: 0.95rem;
+}
+
+.form-error-list li::before {
+  content: "⚠️ ";
+  margin-right: 0.5rem;
+}
+
+/* Highlight invalid fields */
+.input-error {
+  border-color: #ff6b6b !important;
+  background-color: #fff5f5 !important;
 }
 
 * {
@@ -107,6 +243,58 @@ a {
   text-decoration: none;
 }
 
+/* External link indicator */
+.external-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+}
+
+.external-link-icon {
+  width: 0.75em;
+  height: 0.75em;
+  display: inline-block;
+}
+
+.external-link-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+/* Style links in "Our Range" section to be obviously clickable */
+#products.container p a,
+#products .container p a,
+section#products p a {
+  font-weight: bold !important;
+  text-decoration: underline !important;
+  color: var(--color-primary, #4f4f4f) !important;
+  transition: color 0.3s ease;
+}
+
+#products.container p a:hover,
+#products .container p a:hover,
+section#products p a:hover {
+  color: var(--color-secondary, #f9b101) !important;
+}
+
+/* Style links in "Our Repairs Service" section to match "Our Range" styling */
+#repair-process .container p a,
+section#repair-process .container p a,
+section#repair-process p a {
+  font-weight: bold !important;
+  text-decoration: underline !important;
+  text-decoration-line: underline !important;
+  color: var(--color-primary, #4f4f4f) !important;
+  transition: color 0.3s ease;
+}
+
+#repair-process .container p a:hover,
+section#repair-process .container p a:hover,
+section#repair-process p a:hover {
+  color: var(--color-secondary, #f9b101) !important;
+}
+
 .page-heading {
   margin-top: 2em;
 }
@@ -122,6 +310,13 @@ li {
   color: var(--color-primary);
 }
 
+/* Legal pages: slightly larger readable body text */
+.legal-content p,
+.legal-content li {
+  font-size: 1.25rem;
+  line-height: 1.6;
+}
+
 /* Navbar */
 
 .navbar {
@@ -135,7 +330,8 @@ li {
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
-  padding: 0.5em 3em;
+  padding: 1em 3em;
+  min-height: 6rem;
   -webkit-box-pack: justify;
   -webkit-justify-content: space-between;
   -ms-flex-pack: justify;
@@ -148,11 +344,11 @@ li {
 }
 
 .navbar_logo {
-  width: 9rem;
+  width: 14rem;
 }
 
 .navbar_logo.w--current {
-  width: 9rem;
+  width: 14rem;
 }
 
 .navbar_logo-img {
@@ -222,6 +418,118 @@ li {
   display: none;
 }
 
+/* Switch to mobile nav when menu wraps */
+html.nav-wrap .navbar_menu {
+  position: absolute;
+  left: 0%;
+  top: 0%;
+  right: 0%;
+  bottom: auto;
+  z-index: -10;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  overflow: hidden;
+  height: 0vh;
+  padding-right: 10rem;
+  padding-left: 10rem;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  background-color: var(--color-light);
+  font-family: Montserrat, sans-serif;
+}
+
+html.nav-wrap .navbar_menu-link {
+  width: 100vw;
+  margin-right: 0;
+  margin-bottom: 0;
+  padding: 1.2rem 1.5rem;
+  border-bottom: 0.3em solid var(--color-secondary);
+  color: var(--color-button);
+  border-radius: 0;
+  background-color: transparent;
+  box-shadow: none;
+  font-weight: 600;
+}
+
+html.nav-wrap .navbar_menu-link:hover {
+  background-color: transparent;
+  -webkit-transform: none;
+  -ms-transform: none;
+  transform: none;
+  color: var(--color-secondary);
+  font-weight: 600;
+}
+
+html.nav-wrap .navbar_menu-link.w--current,
+html.nav-wrap .navbar_menu-link.w--current:hover {
+  background-color: transparent;
+  color: var(--color-secondary);
+}
+
+html.nav-wrap .navbar_menu-link.contact {
+  margin-top: 1rem;
+  border-bottom-style: none;
+}
+
+html.nav-wrap .navbar_menu-link.contact:hover {
+  margin-top: 1rem;
+  background-color: var(--color-secondary);
+  color: var(--color-button);
+}
+
+html.nav-wrap .navbar_menu-link.contact.w--current {
+  background-color: var(--color-button);
+}
+
+html.nav-wrap .navbar_menu-link.contact.w--current:hover {
+  color: var(--color-secondary);
+}
+
+html.nav-wrap .navbar_menu-icon {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 2rem;
+  height: 2rem;
+  background-color: var(--color-secondary);
+}
+
+html.nav-wrap .navbar_bbbee-badge-desktop {
+  display: none !important;
+}
+
+html.nav-wrap .navbar_bbbee-badge-mobile {
+  display: block !important;
+}
+
+/* Main content spacing - ensure h1 is not obscured by fixed navbar */
+/* Home page uses #header.section with margin-top: calc(6rem + 2em + 0.25rem) */
+/* Other pages need sufficient main padding-top to account for fixed navbar */
+main {
+  padding-top: 4rem;
+}
+
+/* Increase spacing on mobile due to larger logo - but keep it reasonable */
+@media screen and (max-width: 991px) {
+  main {
+    padding-top: 5rem;
+  }
+}
+
 /* Image */
 
 img {
@@ -242,26 +550,26 @@ img {
   width: 100%;
   margin-right: auto;
   margin-left: auto;
-  padding-top: 3em;
-  padding-bottom: 3em;
+  padding: 3rem 0 0 0;
   -webkit-box-orient: horizontal;
   -webkit-box-direction: normal;
   -webkit-flex-direction: row;
   -ms-flex-direction: row;
   flex-direction: row;
 }
+
+#header.section {
+  margin-top: calc(6rem + 2em + 0.25rem);
+  padding-top: 3em;
+}
 .container {
   max-width: 1600px;
-  margin-right: auto;
-  margin-left: auto;
-  padding-right: 10vw;
-  padding-left: 10vw;
+  margin: 0 auto;
+  padding: 0 10vw;
 }
 
 .section.main {
-  margin-top: 6.1em;
-  padding-top: 2em;
-  padding-bottom: 3em;
+  padding: 3rem 0;
 }
 
 .brand-camera {
@@ -274,18 +582,31 @@ img {
 
 .parallax-1 {
   background-color: var(--color-primary);
-  background-image: url('https://sswebimages.mo.cloudinary.net/lrg_komatsu-earth-moving-machinery.jpg');
-  background-position: 100% 100%;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+  position: relative;
+  overflow: hidden;
   color: var(--color-light);
   font-weight: 600;
   font-size: larger;
 }
+.parallax-1 .hero-background {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 100% 100%;
+  z-index: 0;
+}
+.parallax-enabled .parallax-1 .hero-background {
+  will-change: transform;
+}
+.parallax-1 .section {
+  position: relative;
+  z-index: 1;
+}
 .parallax-2 {
   background-color: var(--color-primary);
-  background-image: url('https://sswebimages.mo.cloudinary.net/lrg_bulldozer-cement-boulders.jpg');
+  background-image: url("https://sswebimages.mo.cloudinary.net/lrg_bulldozer-cement-boulders.jpg");
   background-position: 50% 50%;
   background-size: cover;
   background-repeat: no-repeat;
@@ -469,7 +790,7 @@ img {
 }
 
 .w-checkbox::before {
-  content: ' ';
+  content: " ";
   display: table;
   -ms-grid-column-span: 1;
   grid-column-end: 2;
@@ -484,7 +805,7 @@ img {
 }
 
 .w-checkbox::after {
-  content: ' ';
+  content: " ";
   display: table;
   -ms-grid-column-span: 1;
   grid-column-end: 2;
@@ -535,7 +856,7 @@ img {
   border-bottom-color: #4f4f4f;
   border-left-color: #4f4f4f;
   border-right-color: #4f4f4f;
-  background-image: url('https://d3e54v103j8qbb.cloudfront.net/static/custom-checkbox-checkmark.589d534424.svg');
+  background-image: url("https://d3e54v103j8qbb.cloudfront.net/static/custom-checkbox-checkmark.589d534424.svg");
   background-position: 50% 50%;
   background-size: cover;
   background-repeat: no-repeat;
@@ -544,23 +865,13 @@ img {
 .w-checkbox-input--inputType-custom.w--redirected-focus {
   box-shadow: 0px 0px 3px 1px #4f4f4f;
 }
+/* Submit buttons use .button + .submit-button; only layout overrides here */
 .submit-button {
   margin-top: 10px;
+  margin-right: 0;
   -webkit-align-self: flex-end;
   -ms-flex-item-align: end;
   align-self: flex-end;
-  border-radius: 0.2rem;
-  background-color: var(--color-secondary);
-  color: var(--color-primary);
-  box-shadow: 4px 4px 9px 2px rgba(79, 79, 79, 0.15);
-  font-size: 1rem;
-}
-
-.submit-button:hover {
-  background-color: #e2a207;
-  -webkit-transform: scale(0.98);
-  -ms-transform: scale(0.98);
-  transform: scale(0.98);
 }
 
 .contact-info {
@@ -655,6 +966,9 @@ img {
 }
 
 .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   margin-right: 1em;
   padding: 0.7em 1em;
   border-radius: 0.4rem;
@@ -666,6 +980,7 @@ img {
   font-size: 1rem;
   font-weight: 600;
   text-transform: uppercase;
+  text-align: center;
 }
 
 .button:hover {
@@ -678,7 +993,6 @@ img {
 
 .button.submit-button {
   color: var(--color-button);
-  margin-right: 0;
 }
 
 .button.submit-button:hover {
@@ -877,6 +1191,37 @@ img {
   text-decoration: none;
 }
 
+/* Footer contact info - show labels on mobile, actual values on desktop */
+.footer-link-mobile {
+  display: inline;
+}
+
+.footer-link-desktop {
+  display: none;
+}
+
+@media screen and (min-width: 992px) {
+  .parallax-1 {
+    background-image: url("https://sswebimages.mo.cloudinary.net/xl_komatsu-earth-moving-machinery.jpg");
+    background-position: 50% 50%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  .parallax-1 .hero-background {
+    display: none;
+  }
+
+  .footer-link-mobile {
+    display: none;
+  }
+
+  .footer-link-desktop {
+    display: inline;
+  }
+}
+
 .footer-nav {
   text-align: left;
 }
@@ -893,7 +1238,7 @@ img {
 
 .footer-copyright-social {
   padding: 1.5em 3em;
-  grid-template-areas: '. Area';
+  grid-template-areas: ". Area";
   -ms-grid-columns: 1fr auto;
   grid-template-columns: 1fr auto;
   -ms-grid-rows: auto;
@@ -934,7 +1279,8 @@ img {
 }
 
 .footer-logo {
-  width: 10em;
+  width: 15rem;
+  max-width: 15rem;
   padding-bottom: 1em;
 }
 
@@ -1166,6 +1512,7 @@ img {
 .range-image {
   -webkit-transition: all 600ms cubic-bezier(0.6, -0.28, 0.735, 0.045);
   transition: all 600ms cubic-bezier(0.6, -0.28, 0.735, 0.045);
+  opacity: 1 !important; /* Always visible - no fade in/out */
 }
 
 .detail-link {
@@ -1294,11 +1641,6 @@ img {
     display: -ms-flexbox;
     display: flex;
     background-color: var(--color-primary);
-    background-image: url('https://sswebimages.mo.cloudinary.net/xl_komatsu-earth-moving-machinery.jpg');
-    background-position: 50% 50%;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
   }
 
   .parallax-2 {
@@ -1307,7 +1649,7 @@ img {
     display: -ms-flexbox;
     display: flex;
     background-color: var(--color-primary);
-    background-image: url('../images/lrg_bulldozer-cement-boulders.jpg');
+    background-image: url("../images/lrg_bulldozer-cement-boulders.jpg");
     background-position: 50% 50%;
     background-size: cover;
     background-repeat: no-repeat;
@@ -1370,23 +1712,16 @@ img {
     padding-left: 5vw;
   }
 
-  .button.submit-button {
-    margin-right: 0;
-  }
-
   .brand-camera {
     overflow: hidden;
   }
 
-  .parallax-1 {
-    background-image: url('https://sswebimages.mo.cloudinary.net/med_komatsu-earth-moving-machinery.jpeg');
-    background-position: 0% 50%;
-    background-size: cover;
-    background-attachment: scroll;
+  .parallax-1 .hero-background {
+    object-position: 0% 50%;
   }
 
   .parallax-2 {
-    background-image: url('https://sswebimages.mo.cloudinary.net/med_bulldozer-cement-boulders.jpeg');
+    background-image: url("https://sswebimages.mo.cloudinary.net/med_bulldozer-cement-boulders.jpeg");
     background-attachment: scroll;
   }
 
@@ -1815,12 +2150,12 @@ img {
     text-align: center;
   }
 
-  .parallax-1 {
-    background-image: url('https://sswebimages.mo.cloudinary.net/sml_komatsu-earth-moving-machinery.jpeg');
+  .parallax-1 .hero-background {
+    object-position: 50% 50%;
   }
 
   .parallax-2 {
-    background-image: url('https://sswebimages.mo.cloudinary.net/sml_bulldozer-cement-boulders.jpeg');
+    background-image: url("https://sswebimages.mo.cloudinary.net/sml_bulldozer-cement-boulders.jpeg");
     background-position: 50% 50%;
     background-attachment: scroll;
   }
@@ -2645,5 +2980,301 @@ img {
     grid-column-start: span 1;
     -ms-grid-column-span: 1;
     grid-column-end: span 1;
+  }
+}
+
+/* Photo Gallery Styles - MOVED TO public/css/gallery.css */
+/* Gallery styles are now in a separate file to avoid conflicts */
+/*
+.gallery-section {
+  padding: 2rem 0;
+}
+
+.gallery-section .container {
+  width: 100%;
+  max-width: 100%;
+  padding-right: 10vw;
+  padding-left: 10vw;
+  /* Ensure container doesn't break column layout */
+  overflow: visible;
+  /* Ensure minimum width for columns to work */
+  min-width: 0;
+  /* Force container to allow columns to flow */
+  display: block;
+  /* Ensure container width calculation includes padding */
+  box-sizing: border-box;
+}
+
+.photo-gallery {
+  width: 100%;
+  margin: 2rem auto;
+  display: block;
+  /* Ensure gallery container doesn't constrain columns */
+  overflow: visible;
+  /* Reset any grid/flex properties that might interfere */
+  grid-template-columns: none;
+  grid-template-rows: none;
+  flex-direction: unset;
+}
+
+/* Grid Layout (for uniform images) */
+.photo-gallery[data-layout="grid"] {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.photo-gallery[data-layout="grid"] .gallery-item {
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%; /* Square aspect ratio */
+  overflow: hidden;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.photo-gallery[data-layout="grid"] .gallery-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.photo-gallery[data-layout="grid"] .gallery-photo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+#photo-gallery[data-layout="masonry"] {
+  /* CSS Columns - simplest approach */
+  column-width: 300px;
+  -webkit-column-width: 300px;
+  -moz-column-width: 300px;
+  column-gap: 1.5rem;
+  -webkit-column-gap: 1.5rem;
+  -moz-column-gap: 1.5rem;
+  column-fill: auto;
+  column-rule: none;
+  /* Critical: must be block, not grid/flex */
+  display: block;
+  width: 100%;
+  overflow: visible;
+  box-sizing: border-box;
+}
+
+/* Fallback selectors for other contexts */
+.photo-gallery[data-layout="masonry"] {
+  column-width: 300px;
+  -webkit-column-width: 300px;
+  -moz-column-width: 300px;
+  column-gap: 1.5rem;
+  -webkit-column-gap: 1.5rem;
+  -moz-column-gap: 1.5rem;
+  column-fill: auto;
+  column-rule: none;
+  display: block;
+  width: 100%;
+  overflow: visible;
+  box-sizing: border-box;
+}
+
+#photo-gallery[data-layout="masonry"] .gallery-item,
+.photo-gallery[data-layout="masonry"] .gallery-item {
+  /* Critical: inline-block for CSS columns */
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 1.5rem;
+  /* Critical: prevent breaking across columns */
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  -moz-column-break-inside: avoid;
+  page-break-inside: avoid;
+  vertical-align: top;
+  /* Visual styling */
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-sizing: border-box;
+}
+
+.photo-gallery[data-layout="masonry"] .gallery-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.photo-gallery[data-layout="masonry"] .gallery-photo {
+  width: 100%;
+  height: auto;
+  display: block;
+  cursor: pointer;
+  object-fit: contain;
+  max-width: 100%;
+}
+
+/* Auto layout (default, will be set by JS) */
+.photo-gallery[data-layout="auto"] {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.photo-gallery[data-layout="auto"] .gallery-item {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.photo-gallery[data-layout="auto"] .gallery-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.photo-gallery[data-layout="auto"] .gallery-photo {
+  width: 100%;
+  height: auto;
+  display: block;
+  cursor: pointer;
+}
+
+/* Gallery Error and Empty States */
+.gallery-error,
+.gallery-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--color-primary);
+}
+
+.gallery-error p,
+.gallery-empty p {
+  margin: 0.5rem 0;
+  max-width: none;
+}
+
+.gallery-loading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--color-primary);
+}
+
+/* Responsive Design */
+/* Tablet and smaller desktop */
+@media screen and (max-width: 991px) {
+  .photo-gallery[data-layout="grid"],
+  .photo-gallery[data-layout="auto"] {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+
+  .gallery-section .container .photo-gallery[data-layout="masonry"],
+  section.gallery-section .container .photo-gallery[data-layout="masonry"],
+  .photo-gallery[data-layout="masonry"] {
+    column-width: 250px;
+    -webkit-column-width: 250px;
+    -moz-column-width: 250px;
+    column-count: 2;
+    -webkit-column-count: 2;
+    -moz-column-count: 2;
+    column-gap: 1rem;
+    -webkit-column-gap: 1rem;
+    -moz-column-gap: 1rem;
+  }
+}
+
+/* Mobile devices - smaller images to fit more in viewport */
+@media screen and (max-width: 479px) {
+  .photo-gallery[data-layout="grid"],
+  .photo-gallery[data-layout="auto"] {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .photo-gallery[data-layout="masonry"] {
+    column-count: 2;
+    -webkit-column-count: 2;
+    -moz-column-count: 2;
+    column-gap: 0.75rem;
+    -webkit-column-gap: 0.75rem;
+    -moz-column-gap: 0.75rem;
+  }
+
+  .photo-gallery[data-layout="masonry"] .gallery-item {
+    margin-bottom: 0.75rem;
+  }
+
+  /* Make images slightly smaller on mobile - reduce container padding */
+  .gallery-section .container {
+    padding-right: 5vw;
+    padding-left: 5vw;
+  }
+
+  .photo-gallery[data-layout="masonry"] .gallery-photo {
+    max-width: 100%;
+  }
+}
+
+/* Very small mobile devices - single column */
+@media screen and (max-width: 360px) {
+  .photo-gallery[data-layout="masonry"] {
+    column-count: 1;
+    -webkit-column-count: 1;
+    -moz-column-count: 1;
+    column-gap: 0.5rem;
+    -webkit-column-gap: 0.5rem;
+    -moz-column-gap: 0.5rem;
+  }
+
+  .photo-gallery[data-layout="masonry"] .gallery-item {
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Large desktop - more columns for better flow */
+@media screen and (min-width: 1200px) {
+  .photo-gallery[data-layout="masonry"] {
+    column-count: 4;
+    -webkit-column-count: 4;
+    -moz-column-count: 4;
+    column-gap: 2rem;
+    -webkit-column-gap: 2rem;
+    -moz-column-gap: 2rem;
+  }
+}
+
+/* Extra large desktop - even more columns */
+@media screen and (min-width: 1600px) {
+  .gallery-section .container .photo-gallery[data-layout="masonry"],
+  section.gallery-section .container .photo-gallery[data-layout="masonry"],
+  .photo-gallery[data-layout="masonry"] {
+    column-width: 350px;
+    -webkit-column-width: 350px;
+    -moz-column-width: 350px;
+    column-count: 5;
+    -webkit-column-count: 5;
+    -moz-column-count: 5;
+    column-gap: 2rem;
+    -webkit-column-gap: 2rem;
+    -moz-column-gap: 2rem;
+  }
+}
+*/
+
+/* Accessibility: Reduced motion support for users with motion sensitivity */
+/* Only affects users who enable "Reduce Motion" in OS settings (WCAG 2.1 Level AAA) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

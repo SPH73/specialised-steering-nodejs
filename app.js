@@ -1,54 +1,229 @@
-require('dotenv').config();
+// Load .env with explicit path to ensure it's loaded correctly
+const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, ".env") });
 
-const express = require('express');
-const compression = require('compression');
-const favicon = require('serve-favicon');
-const path = require('path');
-const cookieParser = require('cookie-parser');
+// Log environment variable status on startup (without exposing values)
+if (process.env.NODE_ENV !== "production") {
+  console.log("Environment check:");
+  console.log(
+    "  AT_API_KEY:",
+    process.env.AT_API_KEY
+      ? `SET (length: ${process.env.AT_API_KEY.length})`
+      : "NOT SET",
+  );
+  console.log("  BASE:", process.env.BASE || "NOT SET");
+  console.log(
+    "  EMAIL_HOST:",
+    process.env.EMAIL_HOST || process.env.SMTP_HOST || "NOT SET",
+  );
+}
 
-const errorsHandlerMiddleware = require('./middleware/error-handler');
+const express = require("express");
+const compression = require("compression");
+const favicon = require("serve-favicon");
+const cookieParser = require("cookie-parser");
+const requestIp = require("request-ip");
 
-const dynamicRoutes = require('./routes/dynamic');
-const defaultRoutes = require('./routes/default');
+const errorsHandlerMiddleware = require("./middleware/error-handler");
+const { logAbView } = require("./utils/ab-test-logger");
+
+const dynamicRoutes = require("./routes/dynamic");
+const defaultRoutes = require("./routes/default");
 
 const PORT = process.env.PORT || 3300;
 
 const app = express();
 
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
 
 app.use((req, res, next) => {
   res.setHeader(
-    'Report-To',
-    `{"group":"csp-endpoint","max_age":10886400,"endpoints":[{"url":"https://specialisedsteering.com/__cspreport__"}],"include_subdomains":true}`,
+    "Report-To",
+    `{"group":"csp-endpoint","max_age":10886400,"endpoints":[{"url":"https://www.specialisedsteering.com/__cspreport__"}],"include_subdomains":true}`,
   );
   res.setHeader(
-    'Content-Security-Policy-Report-Only',
-    "default-src 'self'; font-src 'self'; img-src 'self' https://googletagmanager.com https://cdn-cookieyes.com https://dl.airtable.com https://res.cloudinary.com https://sswebimages.mo.cloudinary.net; script-src 'self' 'unsafe-inline' https://cdn-cookieyes.com https://region1.google-analytics.com/ https://www.recaptcha.net https://www.gstatic.com https://www.googletagmanager.com https://ajax.googleapis.com https://d3e54v103j8qbb.cloudfront.net; style-src 'self' 'unsafe-inline'; frame-src 'self' https://cdn-cookieyes.com https://www.recaptcha.net; connect-src 'self' https://consentlog.cookieyes.com https://active.cookieyes.com/api/fc1fd1fcf281525614c1466b/log https://log.cookieyes.com https://cdn-cookieyes.com https://region1.google-analytics.com/; script-src-elem 'self' 'unsafe-inline' https://cdn-cookieyes.com https://www.recaptcha.net https://www.googletagmanager.com https://www.gstatic.com https://ajax.googleapis.com https://d3e54v103j8qbb.cloudfront.net",
+    "Content-Security-Policy-Report-Only",
+    "default-src 'self'; font-src 'self' data:; img-src 'self' https://googletagmanager.com https://www.googletagmanager.com https://www.google-analytics.com https://cdn-cookieyes.com https://dl.airtable.com https://res.cloudinary.com https://sswebimages.mo.cloudinary.net; script-src 'self' 'unsafe-inline' https://cdn-cookieyes.com https://region1.google-analytics.com/ https://www.google.com https://www.recaptcha.net https://www.gstatic.com https://recaptcha.google.com https://www.googletagmanager.com https://ajax.googleapis.com https://d3e54v103j8qbb.cloudfront.net https://unpkg.com; style-src 'self' 'unsafe-inline'; frame-src 'self' https://cdn-cookieyes.com https://www.recaptcha.net https://recaptcha.google.com; connect-src 'self' https://consentlog.cookieyes.com https://active.cookieyes.com/api/fc1fd1fcf281525614c1466b/log https://log.cookieyes.com https://cdn-cookieyes.com https://region1.google-analytics.com/ https://www.google-analytics.com https://www.google.com https://recaptcha.google.com; script-src-elem 'self' 'unsafe-inline' https://cdn-cookieyes.com https://www.google.com https://www.recaptcha.net https://www.googletagmanager.com https://www.gstatic.com https://recaptcha.google.com https://ajax.googleapis.com https://d3e54v103j8qbb.cloudfront.net https://unpkg.com",
   );
-  res.setHeader('set-cookie', [
-    '_ga:GA1.1.376191239.1659268542; SameSite=Strict',
-    '_ga_V4W8VP4GL8:GA1.1.376191239.1659268542; SameSite=Strict',
-    '_GRECAPTCHA=09AMjm62UjUi9gunpNhie9zFn-6UPNnedIXhe3Y603QUMzv_HaMV83xZxO1UNsxkL3TaxfRB1N9CS4Gws4xoiXDCw; SameSite=None; Secure; Domain=www.recaptcha.net; Path=/recaptcha',
+  res.setHeader("set-cookie", [
+    "_ga:GA1.1.376191239.1659268542; SameSite=Strict",
+    "_ga_V4W8VP4GL8:GA1.1.376191239.1659268542; SameSite=Strict",
+    // Note: _GRECAPTCHA cookie is set by reCAPTCHA itself from www.recaptcha.net
+    // Chrome blocks third-party cookies, but reCAPTCHA still works without them
   ]);
   next();
 });
 
 app.use(cookieParser());
 
+// Exclude company/internal IPs from Google Analytics (no gtag loaded for these)
+app.use((req, res, next) => {
+  const excludeIps = (process.env.ANALYTICS_EXCLUDE_IPS || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const clientIp = requestIp.getClientIp(req) || "";
+  res.locals.excludeFromAnalytics =
+    excludeIps.length > 0 && excludeIps.includes(clientIp);
+  next();
+});
+
+// Assign A/B variant for metadata testing (A = near-me, B = baseline)
+app.use((req, res, next) => {
+  if (req.path.startsWith("/admin") || req.path.startsWith("/auth")) {
+    return next();
+  }
+
+  const forced =
+    typeof req.query.ab === "string" ? req.query.ab.toUpperCase() : null;
+  const isValidForced = forced === "A" || forced === "B";
+  const existing = req.cookies.ab_variant;
+  const isValidExisting = existing === "A" || existing === "B";
+  const variant = isValidForced
+    ? forced
+    : isValidExisting
+      ? existing
+      : Math.random() < 0.5
+        ? "A"
+        : "B";
+
+  req.abVariant = variant;
+  res.locals.abVariant = variant;
+  res.setHeader("X-AB-Variant", variant);
+
+  if (!isValidExisting || isValidForced) {
+    res.cookie("ab_variant", variant, {
+      maxAge: 1000 * 60 * 60 * 24 * 90,
+      sameSite: "Lax",
+    });
+  }
+
+  next();
+});
+
 app.use(compression());
 
+// Log A/B page views for HTML responses
+app.use((req, res, next) => {
+  if (!req.abVariant || req.method !== "GET") {
+    return next();
+  }
+
+  res.on("finish", () => {
+    const contentType = res.getHeader("content-type") || "";
+    if (!contentType.includes("text/html")) {
+      return;
+    }
+
+    logAbView({
+      ts: Date.now(),
+      path: req.path,
+      variant: req.abVariant,
+      status: res.statusCode,
+    });
+  });
+
+  next();
+});
+
+// Staging: block indexing (hostname-based so production is unaffected)
+const isStaging = req =>
+  /^staging\.specialisedsteering\.com$/i.test(req.hostname || "");
+
+app.get("/robots.txt", (req, res) => {
+  res.type("text/plain");
+  if (isStaging(req)) {
+    res.send("User-agent: *\nDisallow: /\n");
+  } else {
+    // Production (and local): allow crawling, point to sitemap
+    res.send(
+      "User-agent: *\nAllow: /\n\nSitemap: https://www.specialisedsteering.com/sitemap.xml\n"
+    );
+  }
+});
+
 app.use(
-  express.static('public', {
+  express.static("public", {
     etag: true,
     maxAge: 31536000000,
     lastModified: true,
   }),
 );
-app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: false, limit: '10mb' }));
+app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
+app.use(express.json({ limit: "10mb" }));
+// Use extended: true for better compatibility with form submissions
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+
+// Make notification email available to all templates
+app.use((req, res, next) => {
+  res.locals.notificationEmail =
+    process.env.NOTIFICATION_EMAIL || "admin@ssteering.co.za";
+  next();
+});
+
+// Base URL and canonical URL for absolute links (og:image, og:url, etc.) – always production (staging is noindex so crawlers don’t use it)
+app.use((req, res, next) => {
+  const base = "https://www.specialisedsteering.com";
+  res.locals.siteBaseUrl = base;
+  res.locals.canonicalUrl = base + (req.path === "/" ? "" : req.path || "");
+  res.locals.fbAppId = process.env.FB_APP_ID || null;
+  next();
+});
+
+// Prevent search engines from indexing staging (noindex meta + X-Robots-Tag)
+app.use((req, res, next) => {
+  if (isStaging(req)) {
+    res.locals.noindex = true;
+    res.setHeader("X-Robots-Tag", "noindex, nofollow");
+  }
+  next();
+});
+
+// Block WordPress/Elementor query parameters - return 410 Gone to signal permanent removal
+// 410 Gone tells search engines the resource is permanently removed and should be de-indexed
+app.use((req, res, next) => {
+  // WordPress/Elementor query parameters that indicate WordPress artifacts
+  const wordpressParams = [
+    "elementor_library", // Elementor template library
+    "elementor-preview", // Elementor preview mode
+    "preview_id", // WordPress preview with ID
+    "wpml_lang", // WPML multilingual plugin
+    "preview", // WordPress preview mode (when combined with other WP params)
+    "post_type", // WordPress post type
+    "page_id", // WordPress page ID
+  ];
+
+  const hasWordPressParam = wordpressParams.some(param => req.query[param]);
+
+  if (hasWordPressParam) {
+    return res.status(410).render("410");
+  }
+  next();
+});
+
+// Password reset routes (public, no auth required)
+// Use /auth path to avoid browser's cached Basic Auth credentials for /admin/*
+const passwordResetRoutes = require("./routes/password-reset");
+app.use("/auth", passwordResetRoutes);
+
+// Redirect old /admin/forgot-password, /admin/reset-password, and /admin/logout paths to new /auth paths
+// IMPORTANT: These redirects MUST be registered BEFORE the admin routes middleware
+// to prevent basic auth from intercepting the requests
+app.get("/admin/forgot-password", (req, res) => {
+  res.redirect(301, "/auth/forgot-password");
+});
+app.get("/admin/reset-password/:token", (req, res) => {
+  res.redirect(301, `/auth/reset-password/${req.params.token}`);
+});
+app.get("/admin/logout", (req, res) => {
+  res.redirect(301, "/auth/logout");
+});
+
+// Admin routes (protected with basic auth)
+const basicAuth = require("./middleware/basic-auth");
+const adminRoutes = require("./routes/admin");
+app.use("/admin", basicAuth, adminRoutes);
 
 // Routes
 app.use(dynamicRoutes);
@@ -58,10 +233,13 @@ app.use(defaultRoutes);
 // app.use(errorsHandlerMiddleware.handleNotFoundError);
 
 app.use((req, res, next) => {
-  res.status(404).render('404');
+  res.status(404).render("404");
 });
 app.use((error, req, res, next) => {
-  res.status(500).render('500');
+  console.error("❌ 500 Error:", error.message);
+  console.error("❌ Error stack:", error.stack);
+  console.error("❌ Request URL:", req.url);
+  res.status(500).render("500");
 });
 
 app.listen(PORT, () => {

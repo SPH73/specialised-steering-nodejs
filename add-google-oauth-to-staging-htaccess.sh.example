@@ -1,0 +1,86 @@
+#!/bin/bash
+# This is a template file. The actual file with real credentials is:
+# add-google-oauth-to-staging-htaccess.sh (ignored in .gitignore)
+# Copy this file to add-google-oauth-to-staging-htaccess.sh and replace placeholders with actual values.
+
+# Script to add Google OAuth environment variables to staging .htaccess
+# Run this on the staging server: ./add-google-oauth-to-staging-htaccess.sh
+
+set -e  # Exit on error
+
+echo "🔧 Adding Google OAuth environment variables to staging .htaccess"
+echo "=" | head -c 60; echo ""
+
+# Navigate to staging directory - REPLACE WITH YOUR ACTUAL PATH
+cd ~/YOUR_STAGING_DIRECTORY
+
+# Check if .htaccess exists
+if [ ! -f .htaccess ]; then
+    echo "❌ Error: .htaccess file not found in staging directory"
+    exit 1
+fi
+
+# Backup .htaccess
+BACKUP_FILE=".htaccess.backup.$(date +%Y%m%d_%H%M%S)"
+cp .htaccess "$BACKUP_FILE"
+echo "✅ .htaccess backed up to $BACKUP_FILE"
+
+# Check if Google OAuth variables already exist
+if grep -q "SetEnv CLIENT_ID" .htaccess; then
+    echo "⚠️  Warning: CLIENT_ID already exists in .htaccess"
+    read -p "Do you want to update it? (y/N): " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "❌ Aborted. No changes made."
+        exit 0
+    fi
+    # Update existing values - REPLACE WITH YOUR ACTUAL VALUES
+    sed -i.tmp 's|SetEnv CLIENT_ID.*|SetEnv CLIENT_ID YOUR_GOOGLE_OAUTH_CLIENT_ID|g' .htaccess
+    sed -i.tmp 's|SetEnv CLIENT_SECRET.*|SetEnv CLIENT_SECRET YOUR_GOOGLE_OAUTH_CLIENT_SECRET|g' .htaccess
+    sed -i.tmp 's|SetEnv REDIRECT_URIS.*|SetEnv REDIRECT_URIS "http://localhost:3300/oauth2callback,https://YOUR_STAGING_DOMAIN/oauth2callback,https://YOUR_PRODUCTION_DOMAIN/oauth2callback"|g' .htaccess
+    rm -f .htaccess.tmp
+    echo "✅ Updated existing Google OAuth variables"
+else
+    # Add new variables
+    echo "📝 Adding Google OAuth environment variables..."
+
+    # Check if <IfModule Litespeed> block exists
+    if ! grep -q "<IfModule Litespeed>" .htaccess; then
+        echo "📝 Adding <IfModule Litespeed> block..."
+        echo "" >> .htaccess
+        echo "<IfModule Litespeed>" >> .htaccess
+        echo "  # Google OAuth Configuration" >> .htaccess
+    else
+        # Add comment before variables if block exists but no Google OAuth section
+        if ! grep -q "Google OAuth" .htaccess; then
+            sed -i.tmp '/<\/IfModule>/i\
+  # Google OAuth Configuration
+' .htaccess
+        fi
+    fi
+
+    # Append Google OAuth variables - REPLACE WITH YOUR ACTUAL VALUES
+    cat >> .htaccess << 'GOOGLE_OAUTH_VARS'
+  SetEnv CLIENT_ID YOUR_GOOGLE_OAUTH_CLIENT_ID
+  SetEnv CLIENT_SECRET YOUR_GOOGLE_OAUTH_CLIENT_SECRET
+  SetEnv REDIRECT_URIS "http://localhost:3300/oauth2callback,https://YOUR_STAGING_DOMAIN/oauth2callback,https://YOUR_PRODUCTION_DOMAIN/oauth2callback"
+GOOGLE_OAUTH_VARS
+
+    echo "✅ Added Google OAuth environment variables"
+fi
+
+# Clean up temp file
+rm -f .htaccess.tmp
+
+# Verify the changes
+echo ""
+echo "📋 Verifying changes:"
+grep -E "(CLIENT_ID|CLIENT_SECRET|REDIRECT_URIS)" .htaccess
+
+echo ""
+echo "✅ Done! Google OAuth variables are now in .htaccess"
+echo ""
+echo "📝 Next step: Restart Passenger"
+echo "   touch tmp/restart.txt"
+echo ""
+

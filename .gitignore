@@ -1,7 +1,61 @@
 node_modules
 settings.json
 .DS_Store
-images
+# Images - not in repo; upload to server directly (root brand/source + public/images)
+/images
+public/images
 uploads
 config.env
 .env
+token.json
+
+# Google OAuth credentials - never commit
+credentials.json
+*-todo.md
+*.txt
+
+# Resources
+MD/
+AGENT/
+
+# Server configuration files with sensitive data - never commit
+.htaccess
+
+# Deployment scripts - server-specific, don't commit (contain sensitive data)
+check-google-photos-server.sh
+add-env-vars-to-staging-htaccess.sh
+add-google-oauth-to-staging-htaccess.sh
+update-google-oauth-env.sh
+upload-google-oauth-env.sh
+upload-google-photos-files.sh
+
+# Google Photos Picker deployment scripts - server-specific, don't commit (contain sensitive data)
+extract-credentials.sh
+upload-google-picker-files.sh
+upload-google-picker-oauth-env.sh
+
+# Database/storage files (but not data directory)
+data/*.db
+data/gallery.json
+data/password-reset-tokens.json
+
+# Log files - runtime data, should not be committed
+logs/*.log
+logs/ab-tests.log
+logs/ab-views.log
+logs/airtable-calls.log
+
+# SEO documentation - personal/reference only, not for repo
+docs/seo-comparison*.md
+docs/seo-report-ct/
+docs/seo-report-specialised/
+docs/gsc/
+
+# Google Search Console coverage reports
+*Coverage*.zip
+*Coverage*.csv
+*.csv
+Chart.csv
+Metadata.csv
+"Critical issues.csv"
+"Non-critical issues.csv"

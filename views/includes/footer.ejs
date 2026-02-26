@@ -3,17 +3,25 @@
     <div class="w-layout-grid footer-content">
       <img
         class="footer-logo"
-        src="../images/SS-Logo-Inv.png"
-        width="Auto"
-        height="Auto"
-        alt=""
-        sizes="(max-width: 479px) 90vw, (max-width: 991px) 127.99715423583984px, (max-width: 1919px) 10vw, 100vw"
+        src="../images/Extended_logo_inverse.png"
+        srcset="
+          ../images/Extended_logo_inverse.png    1x,
+          ../images/Extended_logo_inverse@2x.png 2x,
+          ../images/Extended_logo_inverse@3x.png 3x
+        "
+        width="240"
+        height="159"
+        style="
+          aspect-ratio: 1025 / 677;
+          width: 15rem;
+          max-width: 15rem;
+          height: auto;
+        "
+        alt="Specialised Steering - Earth Moving Hydraulics"
+        sizes="(max-width: 479px) 90vw, (max-width: 991px) 10rem, (max-width: 1919px) 10vw, 15rem"
         id="w-node-_1f095eb7-1d94-a44c-448d-cbd0ba45b8dc-ba45b8da"
         loading="lazy"
-        srcset="
-          ../images/SS-Logo-Inv-p-500.png 500w,
-          ../images/SS-Logo-Inv.png       991w
-        "
+        decoding="async"
       />
       <div
         id="w-node-_1f095eb7-1d94-a44c-448d-cbd0ba45b8f5-ba45b8da"
@@ -22,17 +30,23 @@
         <h3 class="footer-heading">office</h3>
         <address>
           <a
-            href="mailto:tracy@ssteering.co.za?subject=Website%20enquiry"
-            class="footer-link"
-            >Email</a
+            href="mailto:<%= notificationEmail %>?subject=Website%20enquiry"
+            class="footer-link footer-email"
+            ><span class="footer-link-mobile">Email</span
+            ><span class="footer-link-desktop"
+              ><%= notificationEmail %></span
+            ></a
           >
-          <a href="tel:++27670096822" class="footer-link">Cell</a>
+          <a href="tel:+27670096822" class="footer-link footer-phone"
+            ><span class="footer-link-mobile">Cell</span
+            ><span class="footer-link-desktop">+27 67 009 6822</span></a
+          >
           <a
             href="https://goo.gl/maps/QxqKtTzCSymbqNAaA"
             target="_blank"
             rel="noopener noreferrer"
             class="footer-link"
-            >Directions</a
+            >Find Us</a
           >
         </address>
         <div class="footer-text">Mon-Thur: 7.30am - 4.30pm</div>
@@ -46,11 +60,11 @@
         <a href="../" aria-current="page" class="footer-link w--current"
           >Home</a
         >
-        <a href="../#our-work-list" class="footer-link">Our work</a>
+        <a href="../#our-repairs" class="footer-link">Our repairs</a>
         <a href="../#repair-process" class="footer-link">Repair process</a>
         <a href="../about" class="footer-link">About us</a>
-        <a href="../contact" class="footer-link">Repair/Contact request</a>
-        <a href="../enquiry" class="footer-link">Component sourcing</a>
+        <a href="../contact" class="footer-link">Repairs contact</a>
+        <a href="../enquiry" class="footer-link">Parts sourcing</a>
       </div>
       <div
         id="w-node-_1f095eb7-1d94-a44c-448d-cbd0ba45b8ea-ba45b8da"
@@ -59,19 +73,16 @@
         <h3 class="footer-heading">legal &amp; site map</h3>
         <a href="../disclaimer" class="footer-link">Disclaimer</a>
         <a
-          href="https://drive.google.com/file/d/1To7x2wHN72rgdwsVRDdmZy0KGwAeTJzC/view?usp=sharing"
+          href="../terms-of-sale"
           title="Terms &amp; Conditions"
-          target="_blank"
-          rel="noopener noreferrer"
           id="terms"
           class="footer-link"
           >Terms of sale</a
         >
         <a
           rel="noopener noreferrer"
-          href="https://drive.google.com/file/d/1CuwGmbcaMlDpLbovL-IHfzCdPcAvd9WG/view?usp=sharing"
+          href="https://www.specialisedsteering.com/privacy-policy"
           title="Privacy policy"
-          target="_blank"
           class="footer-link"
           >Privacy policy</a
         >
@@ -95,7 +106,7 @@
     <div class="w-layout-grid footer-copyright-social">
       <div class="copyright">
         <div>
-          © <span class="year">2022</span> SPECIALISED STEERING CC <br />All
+          © <span class="year"></span> Specialised Steering (Pty) Ltd <br />All
           rights reserved.
         </div>
       </div>
@@ -109,6 +120,7 @@
             ><img
               src="../images/f_logo_RGB-Blue_58.png"
               loading="lazy"
+              decoding="async"
               width="65"
               height="65"
               alt="Facebook icon"
@@ -122,6 +134,7 @@
             ><img
               src="../images/Instagram_Glyph_Gradient_RGB.svg"
               loading="lazy"
+              decoding="async"
               width="65"
               height="65"
               alt="instagram icon"
@@ -135,6 +148,7 @@
             ><img
               src="../images/LI-In-Bug.png"
               loading="lazy"
+              decoding="async"
               width="40"
               height="40"
               alt="LinkedIn social media icon"
@@ -157,3 +171,10 @@
     </div>
   </div>
 </footer>
+<script>
+  const year = new Date().getFullYear();
+  const yearElement = document.querySelector(".year");
+  if (yearElement) {
+    yearElement.textContent = year;
+  }
+</script>

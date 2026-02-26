@@ -1,54 +1,189 @@
 <!DOCTYPE html>
-<!--  Last updated: 02 Aug 2022 -->
+<!--  Last Updated: 25 Feb 2026  -->
 <html lang="en" data-wf-page="60b27efeb5434b7ea97c437c">
   <head>
     <%- include('includes/meta') %> <%- include('includes/head') %>
-    <link href="https://specialisedsteering.com/" rel="canonical" />
-    <script src="../js/block-scripts.js" defer></script>
-    <script
-      src="https://www.recaptcha.net/recaptcha/api.js"
-      async
-      defer
-    ></script>
+    <link href="https://www.specialisedsteering.com/" rel="canonical" />
+    <link rel="preconnect" href="https://sswebimages.mo.cloudinary.net" />
+    <link rel="dns-prefetch" href="https://sswebimages.mo.cloudinary.net" />
+    <link
+      rel="preload"
+      as="image"
+      href="https://sswebimages.mo.cloudinary.net/xl_komatsu-earth-moving-machinery.jpg"
+      media="(min-width: 992px)"
+    />
+    <link
+      rel="preload"
+      as="image"
+      href="https://sswebimages.mo.cloudinary.net/med_komatsu-earth-moving-machinery.jpeg?v=1"
+      imagesrcset="
+        https://sswebimages.mo.cloudinary.net/sml_komatsu-earth-moving-machinery.jpeg?v=1 500w,
+        https://sswebimages.mo.cloudinary.net/med_komatsu-earth-moving-machinery.jpeg?v=1 1000w,
+        https://sswebimages.mo.cloudinary.net/lrg_komatsu-earth-moving-machinery.jpg?v=1 1600w
+      "
+      imagesizes="(max-width: 991px) 100vw"
+      media="(max-width: 991px)"
+    />
+    <script src="/js/hero-parallax.js" defer></script>
+    <%- include('includes/recaptcha-script') %>
     <script>
-      function onSubmit(token) {
-        document.getElementById('contactForm').submit();
+      function validateContactForm() {
+        const errors = [];
+
+        // Clear previous error states
+        document
+          .querySelectorAll(".input-error")
+          .forEach(el => el.classList.remove("input-error"));
+
+        // Validate required fields
+        const name = document.getElementById("enquiryName");
+        if (name && !name.value.trim()) {
+          errors.push("Please enter your full name");
+          name.classList.add("input-error");
+        }
+
+        const email = document.getElementById("enquiryEmail");
+        if (email && !email.value.trim()) {
+          errors.push("Please enter your email address");
+          email.classList.add("input-error");
+        } else if (email && !email.validity.valid) {
+          errors.push("Please enter a valid email address");
+          email.classList.add("input-error");
+        }
+
+        const phone = document.getElementById("enquiryNumber");
+        if (phone && !phone.value.trim()) {
+          errors.push("Please enter your contact number");
+          phone.classList.add("input-error");
+        }
+
+        const country = document.getElementById("contactCountry");
+        if (country && !country.value) {
+          errors.push("Please select your country");
+          country.classList.add("input-error");
+        }
+
+        const message = document.getElementById("enquiryMessage");
+        if (message && !message.value.trim()) {
+          errors.push("Please tell us how we can help");
+          message.classList.add("input-error");
+        }
+
+        const terms = document.getElementById("accept-terms");
+        if (terms && !terms.checked) {
+          errors.push("Please accept the Terms & Conditions");
+        }
+
+        return errors;
       }
+
+      function showErrors(errors) {
+        const errorContainer = document.getElementById("form-errors");
+        const errorList = document.getElementById("form-error-list");
+
+        if (!errorContainer || !errorList) return false;
+
+        if (errors.length > 0) {
+          errorList.innerHTML = errors.map(err => `<li>${err}</li>`).join("");
+          errorContainer.classList.add("visible");
+          errorContainer.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+          });
+          return false;
+        } else {
+          errorContainer.classList.remove("visible");
+          return true;
+        }
+      }
+
+      function onSubmit(token) {
+        // Validate form
+        const errors = validateContactForm();
+
+        if (errors.length > 0) {
+          showErrors(errors);
+          grecaptcha.reset(); // Reset reCAPTCHA so user can try again
+          return false;
+        }
+
+        // All validation passed - submit form
+        document.getElementById("contactForm").submit();
+      }
+
+      // Add real-time validation feedback
+      document.addEventListener("DOMContentLoaded", function () {
+        // Re-validate when Terms checkbox is changed
+        const termsCheckbox = document.getElementById("accept-terms");
+        if (termsCheckbox) {
+          termsCheckbox.addEventListener("change", function () {
+            const errorContainer = document.getElementById("form-errors");
+            if (
+              errorContainer &&
+              errorContainer.classList.contains("visible")
+            ) {
+              const errors = validateContactForm();
+              showErrors(errors);
+            }
+          });
+        }
+
+        // Remove field-specific errors when user starts typing
+        const requiredFields = [
+          "enquiryName",
+          "enquiryEmail",
+          "enquiryNumber",
+          "contactCountry",
+          "enquiryMessage",
+        ];
+        requiredFields.forEach(fieldId => {
+          const field = document.getElementById(fieldId);
+          if (field) {
+            const eventType = field.tagName === "SELECT" ? "change" : "input";
+            field.addEventListener(eventType, function () {
+              this.classList.remove("input-error");
+            });
+          }
+        });
+      });
     </script>
   </head>
   <body>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-V4W8VP4GL8"
-    ></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag('js', new Date());
-
-      gtag('config', 'G-V4W8VP4GL8');
-    </script>
-    <!-- G-tag end -->
-
-    <%- include('includes/nav') %> <%- include('includes/header') %>
+    <%- include('includes/analytics') %> <%- include('includes/nav') %> <%-
+    include('includes/header') %>
     <main>
       <div class="parallax-1">
+        <img
+          class="hero-background"
+          src="https://sswebimages.mo.cloudinary.net/lrg_komatsu-earth-moving-machinery.jpg?v=1"
+          srcset="
+            https://sswebimages.mo.cloudinary.net/sml_komatsu-earth-moving-machinery.jpeg?v=1  500w,
+            https://sswebimages.mo.cloudinary.net/med_komatsu-earth-moving-machinery.jpeg?v=1 1000w,
+            https://sswebimages.mo.cloudinary.net/lrg_komatsu-earth-moving-machinery.jpg?v=1  1600w
+          "
+          sizes="(min-width: 992px) 1600px, (min-width: 480px) 1000px, 500px"
+          alt="Earth moving machinery in operation"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+        />
         <section id="professional" class="section">
           <div class="container">
-            <h2>Professional Hydraulic Engineers</h2>
+            <h2>OEM Hydraulic Engineers &amp; Component Sourcing</h2>
             <p>
-              We use our extensive technical knowledge with earth-moving and
-              mining machinery and strong relationships with leading
-              manufacturers to procure your hydraulic component requirements at
-              competitive prices in the shortest time frames.
+              We repair and source hydraulic components for earth-moving and
+              mining machinery, backed by manufacturer relationships and OEM
+              documentation. Service exchange and component sourcing are
+              available to reduce downtime.
+            </p>
+            <p class="location-line">
+              Based in Germiston, Gauteng — hydraulic repairs and service exchange across South Africa.
+            </p>
+            <p>
+              Every job is different—we strip, assess, and restore to OEM spec for your application.
             </p>
             <div class="button_container">
-              <a href="#our-work-list" class="button w-button"
-                >Our Repair Work</a
-              >
+              <a href="#our-repairs" class="button w-button">Repairs</a>
               <a href="./enquiry" class="button w-button">Parts Enquiry</a>
             </div>
           </div>
@@ -56,268 +191,260 @@
       </div>
       <section id="products" class="section">
         <div class="container">
-          <h2>Our Range</h2>
+          <h2>OEM &amp; Aftermarket Parts Supply</h2>
           <p>
-            We supply a wide range of industries with genuine parts from trusted
-            manufacturers and after market equivalent for the mining and
-            agricultural industries. <br />
+            We supply genuine OEM parts and selected aftermarket equivalents for
+            industrial, mining, agricultural and off-highway equipment. <br />
           </p>
           <p>
-            Send us a parts enquiry for any components you need. We will source
-            them for you in the shortest possible timeframe.
+            Send us a <a href="./enquiry">parts enquiry</a> for any components
+            you need. We will source them for you in the shortest possible
+            timeframe.
           </p>
-          <div class="w-layout-grid grid">
-            <ul
-              id="w-node-_8a176121-2007-2647-3a23-84a4ac1fac02-a97c437c"
-              role="list"
-              class="range w-list-unstyled"
-            >
-              <li class="range-item">Articulated Dump Trucks</li>
-              <li class="range-item">Rigid Dump Trucks</li>
-              <li class="range-item">Motor Graders</li>
-              <li class="range-item">Backhoe Loaders</li>
-              <li class="range-item">Bulldozers</li>
-              <li class="range-item">Excavators</li>
-              <li class="range-item">Track Loaders</li>
-              <li class="range-item">Crawler Dozers</li>
-              <li class="range-item">Wheel Loaders</li>
-              <li class="range-item">Engine parts for selected applications</li>
-            </ul>
-            <div
-              id="w-node-_60c71446-d505-6c7d-83fd-9f4cb390f98e-a97c437c"
-              class="range-grid"
-            >
-              <img
-                src="https://sswebimages.mo.cloudinary.net/Articulated-dump-truck_cat.png"
-                loading="lazy"
-                id="w-node-a6843939-aaef-9f6f-0195-f7b8282341d3-a97c437c"
-                alt="Caterpillar Articulated Dump Truck"
-                class="range-image"
-              /><img
-                src="https://sswebimages.mo.cloudinary.net/backhoe-loaders_cat.png"
-                loading="lazy"
-                alt="Caterpillar Backhoe Loader"
-                class="range-image"
-              /><img
-                src="https://sswebimages.mo.cloudinary.net/dozers_cat.png"
-                loading="lazy"
-                alt="Caterpillar Bulldozer"
-                class="range-image"
-              /><img
-                src="https://sswebimages.mo.cloudinary.net/excavators_cat.png"
-                loading="lazy"
-                alt="Caterpillar excavator"
-                class="range-image"
-              /><img
-                src="https://sswebimages.mo.cloudinary.net/track-loaders_cat.png"
-                loading="lazy"
-                alt="Caterpillar Track Loader"
-                class="range-image"
-              /><img
-                src="https://sswebimages.mo.cloudinary.net/wheel_loaders-cat.png"
-                loading="lazy"
-                alt="Caterpillar Wheel Loader"
-                class="range-image"
-              /><img
-                src="https://sswebimages.mo.cloudinary.net/ADT.png"
-                loading="lazy"
-                alt="Komatsu Articulated Dump Truck"
-                class="range-image"
-              /><img
-                src="https://sswebimages.mo.cloudinary.net/rigid-dump-truck.png"
-                loading="lazy"
-                alt="Komatsu Rigid Dump Truck"
-                class="range-image"
-              /><img
-                src="https://sswebimages.mo.cloudinary.net/Motor-graders.png"
-                loading="lazy"
-                id="w-node-c3e3fb36-76cf-96d1-115f-984a45a98467-a97c437c"
-                alt="Komatsu Motor Grader"
-                class="range-image"
-              /><img
-                src="https://sswebimages.mo.cloudinary.net/back-hoe-loaders.png"
-                loading="lazy"
-                alt="Komatsu Backhoe Loader"
-                class="range-image"
-              /><img
-                src="https://sswebimages.mo.cloudinary.net/crawler-dozers.png"
-                loading="lazy"
-                alt="Komatsu Crawler Dozer"
-                class="range-image"
-              /><img
-                src="https://sswebimages.mo.cloudinary.net/wheel-loaders.png"
-                loading="lazy"
-                alt="Komatsu Wheel Loader"
-                class="range-image"
-              /><img
-                src="https://sswebimages.mo.cloudinary.net/travel-motor_hitachi.png"
-                loading="lazy"
-                alt="Hitachi Travel Motor"
-                class="range-image"
-              /><img
-                src="https://sswebimages.mo.cloudinary.net/geroler-motor_eaton.png"
-                loading="lazy"
-                alt="Eaton Geroler Motor"
-                class="range-image"
-              /><img
-                src="https://sswebimages.mo.cloudinary.net/piston-pumps_hitachi.png"
-                loading="lazy"
-                alt="Hitachi Piston Pump"
-                class="range-image"
-              /><img
-                src="https://sswebimages.mo.cloudinary.net/piston-pump_hitachi.png"
-                loading="lazy"
-                alt="Hitachi Piston Pump"
-                class="range-image"
-              /><img
-                src="https://sswebimages.mo.cloudinary.net/black-bruin-motors.png"
-                loading="lazy"
-                alt="Black Bruin Motor"
-                class="range-image"
-              /><img
-                src="https://sswebimages.mo.cloudinary.net/motors_eaton.png"
-                loading="lazy"
-                alt="Eaton Motor"
-                class="range-image"
-              /><img
-                src="https://sswebimages.mo.cloudinary.net/gear-pumps_rexroth.png"
-                loading="lazy"
-                alt="Rexroth Gear Pump"
-                class="range-image"
-              /><img
-                src="https://sswebimages.mo.cloudinary.net/pumps_rexroth.png"
-                loading="lazy"
-                alt="Rexroth Pump"
-                class="range-image"
-              /><img
-                src="https://sswebimages.mo.cloudinary.net/gear-pump_eaton.png"
-                loading="lazy"
-                alt="Eaton Gear Pump"
-                class="range-image"
-              /><img
-                src="https://sswebimages.mo.cloudinary.net/shut-off-valves_rexroth.png"
-                loading="lazy"
-                alt="Rexroth Shut-off Valve"
-                class="range-image"
-              /><img
-                src="https://sswebimages.mo.cloudinary.net/diesel-injectors_eaton.png"
-                loading="lazy"
-                alt="Eaton Diesel Injector"
-                class="range-image"
-              /><img
-                src="https://sswebimages.mo.cloudinary.net/orbitrols_eaton.png"
-                loading="lazy"
-                alt="Eaton Steering Orbitrol"
-                class="range-image"
-              />
-            </div>
-            <ul
-              id="w-node-_5700390f-ef02-d55e-2c05-3c7b6b8a851d-a97c437c"
-              role="list"
-              class="range w-list-unstyled"
-            >
-              <li class="range-item">Travel Motors</li>
-              <li class="range-item">Geroler Motors</li>
-              <li class="range-item">Gerotar Motors</li>
-              <li class="range-item">Piston Motors</li>
-              <li class="range-item">Gear Pumps</li>
-              <li class="range-item">Piston Pumps</li>
-              <li class="range-item">Fuel Pumps</li>
-              <li class="range-item">Shut-off valves</li>
-              <li class="range-item">Diesel Injectors</li>
-              <li class="range-item">Steering Orbitrols</li>
-            </ul>
+          <!-- Machinery types carousel (top) -->
+          <%- include('includes/range-carousel-machinery') %>
+          <!-- Image grid only - text removed from grid -->
+          <div
+            id="w-node-_60c71446-d505-6c7d-83fd-9f4cb390f98e-a97c437c"
+            class="range-grid"
+          >
+            <img
+              src="https://sswebimages.mo.cloudinary.net/Articulated-dump-truck_cat.png"
+              loading="eager"
+              id="w-node-a6843939-aaef-9f6f-0195-f7b8282341d3-a97c437c"
+              alt="Caterpillar Articulated Dump Truck"
+              class="range-image"
+            /><img
+              src="https://sswebimages.mo.cloudinary.net/backhoe-loaders_cat.png"
+              loading="eager"
+              alt="Caterpillar Backhoe Loader"
+              class="range-image"
+            /><img
+              src="https://sswebimages.mo.cloudinary.net/dozers_cat.png"
+              loading="eager"
+              alt="Caterpillar Bulldozer"
+              class="range-image"
+            /><img
+              src="https://sswebimages.mo.cloudinary.net/excavators_cat.png"
+              loading="eager"
+              alt="Caterpillar excavator"
+              class="range-image"
+            /><img
+              src="https://sswebimages.mo.cloudinary.net/track-loaders_cat.png"
+              loading="eager"
+              alt="Caterpillar Track Loader"
+              class="range-image"
+            /><img
+              src="https://sswebimages.mo.cloudinary.net/wheel_loaders-cat.png"
+              loading="eager"
+              alt="Caterpillar Wheel Loader"
+              class="range-image"
+            /><img
+              src="https://sswebimages.mo.cloudinary.net/ADT.png"
+              loading="eager"
+              alt="Komatsu Articulated Dump Truck"
+              class="range-image"
+            /><img
+              src="https://sswebimages.mo.cloudinary.net/rigid-dump-truck.png"
+              loading="eager"
+              alt="Komatsu Rigid Dump Truck"
+              class="range-image"
+            /><img
+              src="https://sswebimages.mo.cloudinary.net/Motor-graders.png"
+              loading="eager"
+              id="w-node-c3e3fb36-76cf-96d1-115f-984a45a98467-a97c437c"
+              alt="Komatsu Motor Grader"
+              class="range-image"
+            /><img
+              src="https://sswebimages.mo.cloudinary.net/back-hoe-loaders.png"
+              loading="eager"
+              alt="Komatsu Backhoe Loader"
+              class="range-image"
+            /><img
+              src="https://sswebimages.mo.cloudinary.net/crawler-dozers.png"
+              loading="eager"
+              alt="Komatsu Crawler Dozer"
+              class="range-image"
+            /><img
+              src="https://sswebimages.mo.cloudinary.net/wheel-loaders.png"
+              loading="eager"
+              alt="Komatsu Wheel Loader"
+              class="range-image"
+            /><img
+              src="https://sswebimages.mo.cloudinary.net/travel-motor_hitachi.png"
+              loading="eager"
+              alt="Hitachi Travel Motor"
+              class="range-image"
+            /><img
+              src="https://sswebimages.mo.cloudinary.net/geroler-motor_eaton.png"
+              loading="eager"
+              alt="Eaton Geroler Motor"
+              class="range-image"
+            /><img
+              src="https://sswebimages.mo.cloudinary.net/piston-pumps_hitachi.png"
+              loading="eager"
+              alt="Hitachi Piston Pump"
+              class="range-image"
+            /><img
+              src="https://sswebimages.mo.cloudinary.net/piston-pump_hitachi.png"
+              loading="eager"
+              alt="Hitachi Piston Pump"
+              class="range-image"
+            /><img
+              src="https://sswebimages.mo.cloudinary.net/black-bruin-motors.png"
+              loading="eager"
+              alt="Black Bruin Motor"
+              class="range-image"
+            /><img
+              src="https://sswebimages.mo.cloudinary.net/motors_eaton.png"
+              loading="eager"
+              alt="Eaton Motor"
+              class="range-image"
+            /><img
+              src="https://sswebimages.mo.cloudinary.net/gear-pumps_rexroth.png"
+              loading="eager"
+              alt="Rexroth Gear Pump"
+              class="range-image"
+            /><img
+              src="https://sswebimages.mo.cloudinary.net/pumps_rexroth.png"
+              loading="eager"
+              alt="Rexroth Pump"
+              class="range-image"
+            /><img
+              src="https://sswebimages.mo.cloudinary.net/gear-pump_eaton.png"
+              loading="eager"
+              alt="Eaton Gear Pump"
+              class="range-image"
+            /><img
+              src="https://sswebimages.mo.cloudinary.net/shut-off-valves_rexroth.png"
+              loading="eager"
+              alt="Rexroth Shut-off Valve"
+              class="range-image"
+            /><img
+              src="https://sswebimages.mo.cloudinary.net/diesel-injectors_eaton.png"
+              loading="eager"
+              alt="Eaton Diesel Injector"
+              class="range-image"
+            /><img
+              src="https://sswebimages.mo.cloudinary.net/orbitrols_eaton.png"
+              loading="eager"
+              alt="Eaton Steering Orbitrol"
+              class="range-image"
+            />
           </div>
+          <!-- Component types carousel (bottom) -->
+          <%- include('includes/range-carousel-components') %>
         </div>
       </section>
       <div class="parallax-2">
         <section id="customer-centric" class="section">
           <div class="container">
-            <h2>Customer centric</h2>
+            <h2>Customer focused, downtime aware</h2>
             <p>
-              We pride ourselves in customer satisfaction and will do our utmost
-              to ensure your experience is rewarding, easy and pleasant. We are
-              conscious of the additional costs when delays add to downtime and
-              our primary goal is to solve your problem as quickly and
-              cost-effectively as possible using the most viable solution.
-              <br /><br />We are always willing to discuss options with you and
-              to offer our professional opinion when requested.
+              We focus on practical solutions that get your equipment back to
+              work quickly and cost-effectively. Expect clear communication,
+              documented assessments, and straight advice on the most viable
+              repair or exchange option.
             </p>
             <div class="button_container">
               <a href="./enquiry" class="button w-button">Parts Enquiry</a>
-              <a href="#our-work-list" class="button w-button"
-                >Our Repair Work</a
-              >
+              <a href="./contact" class="button w-button">Repair enquiry</a>
             </div>
           </div>
         </section>
       </div>
       <section id="repair-process" class="section">
         <div class="container">
-          <h2>Our Repairs Service</h2>
+          <h2>Our OEM Repair Process</h2>
           <p>
-            Our highly qualified engineers are proficient in the full repair and
-            testing of components to OEM specification.
+            Our highly skilled engineers repair and test hydraulic components to
+            OEM specification with full documentation.
           </p>
           <p>
-            Send us a message using the contact form to fill us in on the issue
-            you are experiencing with your unit and we will contact you to
-            discuss your needs and arrange to receive your job.
+            Send us your component details, symptoms, and urgency via the form below—we'll contact you within one business day to discuss and arrange to receive your unit.
           </p>
           <p>
-            As soon as your job is booked in we will strip and inspect the
-            component and document our findings with images.
+            <strong>Step 1: Strip &amp; Assess</strong><br />
+            To strip and assess your unit for cause of failure.<br />
+            Outline the corrective measures needed for repairs.
           </p>
           <p>
-            We will send you our report for the assessment including any wear,
-            failure and possible cause of failure along with our repair
-            quotation.
+            <strong>Step 2: Report &amp; Quote</strong><br />
+            Provide and compile a comprehensive technical report that will give
+            you a visual of the finds of inspection.
           </p>
-          <p>Work will commence on receipt of your official works order.</p>
           <p>
-            We will then repair, reassemble and test the unit to OEM
-            specification.
+            <strong>Step 3: Assemble &amp; Test</strong><br />
+            Our team will assemble and test unit to OEM specifications.
+          </p>
+          <p>
+            Customers are welcome to drop off and collect their components at
+            our Germiston repair shop. We accept couriered shipments if sent
+            with a works order.
           </p>
         </div>
       </section>
-      <section id="our-work-list" class="section">
+      <section id="our-repairs" class="section">
         <div class="container">
-          <h2>Our Work</h2>
-          <% if (repairs.length === 0){ %>
+          <h2>OEM-Standard Hydraulic Repairs &amp; Service Exchange</h2>
+          <h3>
+            Hydraulic component restoration and repairs for industrial, mining,
+            agricultural and off-highway fleets
+          </h3>
           <p>
-            We haven't selected any featured repairs to display at the moment
-            but feel free to view some on our linkedIn page.
+            We repair all hydraulic components such as pumps, motors,
+            orbitrols and HMUs (steering), valve banks, brakes, cylinders,
+            rams, and related systems to OEM specification.
           </p>
-          <% } else { %>
+          <p class="trust-line"><strong>Restored to OEM spec. Documented. Tested.</strong></p>
+          <h3>What we repair</h3>
+          <p><strong>Pumps</strong> — Piston pumps, gear pumps, vane pumps. We restore to OEM flow and pressure specs.</p>
+          <p><strong>Motors</strong> — Travel motors, swing motors, geroler and gerotar motors for drive and swing applications.</p>
+          <p><strong>Orbitrols &amp; steering</strong> — HMUs and steering orbitrols for precise control and reliability.</p>
+          <p><strong>Valves, cylinders &amp; brakes</strong> — Main control valves, hydraulic cylinders, brake systems and calipers.</p>
           <p>
-            We are proud to showcase some examples of our extensive experience
-            in repairs to hydraulic componentry as just some of the repairs we
-            assist our customers with.
+            See completed jobs in our photo gallery, or visit Instagram and
+            LinkedIn for recent updates.
           </p>
           <p>
-            We share many more examples of repairs we have completed on our
-            social media pages. Feel free to
-            <a href="../#social"><strong>connect with us</strong></a> using the
-            icons at the bottom of our site.
+            <strong>Q: What is a service exchange?</strong> A: We supply a
+            pre-repaired component from stock so you can fit it immediately
+            while your original unit is repaired.
           </p>
-          <div id="repairs">
-            <div id="featured-list" class="api-data">
-              <% for (const repair of repairs) {%> <%-
-              include('includes/work/our-work-item', {repair:repair})%> <% } %>
-            </div>
+          <p>
+            <strong>Q: How do I start a repair?</strong> A: Send component
+            details and symptoms via the contact form. We will arrange booking
+            and inspection.
+          </p>
+          <div class="button_container">
+            <a href="/gallery" class="button w-button">View Our Gallery</a>
+            <a
+              href="https://www.instagram.com/specialised_steering/?igshid=YmMyMTA2M2Y="
+              target="_blank"
+              rel="noopener"
+              class="button w-button"
+            >
+              Instagram
+            </a>
+            <a
+              href="https://www.linkedin.com/in/devon-abbot-6989aa108"
+              target="_blank"
+              rel="noopener"
+              class="button w-button"
+            >
+              LinkedIn
+            </a>
           </div>
-          <% } %>
         </div>
       </section>
     </main>
     <section id="contact-us" class="section main">
       <div class="container">
         <div id="contact-form" class="form-block w-form">
-          <h2>Get in Touch!</h2>
+          <h2>Get in Touch</h2>
           <p>
-            If you have a hydraulic component needing repair or any other query,
-            reach out with as much info as necessary and we will be in touch
-            within one business day.
+            For repairs, component sourcing, or service exchange enquiries,
+            send your component and equipment details—we'll get back to you within one business day. Most customers drop off and collect; couriered orders should include a works order number.
           </p>
           <%- include('includes/forms/contact-form') %>
         </div>

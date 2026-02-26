@@ -1,0 +1,146 @@
+/* Range Items Carousel - CSS-only infinite scroll for text in 2 rows */
+
+.range-carousel {
+  overflow: hidden;
+  width: 100%;
+  padding: 1.5rem 0 0 0; /* Top padding only, no bottom */
+  position: relative;
+  background-color: transparent;
+}
+
+.range-carousel-container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  max-width: 100%;
+}
+
+.range-carousel-track {
+  display: flex;
+  flex-wrap: wrap; /* Allow wrapping to create 2 rows */
+  gap: 1.5rem 1rem; /* row-gap column-gap - reduced column gap from 2rem */
+  animation: scroll-range 30s linear infinite;
+  width: max-content;
+  will-change: transform;
+  /* Limit height to show exactly 2 rows */
+  max-height: calc(2 * (1.2rem * 1.5 + 0.5rem * 2 + 1.5rem));
+  overflow: hidden;
+}
+
+/* Pause animation on hover */
+.range-carousel-container:hover .range-carousel-track {
+  animation-play-state: paused;
+}
+
+.range-carousel-item {
+  flex-shrink: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--color-primary, #4f4f4f);
+  white-space: nowrap;
+  padding: 0.5rem 0;
+  transition: color 0.3s ease;
+  /* Width sizes to content - no fixed width calculations */
+  width: auto;
+  max-width: 250px; /* Prevent items from getting too wide */
+  min-width: fit-content; /* Size to content */
+}
+
+.range-carousel-item:hover {
+  color: var(--color-secondary, #f9b101);
+}
+
+@keyframes scroll-range {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Spacing between machinery and component carousels */
+.range-carousel-components {
+  margin-top: 1.5rem;
+}
+
+/* Mobile: Single row, smaller text */
+@media screen and (max-width: 767px) {
+  .range-carousel-item {
+    font-size: 1rem;
+    width: auto; /* Size to content */
+    max-width: 90%; /* Prevent too wide on mobile */
+    min-width: fit-content;
+  }
+
+  .range-carousel-track {
+    flex-wrap: nowrap; /* Single row on mobile */
+    max-height: none; /* No height limit on mobile */
+    gap: 0.75rem; /* Reduced gap on mobile from 1.5rem */
+    animation-duration: 25s; /* Faster on mobile */
+  }
+
+  .range-carousel {
+    padding: 1rem 0 0 0;
+  }
+
+  .range-carousel-components {
+    margin-top: 1rem;
+  }
+}
+
+/* Tablet: 2 rows with 3 items per row */
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+  .range-carousel-item {
+    font-size: 1.1rem;
+    width: auto; /* Size to content */
+    max-width: calc((100% - (2 * 1rem)) / 3); /* Max width for 3 items per row accounting for gaps */
+    min-width: fit-content;
+  }
+
+  .range-carousel-track {
+    max-height: calc(2 * (1.1rem * 1.5 + 0.5rem * 2 + 1.5rem)); /* Height for 2 rows */
+    gap: 1.5rem 1rem; /* Equal column gap, reduced from 2rem */
+    animation-duration: 28s;
+  }
+
+  .range-carousel {
+    padding: 1.25rem 0 0 0;
+  }
+
+  .range-carousel-components {
+    margin-top: 1.25rem;
+  }
+}
+
+/* Desktop: 2 rows with 5 items per row */
+@media screen and (min-width: 1024px) {
+  .range-carousel-item {
+    font-size: 1.2rem;
+    width: auto; /* Size to content */
+    max-width: calc((100% - (4 * 1rem)) / 5); /* Max width for 5 items per row accounting for gaps */
+    min-width: fit-content;
+  }
+
+  .range-carousel-track {
+    max-height: calc(2 * (1.2rem * 1.5 + 0.5rem * 2 + 1.5rem)); /* Height for 2 rows */
+    gap: 1.5rem 1rem; /* Equal column gap - reduced from 2rem */
+    animation-duration: 30s;
+  }
+
+  .range-carousel {
+    padding: 1.5rem 0 0 0;
+  }
+
+  .range-carousel-components {
+    margin-top: 1.5rem;
+  }
+}
+
+/* Accessibility: Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .range-carousel-track {
+    animation: none;
+    transform: translateX(0);
+  }
+}

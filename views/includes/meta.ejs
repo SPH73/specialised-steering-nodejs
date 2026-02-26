@@ -2,5 +2,12 @@
 <meta content="<%= meta.description %>" name="description" />
 <meta content="<%= meta.title %>" property="og:title" />
 <meta content="<%= meta.description %>" property="og:description" />
+<meta content="<%= typeof canonicalUrl !== 'undefined' ? canonicalUrl : 'https://www.specialisedsteering.com/' %>" property="og:url" />
+<meta content="website" property="og:type" />
+<meta content="<%= typeof siteBaseUrl !== 'undefined' ? siteBaseUrl : 'https://www.specialisedsteering.com' %>/images/og-image.png" property="og:image" />
+<% if (typeof fbAppId !== 'undefined' && fbAppId) { %><meta content="<%= fbAppId %>" property="fb:app_id" />
+<% } %>
 <meta content="<%= meta.title %>" property="twitter:title" />
 <meta content="<%= meta.description %>" property="twitter:description" />
+<meta content="summary_large_image" name="twitter:card" />
+<meta content="<%= typeof siteBaseUrl !== 'undefined' ? siteBaseUrl : 'https://www.specialisedsteering.com' %>/images/og-image.png" property="twitter:image" />

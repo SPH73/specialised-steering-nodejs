@@ -1,0 +1,47 @@
+# This is a template file. The actual file with real credentials is:
+# .htaccess (ignored in .gitignore)
+# Copy this file to .htaccess and replace placeholders with actual values.
+# See MD/SENSITIVE_FILES_POLICY.md for more information.
+
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION BEGIN
+PassengerEnabled On
+PassengerAppRoot "/path/to/your/app"
+PassengerBaseURI "/"
+PassengerNodejs "/path/to/nodevenv/your-app/[NODE_VERSION]/bin/node"
+PassengerAppType node
+PassengerStartupFile app.js
+PassengerAppEnv production
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION END
+
+# Redirect mail subdomain to main domain (prevents indexing of mail subdomain)
+# Force HTTPS (redirect HTTP to HTTPS)
+# Redirect non-www to www
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# Force HTTPS (redirect HTTP to HTTPS)
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+# Redirect non-www to www
+RewriteCond %{HTTP_HOST} ^yourdomain\.com$ [NC]
+RewriteRule ^(.*)$ https://www.yourdomain.com$1 [R=301,L]
+
+# Redirect mail subdomain to main domain
+RewriteCond %{HTTP_HOST} ^mail\.yourdomain\.com$ [NC]
+RewriteRule ^(.*)$ https://www.yourdomain.com$1 [R=301,L]
+</IfModule>
+
+# IP Deny List
+# Add your blocked IPs here
+<Limit GET POST>
+        Order Allow,Deny
+        Allow from all
+        # Deny from [IP_ADDRESS]
+</Limit>
+
+# Environment Variables (single block, no duplicates)
+# DO NOT REMOVE OR MODIFY. CLOUDLINUX ENV VARS CONFIGURATION BEGIN
+# Add your environment variables here via cPanel or manually
+# DO NOT REMOVE OR MODIFY. CLOUDLINUX ENV VARS CONFIGURATION END
+

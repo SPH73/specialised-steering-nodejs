@@ -1,0 +1,66 @@
+#!/bin/bash
+# This is a template file. The actual file with real server credentials is:
+# check-google-photos-server.sh (ignored in .gitignore)
+# Copy this file to check-google-photos-server.sh and replace placeholders with actual values.
+
+# Script to check Google Photos setup on production server
+# Run this from your local machine: ./check-google-photos-server.sh
+
+set -e  # Exit on error
+
+echo "🔍 Checking Google Photos setup on server"
+echo "=" | head -c 60; echo ""
+
+# Server details - REPLACE WITH YOUR ACTUAL VALUES
+SERVER="YOUR_USERNAME@YOUR_SERVER_IP"
+PORT="YOUR_SSH_PORT"
+PROD_DIR="~/YOUR_APP_DIRECTORY"
+
+echo ""
+echo "Checking production server..."
+echo ""
+
+ssh -p ${PORT} ${SERVER} << 'EOF'
+    cd ~/YOUR_APP_DIRECTORY
+
+    echo "📁 Checking files:"
+    echo "  - utils/google-photos.js: $([ -f utils/google-photos.js ] && echo '✅ EXISTS' || echo '❌ MISSING')"
+    echo "  - credentials.json: $([ -f credentials.json ] && echo '✅ EXISTS' || echo '❌ MISSING')"
+    echo "  - token.json: $([ -f token.json ] && echo '✅ EXISTS' || echo '❌ MISSING')"
+    echo ""
+
+    echo "📦 Checking npm packages:"
+    if [ -d node_modules/googleapis ]; then
+        echo "  - googleapis: ✅ INSTALLED"
+        echo "    Version: $(cat node_modules/googleapis/package.json | grep '"version"' | head -1 | cut -d'"' -f4)"
+    else
+        echo "  - googleapis: ❌ NOT INSTALLED"
+    fi
+    echo ""
+
+    echo "🔐 Checking environment variables in .htaccess:"
+    if [ -f .htaccess ]; then
+        echo "  - GOOGLE_PHOTOS_ALBUM_ID: $(grep -q 'SetEnv GOOGLE_PHOTOS_ALBUM_ID' .htaccess && grep 'SetEnv GOOGLE_PHOTOS_ALBUM_ID' .htaccess | sed 's/.*SetEnv GOOGLE_PHOTOS_ALBUM_ID //' || echo '❌ NOT SET')"
+        echo "  - CLIENT_ID: $(grep -q 'SetEnv CLIENT_ID' .htaccess && echo '✅ SET' || echo '❌ NOT SET')"
+        echo "  - CLIENT_SECRET: $(grep -q 'SetEnv CLIENT_SECRET' .htaccess && echo '✅ SET' || echo '❌ NOT SET')"
+    else
+        echo "  ❌ .htaccess file not found"
+    fi
+    echo ""
+
+    echo "📋 Recent server logs (last 20 lines with 'Google Photos' or 'gallery'):"
+    if [ -f stderr.log ]; then
+        grep -i "google photos\|gallery" stderr.log | tail -20 || echo "  (No relevant log entries found)"
+    else
+        echo "  ⚠️  stderr.log not found"
+    fi
+    echo ""
+
+    echo "💡 If googleapis is missing, run: npm install googleapis"
+    echo "💡 If files are missing, use: ./upload-google-photos-files.sh"
+    echo "💡 If env vars are missing, use: ./upload-google-oauth-env.sh"
+EOF
+
+echo ""
+echo "✅ Check complete"
+

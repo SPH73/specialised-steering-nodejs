@@ -36,6 +36,11 @@
               <li>
                 <p><strong><%= message.enquiryMessage %></strong></p>
               </li>
+              <% if (typeof imageFilename !== 'undefined' && imageFilename) { %>
+              <li>
+                <p>An image was attached: <strong><%= imageFilename %></strong></p>
+              </li>
+              <% } %>
             </ul>
 
             <p>

@@ -1,49 +1,177 @@
 <!DOCTYPE html>
-<!--  Last updated: 02 Aug 2022  -->
+<!--  Last Updated: 25 Feb 2026  -->
 <html lang="en" data-wf-page="61448a9f18708c14f2c5d52c">
-  >
   <head>
     <%- include('includes/head') %> <%- include('includes/meta') %>
-    <link href="https://specialisedsteering.com/contact" rel="canonical" />
+    <link href="https://www.specialisedsteering.com/contact" rel="canonical" />
     <script src="../js/block-scripts.js" defer></script>
-    <script
-      src="https://www.recaptcha.net/recaptcha/api.js"
-      async
-      defer
-    ></script>
+    <%- include('includes/recaptcha-script') %>
     <script>
-      function onSubmit(token) {
-        document.getElementById('contactForm').submit();
+      // Set form load time for spam detection
+      document.addEventListener("DOMContentLoaded", function () {
+        const formLoadTimeInput = document.getElementById("formLoadTime");
+        if (formLoadTimeInput) {
+          formLoadTimeInput.value = Date.now();
+        }
+      });
+
+      function validateContactForm() {
+        const errors = [];
+        const form = document.getElementById("contactForm");
+
+        // Clear previous error states
+        document
+          .querySelectorAll(".input-error")
+          .forEach(el => el.classList.remove("input-error"));
+
+        // Validate required fields
+        const name = document.getElementById("enquiryName");
+        if (!name.value.trim()) {
+          errors.push("Please enter your full name");
+          name.classList.add("input-error");
+        }
+
+        const email = document.getElementById("enquiryEmail");
+        if (!email.value.trim()) {
+          errors.push("Please enter your email address");
+          email.classList.add("input-error");
+        } else if (!email.validity.valid) {
+          errors.push("Please enter a valid email address");
+          email.classList.add("input-error");
+        }
+
+        const phone = document.getElementById("enquiryNumber");
+        if (!phone.value.trim()) {
+          errors.push("Please enter your contact number");
+          phone.classList.add("input-error");
+        }
+
+        const country = document.getElementById("contactCountry");
+        if (!country.value) {
+          errors.push("Please select your country");
+          country.classList.add("input-error");
+        }
+
+        const message = document.getElementById("enquiryMessage");
+        if (!message.value.trim()) {
+          errors.push("Please tell us how we can help");
+          message.classList.add("input-error");
+        }
+
+        const terms = document.getElementById("accept-terms");
+        if (!terms.checked) {
+          errors.push("Please accept the Terms & Conditions");
+        }
+
+        return errors;
       }
+
+      function showErrors(errors) {
+        const errorContainer = document.getElementById("form-errors");
+        const errorList = document.getElementById("form-error-list");
+
+        if (errors.length > 0) {
+          errorList.innerHTML = errors.map(err => `<li>${err}</li>`).join("");
+          errorContainer.classList.add("visible");
+          errorContainer.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+          });
+          return false;
+        } else {
+          errorContainer.classList.remove("visible");
+          return true;
+        }
+      }
+
+      function onSubmit(token) {
+        // Validate form
+        const errors = validateContactForm();
+
+        if (errors.length > 0) {
+          showErrors(errors);
+          grecaptcha.reset(); // Reset reCAPTCHA so user can try again
+          return false;
+        }
+
+        // All validation passed - submit form
+        const form = document.getElementById("contactForm");
+        form.submit();
+      }
+
+      // Add real-time validation feedback
+      document.addEventListener("DOMContentLoaded", function () {
+        // Re-validate when Terms checkbox is changed
+        const termsCheckbox = document.getElementById("accept-terms");
+        if (termsCheckbox) {
+          termsCheckbox.addEventListener("change", function () {
+            const errorContainer = document.getElementById("form-errors");
+            if (
+              errorContainer &&
+              errorContainer.classList.contains("visible")
+            ) {
+              // Re-run validation to update error list
+              const errors = validateContactForm();
+              showErrors(errors);
+            }
+          });
+        }
+
+        // Optional: Remove field-specific errors when user starts typing
+        const requiredFields = [
+          "enquiryName",
+          "enquiryEmail",
+          "enquiryNumber",
+          "contactCountry",
+          "enquiryMessage",
+        ];
+        requiredFields.forEach(fieldId => {
+          const field = document.getElementById(fieldId);
+          if (field) {
+            field.addEventListener("input", function () {
+              // Remove red highlight when user starts fixing the field
+              this.classList.remove("input-error");
+            });
+          }
+        });
+      });
     </script>
   </head>
   <body>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-V4W8VP4GL8"
-    ></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag('js', new Date());
-
-      gtag('config', 'G-V4W8VP4GL8');
-    </script>
-    <!-- G-tag end -->
-    <%- include('includes/nav') %>
+    <%- include('includes/analytics') %> <%- include('includes/nav') %>
     <main>
       <section id="contact-us" class="section main">
         <div class="container">
-          <h1>Contact us - we're here to help!</h1>
+          <h1>Contact us for repairs and technical support</h1>
+
+          <h2 id="head-office">Head Office – Germiston</h2>
+          <address class="head-office-nap" style="font-style: normal; margin-bottom: 1.5rem;">
+            <p style="margin: 0.25em 0;">
+              <strong>Specialised Steering (Pty) Ltd</strong><br />
+              4 Main road, Fisher's Hill<br />
+              Germiston, 1401<br />
+              Gauteng, South Africa
+            </p>
+            <p style="margin: 0.5em 0;">
+              <strong>Landline:</strong> <a href="tel:+27118283224">+27 11 828 3224</a><br />
+              <strong>Cell:</strong> <a href="tel:+27670096822">+27 67 009 6822</a><br />
+              <strong>Email:</strong> <a href="mailto:admin@ssteering.co.za">admin@ssteering.co.za</a>
+            </p>
+            <p style="margin: 0.5em 0;">
+              <strong>Hours:</strong> Mon–Thu 7:30–16:30, Fri 7:30–12:30
+            </p>
+            <p style="margin: 0.5em 0;">
+              <a href="https://goo.gl/maps/QxqKtTzCSymbqNAaA" target="_blank" rel="noopener noreferrer">Find us on Google Maps</a>
+            </p>
+          </address>
+
           <div id="contact-form" class="form-block w-form">
-            <h2>Get in Touch!</h2>
+            <h2>Get in Touch</h2>
             <p>
-              If you have a component for repair or you have any other query,
-              reach out with as much info as necessary and we will be in touch
-              within one business day.
+              Our Germiston, Gauteng workshop serves the Johannesburg region and
+              customers across South Africa. Include component type, machine
+              model, symptoms, and urgency, and we respond within one business
+              day.
             </p>
             <%- include('includes/forms/contact-form') %>
           </div>
@@ -51,48 +179,5 @@
       </section>
     </main>
     <%- include('includes/footer') %> <%- include('includes/blockjs') %>
-    <!-- ReCaptcha v3 -->
-    <script
-      asyn
-      defer
-      src="https://www.google.com/recaptcha/api.js?render=6Lc9VjYhAAAAADrFcrR-iZ56DPQnCFESM5J-Apaq"
-    ></script>
-    <script>
-      function showResult(text) {
-        document.querySelector('#result').innerHTML = text;
-      }
-
-      function handleClick(token) {
-        return function () {
-          let data = {
-            token: token,
-          };
-
-          fetch('/send', {
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-            },
-            method: 'post',
-            body: JSON.stringify(data),
-          })
-            .then(response => response.text())
-            .then(text => showResult(text))
-            .catch(error => showResult(error));
-        };
-      }
-
-      grecaptcha.ready(function () {
-        grecaptcha
-          .execute('6Lc9VjYhAAAAADrFcrR-iZ56DPQnCFESM5J-Apaq', {
-            action: 'contact',
-          })
-          .then(function (token) {
-            document
-              .querySelector('#send_button')
-              .addEventListener('click', handleClick(token));
-          });
-      });
-    </script>
   </body>
 </html>

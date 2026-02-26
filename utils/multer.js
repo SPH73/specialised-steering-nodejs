@@ -1,9 +1,32 @@
 const multer = require("multer");
+const fs = require("fs");
+const path = require("path");
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, "../public/uploads");
+try {
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+} catch (error) {
+  console.error("Error creating uploads directory:", error.message);
+  // Continue anyway - multer will handle the error
+}
+
 // temp storage of uploaded image files
 module.exports = multer({
   storage: multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, "./public/uploads");
+      // Ensure directory exists before saving
+      try {
+        if (!fs.existsSync(uploadsDir)) {
+          fs.mkdirSync(uploadsDir, { recursive: true });
+        }
+        cb(null, uploadsDir);
+      } catch (error) {
+        console.error("Error with uploads directory:", error.message);
+        cb(error, null);
+      }
     },
     filename: function (req, file, cb) {
       cb(null, Date.now() + "-" + file.originalname);
@@ -20,5 +43,8 @@ module.exports = multer({
 
     // Otherwise accept the file
     cb(null, true);
+  },
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit
   },
 });

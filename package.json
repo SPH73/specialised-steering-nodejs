@@ -5,7 +5,10 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js"
+    "prestart": "node -e \"if(process.version!=='v20.19.0'){console.error('❌ Error: Node.js v20.19.0 required, but found '+process.version);console.error('   Run: nvm use 20');process.exit(1);}\"",
+    "start": "node app.js",
+    "check:google-picker": "node scripts/check-google-picker-token.js",
+    "install:legacy": "npm install --legacy-peer-deps"
   },
   "keywords": [
     "specialised steering",
@@ -20,17 +23,24 @@
     "Design Develop Host"
   ],
   "license": "ISC",
+  "overrides": {
+    "minimatch": "10.2.1",
+    "lodash": "4.17.23",
+    "qs": "6.14.2"
+  },
   "dependencies": {
     "airtable": "^0.11.1",
-    "cloudinary": "^1.27.1",
+    "cloudinary": "^2.7.0",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
     "dotenv": "^10.0.0",
     "ejs": "^3.1.10",
     "express": "^4.17.1",
-    "multer": "^1.4.3",
-    "multer-storage-cloudinary": "^4.0.0",
-    "request-ip": "^2.1.3",
+    "express-rate-limit": "^8.2.1",
+    "googleapis": "^169.0.0",
+    "multer": "^2.0.2",
+    "nodemailer": "^7.0.11",
+    "request-ip": "^3.3.0",
     "serve-favicon": "^2.5.0"
   }
 }

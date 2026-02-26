@@ -1,0 +1,35 @@
+---
+description: Check reflog for branch origin before merging
+alwaysApply: true
+---
+
+# Git: Merge Into Correct Branch
+
+## Rule: Confirm Parent Branch Before Merging
+
+When the user asks to merge a feature branch "into the branch we branched from" (or similar), **do not assume the parent is `main` or `master`**. Check the reflog to see which branch the current branch was created from.
+
+## Steps
+
+1. **Find the branch-creation point** for the branch you are about to merge (e.g. `search-improvements`):
+   ```bash
+   git reflog show <branch-name>
+   ```
+   Look for an entry like `branch: Created from HEAD` and note that commit hash.
+
+2. **See which branch contains that commit** (that is the branch we branched from):
+   ```bash
+   git branch -a --contains <commit-hash>
+   ```
+   The branch that is not the feature branch itself is the parent (e.g. `feature/aeo-copy-refresh`).
+
+3. **Merge into that branch**:
+   ```bash
+   git checkout <parent-branch>
+   git pull origin <parent-branch>
+   git merge <feature-branch>
+   ```
+
+## Why
+
+Different workflows use different base branches (e.g. `main`, `develop`, `feature/aeo-copy-refresh`). Merging into the wrong branch can duplicate or misplace work. The reflog is the source of truth for where a branch was created.
