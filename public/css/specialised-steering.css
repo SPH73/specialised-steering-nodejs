@@ -3266,6 +3266,15 @@ img {
 }
 */
 
+/* Footer heading link (e.g. "head office" linking to /head-office) */
+.footer-heading-link {
+  color: inherit;
+  text-decoration: none;
+}
+.footer-heading-link:hover {
+  text-decoration: underline;
+}
+
 /* Accessibility: Reduced motion support for users with motion sensitivity */
 /* Only affects users who enable "Reduce Motion" in OS settings (WCAG 2.1 Level AAA) */
 @media (prefers-reduced-motion: reduce) {

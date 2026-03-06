@@ -73,6 +73,11 @@ router.get("/gallery", async (req, res) => {
   });
 });
 
+router.get("/head-office", (req, res) => {
+  const meta = getMetaForPage("headOffice", {});
+  res.render("head-office", { meta: meta });
+});
+
 router.get("/sitemap.xml", (req, res) => {
   const baseUrl = "https://www.specialisedsteering.com";
   const today = new Date().toISOString().split("T")[0];
@@ -83,6 +88,7 @@ router.get("/sitemap.xml", (req, res) => {
     { url: "/about", priority: "0.8", changefreq: "monthly" },
     { url: "/our-work", priority: "0.8", changefreq: "weekly" },
     { url: "/gallery", priority: "0.7", changefreq: "weekly" },
+    { url: "/head-office", priority: "0.7", changefreq: "monthly" },
     { url: "/privacy-policy", priority: "0.6", changefreq: "yearly" },
     { url: "/terms-of-sale", priority: "0.6", changefreq: "yearly" },
     { url: "/cookie-policy", priority: "0.5", changefreq: "yearly" },

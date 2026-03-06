@@ -76,6 +76,15 @@ const COPY_VARIANTS = {
     },
   },
 
+  // Head Office page
+  headOffice: {
+    A: {
+      title: "Head Office – Germiston | Specialised Steering",
+      description:
+        "Visit our Germiston workshop: 4 Main road, Fisher's Hill. Landline +27 11 828 3224. Hydraulic repairs, service exchange and parts sourcing for industrial, mining, agricultural and off-highway.",
+    },
+  },
+
   // Enquiry page variants (for Phase 2 - not yet active)
   enquiry: {
     A: {
