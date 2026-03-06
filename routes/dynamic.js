@@ -26,6 +26,40 @@ const base = Airtable.base(process.env.BASE);
 
 const router = express.Router();
 
+const CONFIRM_COOKIE = "confirm_data";
+const CONFIRM_COOKIE_MAX_AGE = 60; // seconds
+
+function setConfirmCookieAndRedirect(res, payload) {
+  const json = JSON.stringify(payload);
+  const value = Buffer.from(json, "utf8")
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_");
+  const opts = {
+    maxAge: CONFIRM_COOKIE_MAX_AGE * 1000,
+    httpOnly: true,
+    path: "/",
+    sameSite: "lax",
+  };
+  if (process.env.NODE_ENV === "production") {
+    opts.secure = true;
+  }
+  res.cookie(CONFIRM_COOKIE, value, opts);
+  res.redirect(303, "/confirm");
+}
+
+function getConfirmFromCookie(req) {
+  const raw = req.cookies && req.cookies[CONFIRM_COOKIE];
+  if (!raw || typeof raw !== "string") return null;
+  try {
+    const base64 = raw.replace(/-/g, "+").replace(/_/g, "/");
+    const json = Buffer.from(base64, "base64").toString("utf8");
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+}
+
 // Rate limiting for form submissions
 // Allow 5 submissions per 15 minutes per IP
 const formRateLimit = rateLimit({
@@ -368,12 +402,13 @@ router.post(
           variant: req.abVariant || "unknown",
           status: "ok",
         });
-        return res.render("confirm", {
+        setConfirmCookieAndRedirect(res, {
           message: messageData,
           ref: null,
           imageFilename: image && image.originalname ? image.originalname : null,
           imageUrl: null,
         });
+        return;
       }
 
       // Ensure data is an object (defensive check)
@@ -603,10 +638,8 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
         variant: req.abVariant || "unknown",
         status: "ok",
       });
-      return res.render("confirm", {
-        message: messageData,
-        ref: null,
-      });
+      setConfirmCookieAndRedirect(res, { message: messageData, ref: null });
+      return;
     }
 
     // Ensure data is an object (defensive check)
@@ -628,7 +661,10 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
       ).catch(err => console.error("Failed to log A/B conversion:", err));
     }
 
-    res.render("confirm", { message: messageData, ref: refValue });
+    setConfirmCookieAndRedirect(res, {
+      message: messageData,
+      ref: refValue,
+    });
   } catch (error) {
     console.error("Unexpected error in contact form handler:", error.message);
     next(error);
@@ -636,7 +672,16 @@ router.post("/contact", formRateLimit, async (req, res, next) => {
 });
 
 router.get("/confirm", (req, res) => {
-  // If we get here via GET, there's no form data to show
+  const payload = getConfirmFromCookie(req);
+  if (payload) {
+    res.clearCookie(CONFIRM_COOKIE, { path: "/" });
+    return res.render("confirm", {
+      message: payload.message || {},
+      ref: payload.ref ?? null,
+      imageFilename: payload.imageFilename ?? null,
+      imageUrl: payload.imageUrl ?? null,
+    });
+  }
   res.render("confirm", {
     message: {},
     ref: null,

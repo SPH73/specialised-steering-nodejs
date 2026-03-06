@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!--  Last updated: 02 Aug 2022 -->
+<!--  Last Updated: 19 Jan 2026  -->
 <html lang="en" data-wf-page="619b5986b939f912f7e2b76e">
   >
   <head>
@@ -12,11 +12,14 @@
       <section class="section">
         <div class="container">
           <h1>Success</h1>
+          <% if (message && message.error) { %>
+          <p><strong><%= message.error %></strong></p>
+          <% } else if (message && message.enquiryName) { %>
           <p>
-            Thank you, <strong><%= message.enquiryName %></strong>, we have
-            received your form submission sent on
-            <strong><%= message.postDate%></strong> at
-            <strong><%= message.postTime %></strong> and will respond soon.
+            Thank you, <strong><%= message.enquiryName || 'there' %></strong>, we have
+            received your form submission<% if (message.postDate && message.postTime) { %> sent on
+            <strong><%= message.postDate %></strong> at
+            <strong><%= message.postTime %></strong><% } %> and will respond soon.
           </p>
           <div class="print">
             <ul>
@@ -24,18 +27,24 @@
                 We will use the following information you have provided to
                 contact you regarding your request.
               </p>
+              <% if (message.enquiryEmail) { %>
               <li>
                 <p>Email: <strong><%= message.enquiryEmail %></strong></p>
               </li>
+              <% } %>
+              <% if (message.enquiryNumber) { %>
               <li>
                 <p>
-                  Contact Number: <strong> <%= message.enquiryNumber %></strong>
+                  Contact Number: <strong><%= message.enquiryNumber %></strong>
                 </p>
               </li>
+              <% } %>
+              <% if (message.enquiryMessage) { %>
               <p>As a reminder, your message was:</p>
               <li>
                 <p><strong><%= message.enquiryMessage %></strong></p>
               </li>
+              <% } %>
               <% if (typeof imageFilename !== 'undefined' && imageFilename) { %>
               <li>
                 <p>An image was attached: <strong><%= imageFilename %></strong></p>
@@ -43,10 +52,12 @@
               <% } %>
             </ul>
 
+            <% if (ref) { %>
             <p>
               The reference for your contact request is:
               <strong><%= ref %></strong>
             </p>
+            <% } %>
             <p class="print">
               <a href="#" onclick="window.print();return false;"
                 ><strong>Print this page</strong> to keep a copy for your
@@ -54,6 +65,9 @@
               >
             </p>
           </div>
+          <% } else { %>
+          <p>We have received your form submission and will respond soon.</p>
+          <% } %>
         </div>
       </section>
     </main>

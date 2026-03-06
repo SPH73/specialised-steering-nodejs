@@ -13,6 +13,7 @@ token.json
 credentials.json
 *-todo.md
 *.txt
+*.pages
 
 # Resources
 MD/
@@ -50,6 +51,7 @@ docs/seo-comparison*.md
 docs/seo-report-ct/
 docs/seo-report-specialised/
 docs/gsc/
+docs/gsc-ctr-rank-workflow.md
 
 # Google Search Console coverage reports
 *Coverage*.zip
