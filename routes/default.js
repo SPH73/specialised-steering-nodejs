@@ -70,6 +70,7 @@ router.get("/gallery", async (req, res) => {
     photos: photos,
     error: error,
     hasPhotos: photos.length > 0,
+    pageCss: ["gallery"],
   });
 });
 

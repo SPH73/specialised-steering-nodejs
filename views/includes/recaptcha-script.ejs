@@ -1,5 +1,26 @@
-<script
-  src="https://www.recaptcha.net/recaptcha/api.js"
-  async
-  defer
-></script>
+<script>
+(function () {
+  var loaded = false;
+  function loadRecaptcha() {
+    if (loaded) return;
+    loaded = true;
+    var s = document.createElement("script");
+    s.src = "https://www.recaptcha.net/recaptcha/api.js";
+    s.async = true;
+    s.defer = true;
+    document.head.appendChild(s);
+  }
+  document.addEventListener("focusin", function handler(e) {
+    if (e.target.closest && e.target.closest("form")) {
+      loadRecaptcha();
+      document.removeEventListener("focusin", handler);
+    }
+  });
+  document.addEventListener("pointerdown", function handler(e) {
+    if (e.target.closest && e.target.closest("form")) {
+      loadRecaptcha();
+      document.removeEventListener("pointerdown", handler);
+    }
+  });
+})();
+</script>

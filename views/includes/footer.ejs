@@ -172,9 +172,14 @@
   </div>
 </footer>
 <script>
-  const year = new Date().getFullYear();
-  const yearElement = document.querySelector(".year");
+  var year = new Date().getFullYear();
+  var yearElement = document.querySelector(".year");
   if (yearElement) {
     yearElement.textContent = year;
+  }
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("/sw.js").catch(function () {});
+    });
   }
 </script>

@@ -38,20 +38,11 @@ const basePath = '/';
     aria-label="menu"
     id="nav-menu-toggle"
   >
-    <div
-      role="presentation"
-      data-is-ix2-target="1"
-      class="icon-animation"
-      data-w-id="15c6fe86-0da0-6554-a202-c50b959f2b44"
-      data-animation-type="lottie"
-      data-src="<%= basePath %>documents/menu-icon-animation.json"
-      data-loop="0"
-      data-direction="1"
-      data-autoplay="0"
-      data-renderer="svg"
-      data-default-duration="4.5"
-      data-duration="0"
-    ></div>
+    <span class="hamburger-icon" aria-hidden="true">
+      <span class="hamburger-bar"></span>
+      <span class="hamburger-bar"></span>
+      <span class="hamburger-bar"></span>
+    </span>
   </a>
   <div
     class="navbar_menu <%= adminMode ? 'admin-nav-menu' : '' %>"
@@ -123,229 +114,94 @@ const basePath = '/';
 </nav>
 
 <script>
-  // Mobile menu toggle for navigation
-  (function () {
-    const menuToggle = document.getElementById("nav-menu-toggle");
-    const menu = document.getElementById("nav-menu");
+(function () {
+  var menuToggle = document.getElementById("nav-menu-toggle");
+  var menu = document.getElementById("nav-menu");
+  var navbar = document.querySelector(".navbar");
 
-    if (menuToggle && menu) {
-      const menuLinks = Array.from(
-        menu.querySelectorAll(".navbar_menu-link"),
-      );
+  if (menuToggle && menu) {
+    var menuLinks = Array.from(menu.querySelectorAll(".navbar_menu-link"));
 
-      const updateNavWrap = () => {
-        const isMobile = window.matchMedia("(max-width: 991px)").matches;
-        if (isMobile || menuLinks.length === 0) {
-          document.documentElement.classList.remove("nav-wrap");
-          return;
-        }
-
+    var updateNavWrap = function () {
+      var isMobile = window.matchMedia("(max-width: 991px)").matches;
+      if (isMobile || menuLinks.length === 0) {
         document.documentElement.classList.remove("nav-wrap");
-        const firstTop = menuLinks[0].offsetTop;
-        const wrapped = menuLinks.some(link => link.offsetTop > firstTop);
-        document.documentElement.classList.toggle("nav-wrap", wrapped);
-      };
+        return;
+      }
+      document.documentElement.classList.remove("nav-wrap");
+      var firstTop = menuLinks[0].offsetTop;
+      var wrapped = menuLinks.some(function (link) { return link.offsetTop > firstTop; });
+      document.documentElement.classList.toggle("nav-wrap", wrapped);
+    };
 
-      const scheduleNavWrapUpdate = () => {
-        window.requestAnimationFrame(updateNavWrap);
-      };
+    var setMenuOpen = function (open) {
+      if (open) {
+        menu.style.height = "100vh";
+        menu.style.zIndex = "20";
+        menuToggle.classList.add("is-open");
+        menuToggle.setAttribute("aria-expanded", "true");
+      } else {
+        menu.style.height = "0vh";
+        menu.style.zIndex = "-10";
+        menuToggle.classList.remove("is-open");
+        menuToggle.setAttribute("aria-expanded", "false");
+      }
+    };
 
-      menuToggle.addEventListener("click", function (e) {
-        e.preventDefault();
-        const isOpen = menu.style.height && menu.style.height !== "0vh";
+    menuToggle.addEventListener("click", function (e) {
+      e.preventDefault();
+      var isOpen = menu.style.height && menu.style.height !== "0vh";
+      setMenuOpen(!isOpen);
+    });
 
-        if (isOpen) {
-          // Close menu
-          menu.style.height = "0vh";
-          menu.style.zIndex = "-10";
-          menu.style.overflow = "hidden";
-        } else {
-          // Open menu
-          menu.style.height = "100vh";
-          menu.style.zIndex = "20";
-          menu.style.overflow = "visible";
+    menuLinks.forEach(function (link) {
+      link.addEventListener("click", function () { setMenuOpen(false); });
+    });
+
+    window.addEventListener("load", function () { requestAnimationFrame(updateNavWrap); });
+    window.addEventListener("resize", function () { requestAnimationFrame(updateNavWrap); });
+    requestAnimationFrame(updateNavWrap);
+  }
+
+  // Nav hide/show on scroll (replaces IX2 scroll interaction)
+  if (navbar) {
+    var lastScrollY = 0;
+    var ticking = false;
+    window.addEventListener("scroll", function () {
+      if (!ticking) {
+        requestAnimationFrame(function () {
+          var currentY = window.scrollY;
+          if (currentY > 100 && currentY > lastScrollY) {
+            navbar.style.transform = "translateY(-100%)";
+          } else {
+            navbar.style.transform = "translateY(0)";
+          }
+          lastScrollY = currentY;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+    navbar.style.transition = "transform 0.3s ease";
+  }
+
+  // Fade-in on scroll for range images and brand logos
+  if ("IntersectionObserver" in window) {
+    var fadeObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          fadeObserver.unobserve(entry.target);
         }
       });
+    }, { threshold: 0.1 });
 
-      // Close menu when clicking on a link
-      menuLinks.forEach(function (link) {
-        link.addEventListener("click", function () {
-          menu.style.height = "0vh";
-          menu.style.zIndex = "-10";
-          menu.style.overflow = "hidden";
-        });
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll(".range-image, .brand-image").forEach(function (el) {
+        el.classList.add("fade-on-scroll");
+        fadeObserver.observe(el);
       });
-
-      window.addEventListener("load", scheduleNavWrapUpdate);
-      window.addEventListener("resize", scheduleNavWrapUpdate);
-      scheduleNavWrapUpdate();
-    }
-  })();
+    });
+  }
+})();
 </script>
-
-<style>
-  /* Admin Navigation - Reversed styling from public nav */
-
-  /* Desktop: accent bg, dark text (except logout) */
-  .admin-nav-menu.navbar_menu .navbar_menu-link {
-    background-color: var(--color-secondary);
-    color: var(--color-button);
-  }
-
-  .admin-nav-menu.navbar_menu .navbar_menu-link:hover {
-    background-color: var(--color-button);
-    color: var(--color-secondary);
-  }
-
-  .admin-nav-menu.navbar_menu .navbar_menu-link.w--current {
-    background-color: var(--color-secondary);
-    color: var(--color-button);
-    font-weight: 800;
-  }
-
-  .admin-nav-menu.navbar_menu .navbar_menu-link.w--current:hover {
-    background-color: var(--color-button);
-    color: var(--color-secondary);
-  }
-
-  /* Logout: dark bg, accent text (reversed) */
-  .admin-nav-menu.navbar_menu .navbar_menu-link.admin-logout {
-    background-color: var(--color-button);
-    color: var(--color-secondary);
-  }
-
-  .admin-nav-menu.navbar_menu .navbar_menu-link.admin-logout:hover {
-    background-color: var(--color-secondary);
-    color: var(--color-button);
-  }
-
-  /* Mobile styles (max-width: 991px) */
-  @media (max-width: 991px) {
-    .admin-nav-menu.navbar_menu .navbar_menu-link {
-      width: 100vw;
-      margin-right: 0;
-      margin-bottom: 0;
-      padding: 1.2rem 1.5rem;
-      border-bottom: 0.3em solid var(--color-secondary);
-      border-radius: 0;
-      background-color: transparent;
-      box-shadow: none;
-      font-weight: 600;
-    }
-
-    .admin-nav-menu.navbar_menu .navbar_menu-link:hover {
-      background-color: transparent;
-      transform: none;
-    }
-
-    /* HOME: accent text */
-    .admin-nav-menu.navbar_menu .navbar_menu-link.admin-home,
-    .admin-nav-menu.navbar_menu .navbar_menu-link.admin-home:hover {
-      background-color: transparent;
-      color: var(--color-secondary);
-    }
-
-    /* GALLERY: dark text */
-    .admin-nav-menu.navbar_menu .navbar_menu-link.admin-gallery,
-    .admin-nav-menu.navbar_menu .navbar_menu-link.admin-gallery:hover {
-      background-color: transparent;
-      color: var(--color-button);
-    }
-
-    /* LOGOUT: dark bg, accent text, no border */
-    .admin-nav-menu.navbar_menu .navbar_menu-link.admin-logout {
-      margin-top: 1rem;
-      border-bottom-style: none;
-      background-color: var(--color-button);
-      color: var(--color-secondary);
-    }
-
-    .admin-nav-menu.navbar_menu .navbar_menu-link.admin-logout:hover {
-      background-color: var(--color-secondary);
-      color: var(--color-button);
-    }
-  }
-
-  /* BBBEE Badge Styles */
-
-  /* Desktop Badge - Right side of navbar */
-  .navbar_bbbee-badge-desktop {
-    display: none;
-  }
-
-  .bbbee-badge-img-desktop {
-    max-width: 120px;
-    width: 100%;
-    height: auto;
-    display: block;
-  }
-
-  /* Mobile Badge - Bottom of navigation drawer */
-  .navbar_bbbee-badge-mobile {
-    display: none;
-  }
-
-  .bbbee-badge-img-mobile {
-    max-width: 140px;
-    width: 100%;
-    height: auto;
-    display: block;
-    margin: 0 auto;
-  }
-
-  /* Desktop: Show badge in navbar */
-  @media screen and (min-width: 992px) {
-    .navbar_bbbee-badge-desktop {
-      display: block;
-      flex-shrink: 0;
-      margin-left: 2rem; /* Spacing from navigation menu links */
-      align-self: center; /* Vertically center with navbar items */
-    }
-
-    .bbbee-badge-img-desktop {
-      max-width: 120px;
-      height: auto;
-    }
-  }
-
-  /* Mobile: Show badge at bottom of drawer */
-  @media screen and (max-width: 991px) {
-    /* Ensure logo and hamburger icon stay above the open menu drawer */
-    /* Menu gets z-index: 20 when open, so navbar elements need higher z-index */
-    .navbar_logo {
-      position: relative;
-      z-index: 25 !important; /* Higher than menu z-index of 20 */
-    }
-
-    .navbar_menu-icon {
-      position: relative;
-      z-index: 25 !important; /* Higher than menu z-index of 20 when open */
-    }
-
-    /* Position badge absolutely at bottom - menu already has position: absolute from CSS */
-    /* Badge is positioned relative to the menu container */
-    .navbar_bbbee-badge-mobile {
-      display: block;
-      position: absolute;
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%);
-      width: calc(100% - 2rem);
-      max-width: 140px;
-      text-align: center;
-      z-index: 1;
-      pointer-events: none; /* Don't interfere with menu clicks */
-    }
-
-    .bbbee-badge-img-mobile {
-      pointer-events: auto; /* Allow clicks on badge itself */
-    }
-  }
-
-  /* Very small screens - adjust badge size */
-  @media screen and (max-width: 479px) {
-    .bbbee-badge-img-mobile {
-      max-width: 120px;
-    }
-  }
-</style>

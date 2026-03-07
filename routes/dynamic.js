@@ -104,7 +104,7 @@ router.get("/", async (req, res) => {
     );
   }
 
-  res.render("index", { meta: meta, abVariants: variants });
+  res.render("index", { meta: meta, abVariants: variants, pageCss: ["brand-carousel", "range-carousel"] });
 });
 
 // ___ OUR WORK ___

@@ -1,20 +1,25 @@
-<link async href="/css/normalize.css" rel="stylesheet" type="text/css" />
-<link async href="/css/styles.css" rel="stylesheet" type="text/css" />
-<link
-  async
-  href="/css/specialised-steering.css"
-  rel="stylesheet"
-  type="text/css"
-/>
-<link async href="/css/brand-carousel.css" rel="stylesheet" type="text/css" />
-<link async href="/css/range-carousel.css" rel="stylesheet" type="text/css" />
-<link
-  async
-  href="/css/print.css"
-  media="print"
-  rel="stylesheet"
-  type="text/css"
-/>
-<link async href="/favicon.png" sizes="32x32" rel=" icon" />
-<link async href="/favicon.ico" rel="shortcut icon" type="image/x-icon" />
-<link async href="/webclip.svg" rel="apple-touch-icon" />
+<link href="/css/normalize.css" rel="stylesheet" type="text/css" media="print" onload="this.media='all'" />
+<link href="/css/styles.css" rel="stylesheet" type="text/css" media="print" onload="this.media='all'" />
+<link href="/css/specialised-steering.css" rel="stylesheet" type="text/css" media="print" onload="this.media='all'" />
+<noscript>
+  <link href="/css/normalize.css" rel="stylesheet" type="text/css" />
+  <link href="/css/styles.css" rel="stylesheet" type="text/css" />
+  <link href="/css/specialised-steering.css" rel="stylesheet" type="text/css" />
+</noscript>
+<% const _css = typeof pageCss !== 'undefined' ? pageCss : []; %>
+<% if (_css.includes('brand-carousel')) { %>
+<link href="/css/brand-carousel.css" rel="stylesheet" type="text/css" media="print" onload="this.media='all'" />
+<noscript><link href="/css/brand-carousel.css" rel="stylesheet" type="text/css" /></noscript>
+<% } %>
+<% if (_css.includes('range-carousel')) { %>
+<link href="/css/range-carousel.css" rel="stylesheet" type="text/css" media="print" onload="this.media='all'" />
+<noscript><link href="/css/range-carousel.css" rel="stylesheet" type="text/css" /></noscript>
+<% } %>
+<% if (_css.includes('gallery')) { %>
+<link href="/css/gallery.css" rel="stylesheet" type="text/css" media="print" onload="this.media='all'" />
+<noscript><link href="/css/gallery.css" rel="stylesheet" type="text/css" /></noscript>
+<% } %>
+<link href="/css/print.css" media="print" rel="stylesheet" type="text/css" />
+<link href="/favicon.png" sizes="32x32" rel="icon" />
+<link href="/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+<link href="/webclip.svg" rel="apple-touch-icon" />

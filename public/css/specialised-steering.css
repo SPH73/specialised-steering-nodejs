@@ -449,6 +449,8 @@ html.nav-wrap .navbar_menu {
   align-items: center;
   background-color: var(--color-light);
   font-family: Montserrat, sans-serif;
+  -webkit-transition: height 0.6s ease;
+  transition: height 0.6s ease;
 }
 
 html.nav-wrap .navbar_menu-link {
@@ -506,6 +508,13 @@ html.nav-wrap .navbar_menu-icon {
   width: 2rem;
   height: 2rem;
   background-color: var(--color-secondary);
+  position: relative;
+  z-index: 25 !important;
+}
+
+html.nav-wrap .navbar_logo {
+  position: relative;
+  z-index: 25 !important;
 }
 
 html.nav-wrap .navbar_bbbee-badge-desktop {
@@ -1779,7 +1788,9 @@ img {
     align-items: center;
     background-color: var(--color-light);
     font-family: Montserrat, sans-serif;
-  }
+  -webkit-transition: height 0.6s ease;
+  transition: height 0.6s ease;
+}
 
   .navbar_menu-link {
     width: 100vw;
@@ -3273,6 +3284,175 @@ img {
 }
 .footer-heading-link:hover {
   text-decoration: underline;
+}
+
+/* Hamburger icon (replaces Lottie animation) */
+.navbar_menu-icon {
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+.hamburger-icon {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 1.25rem;
+  height: 1rem;
+}
+.hamburger-bar {
+  display: block;
+  width: 100%;
+  height: 3px;
+  background-color: var(--color-button);
+  border-radius: 1px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.is-open .hamburger-bar:nth-child(1) {
+  transform: translateY(calc(0.5rem - 1.5px)) rotate(45deg);
+}
+.is-open .hamburger-bar:nth-child(2) {
+  opacity: 0;
+}
+.is-open .hamburger-bar:nth-child(3) {
+  transform: translateY(calc(-0.5rem + 1.5px)) rotate(-45deg);
+}
+
+/* Scroll fade-in animation (replaces IX2 scroll-into-view) */
+.fade-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Admin Navigation - Reversed styling from public nav */
+.admin-nav-menu.navbar_menu .navbar_menu-link {
+  background-color: var(--color-secondary);
+  color: var(--color-button);
+}
+.admin-nav-menu.navbar_menu .navbar_menu-link:hover {
+  background-color: var(--color-button);
+  color: var(--color-secondary);
+}
+.admin-nav-menu.navbar_menu .navbar_menu-link.w--current {
+  background-color: var(--color-secondary);
+  color: var(--color-button);
+  font-weight: 800;
+}
+.admin-nav-menu.navbar_menu .navbar_menu-link.w--current:hover {
+  background-color: var(--color-button);
+  color: var(--color-secondary);
+}
+.admin-nav-menu.navbar_menu .navbar_menu-link.admin-logout {
+  background-color: var(--color-button);
+  color: var(--color-secondary);
+}
+.admin-nav-menu.navbar_menu .navbar_menu-link.admin-logout:hover {
+  background-color: var(--color-secondary);
+  color: var(--color-button);
+}
+@media (max-width: 991px) {
+  .admin-nav-menu.navbar_menu .navbar_menu-link {
+    width: 100vw;
+    margin-right: 0;
+    margin-bottom: 0;
+    padding: 1.2rem 1.5rem;
+    border-bottom: 0.3em solid var(--color-secondary);
+    border-radius: 0;
+    background-color: transparent;
+    box-shadow: none;
+    font-weight: 600;
+  }
+  .admin-nav-menu.navbar_menu .navbar_menu-link:hover {
+    background-color: transparent;
+    transform: none;
+  }
+  .admin-nav-menu.navbar_menu .navbar_menu-link.admin-home,
+  .admin-nav-menu.navbar_menu .navbar_menu-link.admin-home:hover {
+    background-color: transparent;
+    color: var(--color-secondary);
+  }
+  .admin-nav-menu.navbar_menu .navbar_menu-link.admin-gallery,
+  .admin-nav-menu.navbar_menu .navbar_menu-link.admin-gallery:hover {
+    background-color: transparent;
+    color: var(--color-button);
+  }
+  .admin-nav-menu.navbar_menu .navbar_menu-link.admin-logout {
+    margin-top: 1rem;
+    border-bottom-style: none;
+    background-color: var(--color-button);
+    color: var(--color-secondary);
+  }
+  .admin-nav-menu.navbar_menu .navbar_menu-link.admin-logout:hover {
+    background-color: var(--color-secondary);
+    color: var(--color-button);
+  }
+}
+
+/* BBBEE Badge Styles */
+.navbar_bbbee-badge-desktop {
+  display: none;
+}
+.bbbee-badge-img-desktop {
+  max-width: 120px;
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.navbar_bbbee-badge-mobile {
+  display: none;
+}
+.bbbee-badge-img-mobile {
+  max-width: 140px;
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+@media screen and (min-width: 992px) {
+  .navbar_bbbee-badge-desktop {
+    display: block;
+    flex-shrink: 0;
+    margin-left: 2rem;
+    align-self: center;
+  }
+  .bbbee-badge-img-desktop {
+    max-width: 120px;
+    height: auto;
+  }
+}
+@media screen and (max-width: 991px) {
+  .navbar_logo {
+    position: relative;
+    z-index: 25 !important;
+  }
+  .navbar_menu-icon {
+    position: relative;
+    z-index: 25 !important;
+  }
+  .navbar_bbbee-badge-mobile {
+    display: block;
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 2rem);
+    max-width: 140px;
+    text-align: center;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .bbbee-badge-img-mobile {
+    pointer-events: auto;
+  }
+}
+@media screen and (max-width: 479px) {
+  .bbbee-badge-img-mobile {
+    max-width: 120px;
+  }
 }
 
 /* Accessibility: Reduced motion support for users with motion sensitivity */
